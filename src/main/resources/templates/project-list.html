@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Mine Projekter</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+  <h1>Mine Projekter</h1>
+
+  <div th:if="${projects.isEmpty()}">
+    <div class="alert alert-info">Du har endnu ikke oprettet nogen projekter</div>
+  </div>
+
+  <table class="table table-striped" th:unless="${projects.isEmpty()}">
+    <thead>
+    <tr>
+      <th>Navn</th>
+      <th>Rolle</th>
+      <th>Beskrivelse</th>
+      <th>Startdato</th>
+      <th>Slutdato</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="project : ${projects}">
+      <td th:text="${project.name}"></td>
+      <td th:text="${project.rolle}"></td>
+      <td th:text="${project.description}"></td>
+      <td th:text="${project.startDate}"></td>
+      <td th:text="${project.endDate}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
