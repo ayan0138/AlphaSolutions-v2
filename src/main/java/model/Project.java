@@ -10,6 +10,10 @@ public class Project {
     private LocalDate endDate;
     private long createdBy; // FK til User
 
+    public Project() {
+        // Default constructor
+    }
+
     public Project(long projectId, String name, String description, LocalDate startDate,
                    LocalDate endDate, long createdBy) {
         this.projectId = projectId;
