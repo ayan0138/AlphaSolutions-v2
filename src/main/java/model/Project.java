@@ -12,6 +12,10 @@ public class Project {
     private long createdBy; // FK til User
     private LocalDateTime created_at;
 
+    public Project() {
+        // Default constructor
+    }
+
     public Project(long projectId, String name, String description, LocalDate startDate,
                    LocalDate endDate, long createdBy, LocalDateTime created_at) {
         this.projectId = projectId;
