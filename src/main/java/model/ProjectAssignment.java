@@ -1,16 +1,20 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class ProjectAssignment {
     private long assignmentId;
     private long userId;
     private long projectId;
     private String projectRole;
+    private LocalDateTime created_at;
 
-    public ProjectAssignment(long assignmentId, long userId, long projectId, String projectRole) {
+    public ProjectAssignment(long assignmentId, long userId, long projectId, String projectRole, LocalDateTime created_at) {
         this.assignmentId = assignmentId;
         this.userId = userId;
         this.projectId = projectId;
         this.projectRole = projectRole;
+        this.created_at = created_at;
     }
 
     public long getAssignmentId() {
@@ -43,5 +47,11 @@ public class ProjectAssignment {
 
     public void setProjectRole(String projectRole) {
         this.projectRole = projectRole;
+    }
+    public LocalDateTime getCreated_at(){
+        return created_at;
+    }
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
     }
 }

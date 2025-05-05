@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Project {
     private long projectId;
@@ -9,15 +10,17 @@ public class Project {
     private LocalDate startDate;
     private LocalDate endDate;
     private long createdBy; // FK til User
+    private LocalDateTime created_at;
 
     public Project(long projectId, String name, String description, LocalDate startDate,
-                   LocalDate endDate, long createdBy) {
+                   LocalDate endDate, long createdBy, LocalDateTime created_at) {
         this.projectId = projectId;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.createdBy = createdBy;
+        this.created_at = created_at;
     }
 
     public long getProjectId() {
@@ -66,5 +69,11 @@ public class Project {
 
     public void setCreatedBy(long createdBy) {
         this.createdBy = createdBy;
+    }
+    public LocalDateTime getCreated_at(){
+        return created_at;
+    }
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
     }
 }

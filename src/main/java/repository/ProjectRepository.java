@@ -1,7 +1,10 @@
 package repository;
 
 import model.Project;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.List;
 
 public class ProjectRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -21,4 +24,10 @@ public class ProjectRepository {
                 project.getCreatedBy()
         );
     }
+
+    public List<Project>findByCreatedBy(long userId){
+        String sql = "SELECT * FROM projects WHERE created_by = ?";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Project.class), userId);
+    }
+
 }
