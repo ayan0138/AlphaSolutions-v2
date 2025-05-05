@@ -3,27 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Opret Projekt</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
+<div class="container mt-4">
+    <h1 class="mb-4">Opret nyt projekt</h1>
 
-<h1>Opret nyt projekt</h1>
+    <form th:action="@{/projects/create}" th:object="${project}" method="post" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label for="name" class="form-label">Projekt navn:</label>
+            <input type="text" id="name" th:field="*{name}" class="form-control" required>
+        </div>
 
-<form th:action="@{/projects/create}" th:object="${project}" method="post">
-    <label for="name">Projekt navn:</label>
-    <input type="text" id="name" th:field="*{name}" required>
+        <div class="mb-3">
+            <label for="description" class="form-label">Beskrivelse:</label>
+            <textarea id="description" th:field="*{description}" class="form-control" rows="3" required></textarea>
+        </div>
 
-    <label for="description">Beskrivelse:</label>
-    <textarea id="description" th:field="*{description}" required></textarea>
+        <div class="mb-3">
+            <label for="endDate" class="form-label">Slutdato:</label>
+            <input type="date" id="endDate" th:field="*{endDate}" class="form-control" required>
+        </div>
 
-    <label for="endDate">Slutdato:</label>
-    <input type="date" id="endDate" th:field="*{endDate}" required>
+        <div class="mb-3">
+            <label for="createdBy" class="form-label">Bruger-ID:</label>
+            <input type="number" id="createdBy" th:field="*{createdBy}" class="form-control" required>
+        </div>
 
-    <label for="createdBy">Bruger-ID:</label>
-    <input type="number" id="createdBy" th:field="*{createdBy}" required>
-
-    <button type="submit">Opret projekt</button>
-</form>
-
+        <button type="submit" class="btn btn-primary">Opret projekt</button>
+        <a href="/projects/my" class="btn btn-secondary ms-2">Tilbage</a>
+    </form>
+</div>
 </body>
 </html>
