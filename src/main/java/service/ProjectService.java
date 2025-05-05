@@ -1,8 +1,10 @@
 package service;
 
 import model.Project;
+import org.springframework.stereotype.Service;
 import repository.ProjectRepository;
 
+@Service
 public class ProjectService {
 
     private final ProjectRepository projectRepository;

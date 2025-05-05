@@ -2,7 +2,9 @@ package repository;
 
 import model.Project;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ProjectRepository {
     private final JdbcTemplate jdbcTemplate;
 
