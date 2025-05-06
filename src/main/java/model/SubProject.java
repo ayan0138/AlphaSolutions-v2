@@ -1,38 +1,45 @@
 package model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Project {
-    private long projectId;
+public class SubProject {
+    private long subProjectId;
+    private Project project;
     private String name;
     private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private User createdBy; // FK til User
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private LocalDateTime createdAt;
 
-    public Project() {
+    public SubProject() {
         // Default constructor
     }
 
-    public Project(long projectId, String name, String description, LocalDate startDate,
-                   LocalDate endDate, User createdBy,  LocalDateTime createdAt) {
-        this.projectId = projectId;
+    public SubProject(long subProjectId, Project project, String name, String description, LocalDateTime startDate,
+                      LocalDateTime endDate, LocalDateTime createdAt) {
+        this.subProjectId = subProjectId;
+        this.project = project;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.createdBy = createdBy;
         this.createdAt = createdAt;
     }
 
-    public long getProjectId() {
-        return projectId;
+    public long getSubProjectId() {
+        return subProjectId;
     }
 
-    public void setProjectId(long projectId) {
-        this.projectId = projectId;
+    public void setSubProjectId(long subProjectId) {
+        this.subProjectId = subProjectId;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public String getName() {
@@ -51,28 +58,20 @@ public class Project {
         this.description = description;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
     }
 
     public LocalDateTime getCreatedAt() {

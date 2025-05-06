@@ -1,16 +1,24 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class ProjectAssignment {
     private long assignmentId;
-    private long userId;
-    private long projectId;
+    private User user; // FK: userId -> som objekt
+    private Project project;  // FK: projectId -> som objekt
     private String projectRole;
+    private LocalDateTime createdAt;
 
-    public ProjectAssignment(long assignmentId, long userId, long projectId, String projectRole) {
+    public ProjectAssignment() {
+        // Default constructor
+    }
+
+    public ProjectAssignment(long assignmentId, User user, Project project, String projectRole, LocalDateTime createdAt) {
         this.assignmentId = assignmentId;
-        this.userId = userId;
-        this.projectId = projectId;
+        this.user = user;
+        this.project = project;
         this.projectRole = projectRole;
+        this.createdAt = createdAt;
     }
 
     public long getAssignmentId() {
@@ -21,20 +29,20 @@ public class ProjectAssignment {
         this.assignmentId = assignmentId;
     }
 
-    public long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public long getProjectId() {
-        return projectId;
+    public Project getProject() {
+        return project;
     }
 
-    public void setProjectId(long projectId) {
-        this.projectId = projectId;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public String getProjectRole() {
@@ -43,5 +51,13 @@ public class ProjectAssignment {
 
     public void setProjectRole(String projectRole) {
         this.projectRole = projectRole;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
