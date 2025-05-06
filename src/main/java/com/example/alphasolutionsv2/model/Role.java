@@ -1,4 +1,4 @@
-package model;
+package com.example.alphasolutionsv2.model;
 
 public class Role {
     private String roleId;
