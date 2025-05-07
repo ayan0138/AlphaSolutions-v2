@@ -1,23 +1,23 @@
 package com.example.alphasolutionsv2.model;
 
 public class Role {
-    private String roleId;
+    private Long roleId;
     private String roleName;
 
     public Role() {
         // Default constructor
     }
 
-    public Role(String roleId, String roleName) {
+    public Role(Long roleId, String roleName) {
         this.roleId = roleId;
         this.roleName = roleName;
     }
 
-    public String getRoleId() {
+    public Long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(String roleId) {
+    public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
 
