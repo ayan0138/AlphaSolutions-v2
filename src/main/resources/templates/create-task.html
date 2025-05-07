@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Opret Opgave</title>
+</head>
+<body>
+<h1>Opret Opgave</h1>
+<form th:action="@{/tasks/create}" th:object="${task}" method="post">
+    <label>Navn:</label>
+    <input type="text" th:field="*{name}" /><br/>
+
+    <label>Beskrivelse:</label>
+    <textarea th:field="*{description}"></textarea><br/>
+
+    <label>Projekt ID:</label>
+    <input type="number" th:field="*{projectId}" /><br/>
+
+    <button type="submit">Gem</button>
+</form>
+</body>
+</html>
