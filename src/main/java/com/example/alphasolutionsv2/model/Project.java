@@ -1,4 +1,4 @@
-package com.example.alphasolutionsv2.model;
+package model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,22 +9,22 @@ public class Project {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
-    private User createdBy; // FK til User
-    private LocalDateTime createdAt;
+    private long createdBy; // FK til User
+    private LocalDateTime created_at;
 
     public Project() {
         // Default constructor
     }
 
     public Project(long projectId, String name, String description, LocalDate startDate,
-                   LocalDate endDate, User createdBy,  LocalDateTime createdAt) {
+                   LocalDate endDate, long createdBy, LocalDateTime created_at) {
         this.projectId = projectId;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.createdBy = createdBy;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
     }
 
     public long getProjectId() {
@@ -67,19 +67,17 @@ public class Project {
         this.endDate = endDate;
     }
 
-    public User getCreatedBy() {
+    public long getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User createdBy) {
+    public void setCreatedBy(long createdBy) {
         this.createdBy = createdBy;
     }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getCreated_at(){
+        return created_at;
     }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
     }
 }

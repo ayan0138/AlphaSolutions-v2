@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Projekt Detaljer</title>
+</head>
+<body>
+
+<h1>Projekt Detaljer</h1>
+
+<div>
+  <h2 th:text="${project.name}"></h2>
+  <p><strong>Beskrivelse:</strong> <span th:text="${project.description}"></span></p>
+  <p><strong>Startdato:</strong> <span th:text="${project.startDate}"></span></p>
+  <p><strong>Slutdato:</strong> <span th:text="${project.endDate}"></span></p>
+  <p><strong>Oprettet af:</strong> <span th:text="${project.createdBy}"></span></p>
+  <p><strong>Task:</strong> <span th:text="${project.createdBy}"></span></p>
+  <p><strong>Sub task:</strong> <span th:text="${project.createdBy}"></span></p>
+</div>
+
+<a href="/my-projects">Tilbage til projekter</a>
+
+</body>
+</html>
