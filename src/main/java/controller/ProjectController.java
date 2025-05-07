@@ -14,7 +14,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    // Constructor injection.
+    // Constructor injection
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
     }
