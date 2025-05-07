@@ -26,4 +26,6 @@ public class ProjectController {
         model.addAttribute("projects", projects); // "projects" skal matche HTML-loop
         return "project-list"; // Navn på  .html side i templates = project-list.html
     }
-}
+    }
+
+
