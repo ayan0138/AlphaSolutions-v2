@@ -1,38 +1,39 @@
+/* style.css */
 body {
-    font-family: Arial, sans-serif;
-    margin: 40px;
-    background-color: #f9f9f9;
+    background-color: #5E899D;
+    font-family: 'Segoe UI', sans-serif;
+    color: #2B2B2B;
+    margin: 0;
+    padding: 0;
 }
 
-h1 {
-    color: #333;
-}
-
-form {
-    background-color: #fff;
-    padding: 20px;
+.container {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 30px;
+    background-color: white;
     border-radius: 8px;
-    max-width: 500px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+h2 {
+    text-align: center;
+    color: #3489A3;
 }
 
-input, textarea {
+input[type="text"],
+input[type="password"] {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
+    padding: 12px;
+    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
+    width: 100%;
+    padding: 12px;
+    background-color: #3489A3;
     color: white;
     border: none;
     border-radius: 4px;
@@ -40,5 +41,11 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #2B6E84;
+}
+
+.error {
+    color: #D9534F;
+    font-size: 0.9em;
+    text-align: center;
 }
