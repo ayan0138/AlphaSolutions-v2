@@ -16,7 +16,7 @@
     <thead>
     <tr>
       <th>Navn</th>
-      <th>Rolle</th>
+      <th>Oprettet af (rolle)</th>
       <th>Beskrivelse</th>
       <th>Startdato</th>
       <th>Slutdato</th>
@@ -25,7 +25,7 @@
     <tbody>
     <tr th:each="project : ${projects}">
       <td th:text="${project.name}"></td>
-      <td th:text="${project.rolle}"></td>
+      <td th:text="${project.createdBy.role.roleName}"></td>
       <td th:text="${project.description}"></td>
       <td th:text="${project.startDate}"></td>
       <td th:text="${project.endDate}"></td>

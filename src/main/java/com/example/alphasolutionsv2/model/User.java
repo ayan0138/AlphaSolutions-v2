@@ -1,4 +1,4 @@
-package model;
+package com.example.alphasolutionsv2.model;
 
 public class User {
     private long userId;

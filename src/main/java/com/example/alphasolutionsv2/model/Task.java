@@ -1,4 +1,4 @@
-package model;
+package com.example.alphasolutionsv2.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
