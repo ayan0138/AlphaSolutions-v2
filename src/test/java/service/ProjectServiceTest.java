@@ -35,14 +35,14 @@ class ProjectServiceTest {
         project.setStartDate(LocalDate.now());
         project.setEndDate(LocalDate.now().plusDays(7));
         project.setCreatedBy(user);
-        project.setCreatedAt(LocalDateTime.now());
+        project.setCreatedat(LocalDateTime.now());
 
         // Act
         projectService.createProject(project);
 
         // Assert
         verify(projectRepository,times(1)).save(project);
-        assertNotNull(project.getCreatedAt(), "createdAt skal automatisk sættes");
+        assertNotNull(project.getCreatedat(), "createdAt skal automatisk sættes");
     }
 
     @Test

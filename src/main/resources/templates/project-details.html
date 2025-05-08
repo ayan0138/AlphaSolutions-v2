@@ -1,23 +1,61 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
+  <meta charset="UTF-8">
   <title>Projekt Detaljer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
+<div class="container mt-4">
+  <!-- Display the logged-in user information -->
+  <div class="alert alert-info" th:if="${loggedInUser != null}">
+    Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
+  </div>
 
-<h1>Projekt Detaljer</h1>
+  <h1 class="mb-4" th:text="${project.name}">Projektnavn</h1>
 
-<div>
-  <h2 th:text="${project.name}"></h2>
-  <p><strong>Beskrivelse:</strong> <span th:text="${project.description}"></span></p>
-  <p><strong>Startdato:</strong> <span th:text="${project.startDate}"></span></p>
-  <p><strong>Slutdato:</strong> <span th:text="${project.endDate}"></span></p>
-  <p><strong>Oprettet af:</strong> <span th:text="${project.createdBy}"></span></p>
-  <p><strong>Task:</strong> <span th:text="${project.createdBy}"></span></p>
-  <p><strong>Sub task:</strong> <span th:text="${project.createdBy}"></span></p>
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h2 class="card-title h5 mb-0">Projektinformation</h2>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-3 fw-bold">Beskrivelse:</div>
+        <div class="col-md-9" th:text="${project.description}">Projektbeskrivelse</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-3 fw-bold">Startdato:</div>
+        <div class="col-md-9" th:text="${project.startDate}">2023-01-01</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-3 fw-bold">Slutdato:</div>
+        <div class="col-md-9" th:text="${project.endDate}">2023-12-31</div>
+      </div>
+
+      <!-- Show who created the project -->
+      <div class="row mb-3">
+        <div class="col-md-3 fw-bold">Oprettet af:</div>
+        <div class="col-md-9" th:text="${project.createdBy.username}">Projektleder navn</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-3 fw-bold">Oprettet af rolle:</div>
+        <div class="col-md-9" th:text="${project.createdBy.role.roleName}">Rolle navn</div>
+      </div>
+
+      <!-- Display the logged-in user's role -->
+      <div class="row mb-3">
+        <div class="col-md-3 fw-bold">Din rolle:</div>
+        <div class="col-md-9" th:text="${loggedInUser.role.roleName}">Din rolle</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a th:href="@{/my-projects}" class="btn btn-secondary">Tilbage til projekter</a>
+  </div>
 </div>
-
-<a href="/my-projects">Tilbage til projekter</a>
-
 </body>
 </html>

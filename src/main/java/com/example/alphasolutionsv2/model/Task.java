@@ -5,22 +5,27 @@ import java.time.LocalDateTime;
 
 public class Task {
     private long taskId;
-    private SubProject subProject; // FK som objekt
+    private Long subProjectId;    // Renamed to match database schema
     private String name;
     private String description;
-    private User assignedTo; // FK som objekt
+    private Long assignedTo;      // Changed to Long to match database schema
     private String status;
     private LocalDate dueDate;
     private LocalDateTime createdAt;
+
+    // Object references (not directly in database)
+    private SubProject subProject;
+    private User assignedUser;
 
     public Task() {
         // Default constructor
     }
 
-    public Task(long taskId, SubProject subProject, String name, String description, User assignedTo, String status,
-                LocalDate dueDate, LocalDateTime createdAt) {
+    // Constructor with all database fields
+    public Task(long taskId, Long subProjectId, String name, String description,
+                Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt) {
         this.taskId = taskId;
-        this.subProject = subProject;
+        this.subProjectId = subProjectId;
         this.name = name;
         this.description = description;
         this.assignedTo = assignedTo;
@@ -29,6 +34,23 @@ public class Task {
         this.createdAt = createdAt;
     }
 
+    // Constructor with both database fields and object references
+    public Task(long taskId, Long subProjectId, String name, String description,
+                Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt,
+                SubProject subProject, User assignedUser) {
+        this.taskId = taskId;
+        this.subProjectId = subProjectId;
+        this.name = name;
+        this.description = description;
+        this.assignedTo = assignedTo;
+        this.status = status;
+        this.dueDate = dueDate;
+        this.createdAt = createdAt;
+        this.subProject = subProject;
+        this.assignedUser = assignedUser;
+    }
+
+    // Getters and Setters
     public long getTaskId() {
         return taskId;
     }
@@ -37,12 +59,12 @@ public class Task {
         this.taskId = taskId;
     }
 
-    public SubProject getSubProject() {
-        return subProject;
+    public Long getSubProjectId() {
+        return subProjectId;
     }
 
-    public void setSubProject(SubProject subProject) {
-        this.subProject = subProject;
+    public void setSubProjectId(Long subProjectId) {
+        this.subProjectId = subProjectId;
     }
 
     public String getName() {
@@ -61,11 +83,11 @@ public class Task {
         this.description = description;
     }
 
-    public User getAssignedTo() {
+    public Long getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(User assignedTo) {
+    public void setAssignedTo(Long assignedTo) {
         this.assignedTo = assignedTo;
     }
 
@@ -91,5 +113,35 @@ public class Task {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public SubProject getSubProject() {
+        return subProject;
+    }
+
+    public void setSubProject(SubProject subProject) {
+        this.subProject = subProject;
+        if (subProject != null) {
+            this.subProjectId = subProject.getSubProjectId();
+        }
+    }
+
+    public User getAssignedUser() {
+        return assignedUser;
+    }
+
+    public void setAssignedUser(User assignedUser) {
+        this.assignedUser = assignedUser;
+        if (assignedUser != null) {
+            this.assignedTo = assignedUser.getUserId();
+        }
+    }
+
+    // Helper method to get the related project ID via subProject
+    public Long getProjectId() {
+        if (subProject != null && subProject.getProject() != null) {
+            return subProject.getProject().getProjectId();
+        }
+        return null;
     }
 }

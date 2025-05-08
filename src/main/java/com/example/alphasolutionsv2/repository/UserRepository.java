@@ -1,47 +1,61 @@
+
 package com.example.alphasolutionsv2.repository;
 
-import com.example.alphasolutionsv2.model.Role;
 import com.example.alphasolutionsv2.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class UserRepository {
+    private final JdbcTemplate jdbcTemplate;
 
-    private final JdbcTemplate jdbc;
-
-    public UserRepository(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
+    public UserRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public User findByUsernameAndPassword(String username, String password) {
         String sql = """
-                SELECT u.user_id, u.username, u.email, u.password, r.role_id, r.role_name
-                FROM users u
-                JOIN Roles r ON u.role_id = r.role_id
-                WHERE u.username = ? AND u.password = ?  
-                """;
+            SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
+            FROM Users u
+            JOIN Roles r ON u.role_id = r.role_id
+            WHERE u.username = ? AND u.password = ?
+        """;
 
-        return jdbc.query(sql, rs -> {
-            if(rs.next()) {
-                User user = new User();
-                user.setUserId(rs.getLong("user_id"));
-                user.setUserName(rs.getString("username"));
-                user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
+        List<User> results = jdbcTemplate.query(sql, new UserRowMapper(), username, password);
 
-                Role role =  new Role();
-                role.setRoleId(rs.getLong("role_id"));
-                role.setRoleName(rs.getString("role_name"));
-
-                user.setRole(role);
-                return user;
-            }
+        if (results.isEmpty()) {
             return null;
-        }, username, password);
+        } else {
+            return results.get(0);
+        }
     }
 
+    public User findById(Long userId) {
+        String sql = """
+            SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
+            FROM Users u
+            JOIN Roles r ON u.role_id = r.role_id
+            WHERE u.user_id = ?
+        """;
 
+        List<User> results = jdbcTemplate.query(sql, new UserRowMapper(), userId);
 
+        if (results.isEmpty()) {
+            return null;
+        } else {
+            return results.get(0);
+        }
+    }
 
+    public List<User> findAll() {
+        String sql = """
+            SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
+            FROM Users u
+            JOIN Roles r ON u.role_id = r.role_id
+        """;
+
+        return jdbcTemplate.query(sql, new UserRowMapper());
+    }
 }

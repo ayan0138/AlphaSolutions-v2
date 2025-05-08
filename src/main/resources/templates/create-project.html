@@ -7,31 +7,47 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h1 class="mb-4">Opret nyt projekt.</h1>
+    <h1 class="mb-4">Opret nyt projekt</h1>
 
-    <form th:action="@{/projects/create}" th:object="${project}" method="post" class="needs-validation" novalidate>
+    <!-- Show any error messages -->
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+    <form th:action="@{/projects/create}" th:object="${project}" method="post">
         <div class="mb-3">
             <label for="name" class="form-label">Projekt navn:</label>
             <input type="text" id="name" th:field="*{name}" class="form-control" required>
         </div>
 
         <div class="mb-3">
-            <label for="name" class="form-label">Rolle:</label>
-            <input type="text" id="name" th:field="*{role}" class="form-control" required>
-        </div>
-        <div class="mb-3">
             <label for="description" class="form-label">Beskrivelse:</label>
             <textarea id="description" th:field="*{description}" class="form-control" rows="3" required></textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="endDate" class="form-label">Slutdato:</label>
-            <input type="date" id="endDate" th:field="*{endDate}" class="form-control" required>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="startDate" class="form-label">Startdato:</label>
+                <input type="date" id="startDate" th:field="*{startDate}" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="endDate" class="form-label">Slutdato:</label>
+                <input type="date" id="endDate" th:field="*{endDate}" class="form-control" required>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="createdBy" class="form-label">Bruger-ID:</label>
-            <input type="number" id="createdBy" th:field="*{createdBy}" class="form-control" required>
+        <!-- If you have User objects in your controller -->
+        <div class="mb-3" th:if="${users != null}">
+            <label for="createdBy" class="form-label">Projektleder:</label>
+            <select id="createdBy" th:field="*{createdBy.userId}" class="form-select" required>
+                <option value="">Vælg projektleder</option>
+                <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.username + ' (' + user.role.roleName + ')'}"></option>
+            </select>
+        </div>
+
+        <!-- Fallback if no user list is provided -->
+        <div class="mb-3" th:if="${users == null}">
+            <label for="userId" class="form-label">Bruger-ID (projektleder):</label>
+            <input type="number" id="userId" name="userId" class="form-control" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Opret projekt</button>

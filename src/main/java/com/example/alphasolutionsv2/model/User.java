@@ -5,14 +5,14 @@ public class User {
     private String username;
     private String email;
     private String password;
-    private Role role;  // FK som object
+    private Role role;  // Changed from String to Role object
 
-    public User(){
+    public User() {
         // Default constructor
     }
 
-    public User(long userID, String username, String email, String password, Role role) {
-        this.userId = userID;
+    public User(long userId, String username, String email, String password, Role role) {
+        this.userId = userId;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -27,11 +27,11 @@ public class User {
         this.userId = userId;
     }
 
-    public String getUserName() {
+    public String getUsername() {
         return username;
     }
 
-    public void setUserName(String userName) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
@@ -57,5 +57,11 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    // Add toString method to provide a nice string representation
+    @Override
+    public String toString() {
+        return username + " (" + (role != null ? role.getRoleName() : "Ingen rolle") + ")";
     }
 }

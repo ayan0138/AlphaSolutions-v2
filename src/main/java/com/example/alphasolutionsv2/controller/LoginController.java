@@ -27,12 +27,14 @@ public class LoginController {
     public String handleLogin(@RequestParam String username,
                               @RequestParam String password,
                               HttpSession session, Model model){
-        User user  = userService.authenticate(username, password);
-
+        User user = userService.authenticate(username, password);
 
         if(user != null){
+            session.setAttribute("userID", user.getUserId());
+            // Also store the user object in session for easy access
             session.setAttribute("loggedInUser", user);
-            return "redirect:/projects";
+
+            return "redirect:/my-projects";
         } else {
             model.addAttribute("loginError", "Ugyldigt brugernavn eller adgangskode");
             return "login";
@@ -44,5 +46,4 @@ public class LoginController {
         session.invalidate();
         return "redirect:/login";
     }
-
 }
