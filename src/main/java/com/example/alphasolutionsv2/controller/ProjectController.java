@@ -28,6 +28,7 @@ public class ProjectController {
         return "create-project"; // Matcher HTML-filens navn
     }
 
+
     // Modtager og gemmer projektet
     @PostMapping("/create")
     public String handleCreateForm(Model model, Project project) {
