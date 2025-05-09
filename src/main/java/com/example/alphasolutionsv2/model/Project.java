@@ -10,7 +10,7 @@ public class Project {
     private LocalDate startDate;
     private LocalDate endDate;
     private User createdBy; // FK til User
-    private LocalDateTime createdat;
+    private LocalDateTime createdAt;
 
     public Project() {
         // Default constructor
@@ -24,7 +24,7 @@ public class Project {
         this.startDate = startDate;
         this.endDate = endDate;
         this.createdBy = createdBy;
-        this.createdat = createdat;
+        this.createdAt = createdat;
     }
 
     public long getProjectId() {
@@ -74,11 +74,11 @@ public class Project {
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
-    public LocalDateTime getCreatedat(){
-        return createdat;
+    public LocalDateTime getCreatedAt(){
+        return createdAt;
     }
-    public void setCreatedat(LocalDateTime createdat) {
-        this.createdat = createdat;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Long getUserId() {
