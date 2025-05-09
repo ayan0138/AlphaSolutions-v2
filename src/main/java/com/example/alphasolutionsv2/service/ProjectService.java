@@ -6,6 +6,7 @@ import com.example.alphasolutionsv2.repository.ProjectRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectService {
@@ -48,10 +49,14 @@ public class ProjectService {
     }
 
     public List<Project> getProjectsByUserId(Long userId) {
-        if(userId == null || userId <= 0) {
+        if( userId <= 0) {
             throw new IllegalArgumentException("Ugyldig bruger-ID er ugyldig");
         }
 
         return projectRepository.findUserById(userId);
+    }
+
+    public Optional<Project> getProjectById(Long projectId) {
+        return null;
     }
 }
