@@ -27,7 +27,7 @@ class ProjectServiceTest {
     void testCreateProject_shouldCallSave_whenProjectIsValid() {
         // Arrange
         User user  = new User();
-        user.setUserId(1);
+        user.setUserId(1L);
 
         Project project = new Project();
         project.setName("Testprojekt");
@@ -49,7 +49,7 @@ class ProjectServiceTest {
     void testCreateProject_shouldThrowException_whenNameIsMissing() {
         // Arrange
         User user  = new User();
-        user.setUserId(1);
+        user.setUserId(1L);
 
         Project project = new Project();
         project.setName("");
