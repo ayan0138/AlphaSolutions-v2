@@ -101,4 +101,5 @@ public class ProjectRepository {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId, projectId);
         return count != null && count > 0;
     }
+
 }

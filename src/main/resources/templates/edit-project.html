@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Rediger Projekt</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <!-- Display the logged-in user information -->
+    <div class="alert alert-info" th:if="${loggedInUser != null}">
+        Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
+    </div>
+
+    <h1 class="mb-4">Rediger Projekt</h1>
+
+    <!-- Show errors if any -->
+    <div class="alert alert-danger" th:if="${param.error}">
+        <span th:text="${param.error}">Error message</span>
+    </div>
+
+    <!-- Show direct error messages set in controller -->
+    <div class="alert alert-danger" th:if="${error != null}">
+        <span th:text="${error}">Error message</span>
+    </div>
+
+    <form th:action="@{/projects/{id}/edit(id=${project.projectId})}" method="post">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title h5 mb-0">Projektinformation</h2>
+            </div>
+            <div class="card-body">
+                <!-- Project Name -->
+                <div class="mb-3">
+                    <label for="name" class="form-label">Projektnavn</label>
+                    <input type="text" class="form-control" id="name" name="name" th:value="${project.name}" required>
+                </div>
+
+                <!-- Project Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">Beskrivelse</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" th:text="${project.description}" required></textarea>
+                </div>
+
+                <!-- Start Date -->
+                <div class="mb-3">
+                    <label for="startDate" class="form-label">Startdato</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate" th:value="${project.startDate}" required>
+                </div>
+
+                <!-- End Date -->
+                <div class="mb-3">
+                    <label for="endDate" class="form-label">Slutdato</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate" th:value="${project.endDate}" required>
+                </div>
+
+                <!-- Hidden fields for created by -->
+                <input type="hidden" name="createdBy.userId" th:value="${project.createdBy.userId}">
+            </div>
+        </div>
+
+        <div class="d-flex">
+            <button type="submit" class="btn btn-primary me-2">Gem ændringer</button>
+            <a th:href="@{/projects/{id}(id=${project.projectId})}" class="btn btn-secondary">Annullér</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

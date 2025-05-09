@@ -12,6 +12,16 @@
     Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
   </div>
 
+  <!-- Show success messages -->
+  <div class="alert alert-success" th:if="${param.success}">
+    <span th:text="${param.success}">Success message</span>
+  </div>
+
+  <!-- Show error messages -->
+  <div class="alert alert-danger" th:if="${param.error}">
+    <span th:text="${param.error}">Error message</span>
+  </div>
+
   <h1 class="mb-4" th:text="${project.name}">Projektnavn</h1>
 
   <div class="card mb-4">
@@ -55,6 +65,11 @@
 
   <div class="mt-4">
     <a th:href="@{/my-projects}" class="btn btn-secondary">Tilbage til projekter</a>
+    <!-- Show edit button only for project creator or admins -->
+    <a th:if="${loggedInUser.role.roleName == 'Admin' or loggedInUser.role.roleName == 'Projektleder'}"
+       th:href="@{/projects/{id}/edit(id=${project.projectId})}"
+       class="btn btn-primary">Rediger</a>
+
   </div>
 </div>
 </body>
