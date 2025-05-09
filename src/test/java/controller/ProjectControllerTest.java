@@ -1,7 +1,6 @@
 package controller;
 
 import com.example.alphasolutionsv2.AlphaSolutionsV2Application;
-import com.example.alphasolutionsv2.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,12 +20,9 @@ class ProjectControllerTest {
 
     @Test
     void testShouldReturnProjectListView_whenUserIsInSession() throws Exception {
-        // Opret testbruger med userId = 1 (skal findes i DB)
-        User testUser = new User();
-        testUser.setUserId(1L);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/projects")
-                .sessionAttr("loggedInUser", testUser))
+        mockMvc.perform(MockMvcRequestBuilders.get("/my-projects")
+                .sessionAttr("userID", 1L))
                 .andExpect(status().isOk())
                 .andExpect(view().name("project-list"))
                 .andExpect(model().attributeExists("projects"));
@@ -35,16 +31,9 @@ class ProjectControllerTest {
 
     @Test
     void testShouldRedirectToLogin_whenUserIsNotInSession() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/projects"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/my-projects"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
     }
 
-    @Test
-    void showCreateForm() {
-    }
-
-    @Test
-    void testShowCreateForm() {
-    }
 }

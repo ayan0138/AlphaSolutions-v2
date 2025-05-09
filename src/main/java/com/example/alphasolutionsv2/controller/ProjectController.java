@@ -18,6 +18,7 @@ import java.util.Optional;
 @Controller
 public class ProjectController {
 
+
     private final ProjectService projectService;
     private final UserService userService;
 
@@ -28,51 +29,55 @@ public class ProjectController {
 
     @GetMapping("/my-projects")
     public String showMyProjects(HttpSession session, Model model) {
-        Long userId = (Long) session.getAttribute("userID"); // Sørg for userID sættes ved login
+        Long userId = (Long) session.getAttribute("userID");
+        if (userId == null) {
+            return "redirect:/login";
+        }
 
-        // Get the logged-in user and add to model
         User loggedInUser = userService.getUserById(userId).orElse(null);
         model.addAttribute("loggedInUser", loggedInUser);
 
         List<Project> projects = projectService.getProjectsByUserId(userId);
         model.addAttribute("projects", projects);
-        // "projects" skal matche HTML-loop
-        return "project-list"; // Navn på .html side i templates = project-list.html
+        return "project-list";
     }
 
     @GetMapping("/projects/{id}")
     public String showProjectDetails(@PathVariable("id") Long projectId, HttpSession session, Model model) {
-        // Get the logged-in user and add to model
         Long userId = (Long) session.getAttribute("userID");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
         User loggedInUser = userService.getUserById(userId).orElse(null);
         model.addAttribute("loggedInUser", loggedInUser);
 
         Optional<Project> projectOpt = projectService.getProjectById(projectId);
-
-        if (projectOpt.isPresent()) {
-            Project project = projectOpt.get();
-
-            // Check if user has access to this project
-            if (loggedInUser != null &&
-                    (project.getCreatedBy().getUserId().equals(loggedInUser.getUserId()) ||
-                            "Admin".equals(loggedInUser.getRole().getRoleName()) ||
-                            projectService.userCanViewProject(userId, projectId))) {
-
-                model.addAttribute("project", project);
-                return "project-details";
-            }
-            else {
-                return "redirect:/my-projects?error=Ikke+tilladelse+til+at+se+dette+projekt";
-            }
-        } else {
+        if (projectOpt.isEmpty()) {
             return "redirect:/my-projects?error=Projekt+ikke+fundet";
         }
+
+        Project project = projectOpt.get();
+
+        if (loggedInUser != null &&
+                (project.getCreatedBy().getUserId().equals(loggedInUser.getUserId()) ||
+                        "Admin".equalsIgnoreCase(loggedInUser.getRole().getRoleName()) ||
+                        projectService.userCanViewProject(userId, projectId))) {
+
+            model.addAttribute("project", project);
+            return "project-details";
+        }
+
+        return "redirect:/my-projects?error=Ingen+rettigheder";
     }
 
-    // Fixed GET method to show edit form
     @GetMapping("/projects/{id}/edit")
     public String showEditProjectForm(@PathVariable("id") Long projectId, HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userID");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
         User loggedInUser = userService.getUserById(userId).orElse(null);
         model.addAttribute("loggedInUser", loggedInUser);
 
@@ -91,8 +96,6 @@ public class ProjectController {
         return "edit-project";
     }
 
-
-    // Fixed POST method to handle form submission
     @PostMapping("/projects/{id}/edit")
     public String updateProject(@PathVariable("id") Long projectId,
                                 @RequestParam("name") String name,
@@ -100,21 +103,27 @@ public class ProjectController {
                                 @RequestParam("startDate") String startDateStr,
                                 @RequestParam("endDate") String endDateStr,
                                 HttpSession session,
-                                Model model, RedirectAttributes redirectAttributes) {
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
 
         Long userId = (Long) session.getAttribute("userID");
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
         User loggedInUser = userService.getUserById(userId).orElse(null);
         model.addAttribute("loggedInUser", loggedInUser);
 
         Optional<Project> projectOpt = projectService.getProjectById(projectId);
         if (projectOpt.isEmpty() || loggedInUser == null) {
-            return "redirect:/my-projects?error=Projekt+ikke+fundet+eller+login+påkrævet";
+            redirectAttributes.addFlashAttribute("error", "Projekt ikke fundet eller login påkrævet");
+            return "redirect:/my-projects";
         }
 
         Project project = projectOpt.get();
 
         if (!projectService.userCanEditProject(loggedInUser, project)) {
-            redirectAttributes.addFlashAttribute("error", "Ikke rettigheder til at redigere");
+            redirectAttributes.addFlashAttribute("error", "Ingen rettigheder til at redigere projektet");
             return "redirect:/projects/" + projectId;
         }
 
