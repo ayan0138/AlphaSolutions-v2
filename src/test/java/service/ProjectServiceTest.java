@@ -37,10 +37,10 @@ class ProjectServiceTest {
         project.setCreatedBy(user);
         project.setCreatedAt(LocalDateTime.now());
 
-        // Act
+        // Act.
         projectService.createProject(project);
 
-        // Assert
+        // Assert.
         verify(projectRepository,times(1)).save(project);
         assertNotNull(project.getCreatedAt(), "createdAt skal automatisk sættes");
     }
