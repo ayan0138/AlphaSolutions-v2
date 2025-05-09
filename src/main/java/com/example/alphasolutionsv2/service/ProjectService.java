@@ -1,9 +1,11 @@
 package com.example.alphasolutionsv2.service;
 
 import com.example.alphasolutionsv2.model.Project;
+import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,7 @@ public class ProjectService {
         this.projectRepository = projectRepository;
     }
 
+    // Create (Opret projekt)
     public void createProject(Project project) {
         // validation checks
         if (project.getName() == null || project.getName().isEmpty()) {
@@ -36,7 +39,7 @@ public class ProjectService {
         }
 
         Long userId = project.getCreatedBy().getUserId();
-        if (userId == null || userId <= 0) {
+        if (userId <= 0) {
             throw new IllegalArgumentException("Brugerens ID er ugyldigt - oprettelse af projekt afvist");
         }
 
@@ -56,21 +59,10 @@ public class ProjectService {
     }
 
     public Optional<Project> getProjectById(Long projectId) {
+        if( projectId == null || projectId <= 0) {
+            throw new IllegalArgumentException("Ugyldig projekt-ID");
+        }
         return projectRepository.findById(projectId);
-    }
-
-    public boolean userCanEditProject(Long userId, Long projectId) {
-        Optional<Project> projectOptional = projectRepository.findById(projectId);
-        if (projectOptional.isEmpty()) {
-            return false;
-        }
-
-        Project project = projectOptional.get();
-        if (project.getUserId() != null && project.getUserId().equals(userId)) {
-            return true;
-        }
-
-        return projectRepository.userHasRoleInProject(userId, projectId);
     }
 
     public boolean userCanViewProject(Long userId, Long projectId) {
@@ -80,11 +72,12 @@ public class ProjectService {
         }
 
         Project project = projectOptional.get();
-        if (project.getUserId() != null && project.getUserId().equals(userId)) {
-            return true;
-        }
 
-        return projectRepository.userHasAccessToProject(userId, projectId);
+        return isOwner(userId, project) || projectRepository.userHasAccessToProject(userId, projectId);
+    }
+
+    private boolean isOwner(Long userId, Project project) {
+        return project.getUserId() != null && project.getUserId().equals(userId);
     }
 
     // Update the project
@@ -107,6 +100,40 @@ public class ProjectService {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public boolean userCanEditProject(User user, Project project) {
+        if (user == null || project == null || user.getRole() == null) return false;
+
+        return user.getUserId().equals(project.getCreatedBy().getUserId()) ||
+                "Admin".equalsIgnoreCase(user.getRole().getRoleName()) ||
+                "Projektleder".equalsIgnoreCase(user.getRole().getRoleName());
+    }
+
+    public String updateProjectDetails(Project project, String name, String description,
+                                       String startDateStr, String endDateStr) {
+        try {
+            LocalDate startDate = LocalDate.parse(startDateStr);
+            LocalDate endDate = LocalDate.parse(endDateStr);
+
+            if (endDate.isBefore(startDate)) {
+                return "Slutdato må ikke være før startdato";
+            }
+
+            project.setName(name);
+            project.setDescription(description);
+            project.setStartDate(startDate);
+            project.setEndDate(endDate);
+
+            boolean updated = updateProject(project);
+            if (!updated) {
+                return "Kunne ikke opdatere projektet i databasen";
+            }
+
+            return null; // ingen fejl
+        } catch (Exception e) {
+            return "Ugyldige data: " + e.getMessage();
         }
     }
 }

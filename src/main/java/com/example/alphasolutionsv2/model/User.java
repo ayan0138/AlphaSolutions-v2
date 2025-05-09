@@ -1,7 +1,7 @@
 package com.example.alphasolutionsv2.model;
 
 public class User {
-    private long userId;
+    private Long userId;
     private String username;
     private String email;
     private String password;
@@ -11,7 +11,7 @@ public class User {
         // Default constructor
     }
 
-    public User(long userId, String username, String email, String password, Role role) {
+    public User(Long userId, String username, String email, String password, Role role) {
         this.userId = userId;
         this.username = username;
         this.email = email;
@@ -19,11 +19,11 @@ public class User {
         this.role = role;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

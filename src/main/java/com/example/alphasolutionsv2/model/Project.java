@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Project {
-    private long projectId;
+    private Long projectId;
     private String name;
     private String description;
     private LocalDate startDate;
@@ -16,22 +16,22 @@ public class Project {
         // Default constructor
     }
 
-    public Project(long projectId, String name, String description, LocalDate startDate,
-                   LocalDate endDate, User createdBy, LocalDateTime createdat) {
+    public Project(Long projectId, String name, String description, LocalDate startDate,
+                   LocalDate endDate, User createdBy, LocalDateTime createdAt) {
         this.projectId = projectId;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.createdBy = createdBy;
-        this.createdAt = createdat;
+        this.createdAt = createdAt;
     }
 
-    public long getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(long projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
