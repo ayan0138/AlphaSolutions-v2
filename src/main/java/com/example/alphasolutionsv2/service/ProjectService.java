@@ -56,7 +56,7 @@ public class ProjectService {
         return projectRepository.findUserById(userId);
     }
 
-    public Optional<Project> getProjectById(Long projectId) {
+    public Optional<Project> getProjectById(Long projectId) { //fix syntax error
         return projectRepository.findById(projectId);
 
     }
