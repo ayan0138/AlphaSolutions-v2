@@ -50,13 +50,14 @@ public class ProjectService {
 
     public List<Project> getProjectsByUserId(Long userId) {
         if( userId <= 0) {
-            throw new IllegalArgumentException("Ugyldig bruger-ID er ugyldig");
+            throw new IllegalArgumentException("Bruger-ID er ugyldigt");
         }
 
         return projectRepository.findUserById(userId);
     }
 
     public Optional<Project> getProjectById(Long projectId) {
-        return null;
+        return projectRepository.findById(projectId);
+
     }
 }
