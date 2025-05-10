@@ -1,8 +1,7 @@
-package service;
+package com.example.alphasolutionsv2.service;
 
 import com.example.alphasolutionsv2.model.Project;
 import com.example.alphasolutionsv2.model.User;
-import com.example.alphasolutionsv2.service.ProjectService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.alphasolutionsv2.repository.ProjectRepository;
