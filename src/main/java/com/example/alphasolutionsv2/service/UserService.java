@@ -2,6 +2,8 @@ package com.example.alphasolutionsv2.service;
 
 import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,14 +11,20 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    private UserRepository userRepo;
+    private final UserRepository userRepo;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepo){
+    public UserService(UserRepository userRepo,  BCryptPasswordEncoder passwordEncoder) {
         this.userRepo=userRepo;
+        this.passwordEncoder=passwordEncoder;
     }
 
-    public User authenticate(String username, String password) {
-        return userRepo.findByUsernameAndPassword(username, password);
+    public User authenticate(String username, String rawPassword) {
+        User user = userRepo.findByUsername(username);
+        if(user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
+            return user;
+        }
+        return null;
     }
 
     // Added method to get user by ID

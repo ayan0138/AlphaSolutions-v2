@@ -1,4 +1,4 @@
-package controller;
+package com.example.alphasolutionsv2.controller;
 
 import com.example.alphasolutionsv2.AlphaSolutionsV2Application;
 import org.junit.jupiter.api.Test;

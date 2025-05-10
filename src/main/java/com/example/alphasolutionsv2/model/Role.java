@@ -1,7 +1,7 @@
 package com.example.alphasolutionsv2.model;
 
 public class Role {
-    private long roleId;
+    private Long roleId;
     private String roleName;
 
     public Role() {
@@ -13,11 +13,15 @@ public class Role {
         this.roleName = roleName;
     }
 
+    public Role (String roleName) {
+        this.roleName = roleName;
+    }
+
     public Long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(long roleId) {
+    public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
 
