@@ -19,13 +19,28 @@ public class UserService {
         this.passwordEncoder=passwordEncoder;
     }
 
+    //UPDATED METODE
     public User authenticate(String username, String rawPassword) {
         User user = userRepo.findByUsername(username);
+        System.out.println("Bruger fundet: " + (user != null));
+        if (user != null) {
+            System.out.println("Gemte hash: " + user.getPassword());
+            System.out.println("Matcher password: " + passwordEncoder.matches(rawPassword, user.getPassword()));
+        }
         if(user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
             return user;
         }
         return null;
     }
+
+//ORIGINAL METODE AF NAJIB!
+   /* public User authenticate(String username, String rawPassword) {
+        User user = userRepo.findByUsername(username);
+        if(user != null && passwordEncoder.matches(rawPassword, user.getPassword())) {
+            return user;
+        }
+        return null;
+    }*/
 
     // Added method to get user by ID
     public Optional<User> getUserById(Long userId) {

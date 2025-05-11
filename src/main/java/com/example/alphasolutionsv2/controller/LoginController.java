@@ -27,6 +27,7 @@ public class LoginController {
     public String handleLogin(@RequestParam String username,
                               @RequestParam String password,
                               HttpSession session, Model model){
+        System.out.println("Loginforsøg for: " + username + " med kode: " + password);
         User user = userService.authenticate(username, password);
 
         if(user != null){

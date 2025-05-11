@@ -25,7 +25,7 @@ public class TaskController {
                              @RequestParam Long subProjectId,
                              @RequestParam Double estimatedHours,
                              @RequestParam Double hourlyRate,
-                             @RequestParam LocalDateTime dueDate) {
+                             @RequestParam LocalDate dueDate) {
 
         Task task = new Task();
         task.setName(name);

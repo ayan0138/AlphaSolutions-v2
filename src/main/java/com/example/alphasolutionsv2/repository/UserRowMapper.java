@@ -29,7 +29,7 @@ public class UserRowMapper implements RowMapper<User> {
         user.setUsername(rs.getString("username"));
         user.setEmail(rs.getString("email"));
         // Note: For security reasons, you might want to avoid setting the password
-        // user.setPassword(rs.getString("password"));
+      user.setPassword(rs.getString("password")); //husk at udkommentere tilbage igen
         user.setRole(role);
 
         return user;
