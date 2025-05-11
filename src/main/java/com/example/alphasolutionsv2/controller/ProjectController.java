@@ -35,7 +35,7 @@ public class ProjectController {
         User loggedInUser = userOpt.get();
         List<Project> projects = projectService.getProjectsByUserId(loggedInUser.getUserId());
         model.addAttribute("projects", projects);
-        return "project-list";
+        return "my-projects";
     }
 
     @GetMapping("/projects/{id}")

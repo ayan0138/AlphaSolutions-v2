@@ -11,6 +11,7 @@
     <h2>Login</h2>
 
     <form th:action="@{/login}" method="post">
+
         <label for="username">Brugernavn</label>
         <input type="text" id="username" name="username" required autofocus autocomplete="username">
 
@@ -21,7 +22,8 @@
     </form>
 
     <!-- Korrekt visning af fejlbesked -->
-    <div class="error" th:if="${loginError}" th:text="${loginError}" style="color: red; margin-top: 10px;"></div>
+    <div class="error" th:if="${param.error}" style="color: red;">Ugyldigt brugernavn eller adgangskode</div>
+    <div class="success" th:if="${param.logout}" style="color: green;">Du er nu logget ud.</div>
 </div>
 
 </body>

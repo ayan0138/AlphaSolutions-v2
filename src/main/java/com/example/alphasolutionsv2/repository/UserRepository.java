@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserRepository {
@@ -15,24 +16,8 @@ public class UserRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /*public User findByUsernameAndPassword(String username, String password) {
-        String sql = """
-            SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
-            FROM Users u
-            JOIN Roles r ON u.role_id = r.role_id
-            WHERE u.username = ? AND u.password = ?
-        """;
 
-        List<User> results = jdbcTemplate.query(sql, new UserRowMapper(), username, password);
-
-        if (results.isEmpty()) {
-            return null;
-        } else {
-            return results.get(0);
-        }
-    }*/
-
-    public User findById(Long userId) {
+    public Optional<User> findById(Long userId) {
         String sql = """
             SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
             FROM Users u
@@ -42,11 +27,7 @@ public class UserRepository {
 
         List<User> results = jdbcTemplate.query(sql, new UserRowMapper(), userId);
 
-        if (results.isEmpty()) {
-            return null;
-        } else {
-            return results.get(0);
-        }
+        return results.stream().findFirst();
     }
 
     public List<User> findAll() {
@@ -59,7 +40,7 @@ public class UserRepository {
         return jdbcTemplate.query(sql, new UserRowMapper());
     }
 
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         String sql = """
                 SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
                 FROM Users u
@@ -67,11 +48,6 @@ public class UserRepository {
                 WHERE u.username = ?
                 """;
         List<User> results = jdbcTemplate.query(sql, new UserRowMapper(), username);
-
-        if (results.isEmpty()) {
-            return null;
-        } else  {
-            return results.get(0);
-        }
+        return results.stream().findFirst();
     }
 }
