@@ -2,14 +2,14 @@
 CREATE DATABASE IF NOT EXISTS alpha_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE alpha_db;
 
--- Roller
-CREATE TABLE roles (
+-- Opret roller
+CREATE TABLE IF NOT EXISTS roles (
     role_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     role_name VARCHAR(255) NOT NULL
 );
 
--- Brugere
-CREATE TABLE users (
+-- Opret brugere
+CREATE TABLE IF NOT EXISTS users (
     user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -21,8 +21,8 @@ CREATE TABLE users (
     FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE SET NULL
 );
 
--- Projekter
-CREATE TABLE projects (
+-- Opret projekter
+CREATE TABLE IF NOT EXISTS projects (
     project_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -33,8 +33,8 @@ CREATE TABLE projects (
     FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
--- Tildelinger
-CREATE TABLE project_assignments (
+-- Opret projekt-tilknytninger
+CREATE TABLE IF NOT EXISTS project_assignments (
     assignment_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
     project_id BIGINT NOT NULL,
@@ -44,8 +44,8 @@ CREATE TABLE project_assignments (
     FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE
 );
 
--- Underprojekter
-CREATE TABLE sub_projects (
+-- Opret underprojekter
+CREATE TABLE IF NOT EXISTS sub_projects (
     sub_project_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     project_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -56,8 +56,8 @@ CREATE TABLE sub_projects (
     FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE
 );
 
--- Opgaver (Tasks)
-CREATE TABLE tasks (
+-- Opret opgaver (Tasks)
+CREATE TABLE IF NOT EXISTS  tasks (
     task_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     sub_project_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,

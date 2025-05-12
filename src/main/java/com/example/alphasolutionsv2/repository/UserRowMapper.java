@@ -10,28 +10,17 @@ import java.sql.SQLException;
 public class UserRowMapper implements RowMapper<User> {
     @Override
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-        // Create a Role object first
-        Role role = new Role();
-        try {
-            // If you have role_id and role_name columns in your result set
-            role.setRoleId(rs.getLong("role_id"));
-            role.setRoleName(rs.getString("role_name"));
-        } catch (SQLException e) {
-            // If role columns don't exist or are null, create a role from the string
-            String roleName = rs.getString("role");
-            if (roleName != null) {
-                role.setRoleName(roleName);
-            }
-        }
+        Role role = new Role(
+        rs.getLong("role_id"),
+        rs.getString("role_name")
+                );
 
-        User user = new User();
-        user.setUserId(rs.getLong("user_id"));
-        user.setUsername(rs.getString("username"));
-        user.setEmail(rs.getString("email"));
-        // Note: For security reasons, you might want to avoid setting the password
-        // user.setPassword(rs.getString("password"));
-        user.setRole(role);
-
-        return user;
+        return new User(
+                rs.getLong("user_id"),
+                rs.getString("username"),
+                rs.getString("email"),
+                rs.getString("password"), // Denne er kritisk for login!
+                role
+        );
     }
 }

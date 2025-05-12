@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Optional;
+
 
 @Controller
 public class LoginController {
@@ -20,30 +22,11 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showLoginForm(){
-        return "login"; // viser Login-html
-    }
-
-    @PostMapping("/login")
-    public String handleLogin(@RequestParam String username,
-                              @RequestParam String password,
-                              HttpSession session, Model model){
-        User user = userService.authenticate(username, password);
-
-        if(user != null){
-            session.setAttribute("userID", user.getUserId());
-            // Also store the user object in session for easy access
-            session.setAttribute("loggedInUser", user);
-
-            return "redirect:/my-projects";
-        } else {
-            model.addAttribute("loginError", "Ugyldigt brugernavn eller adgangskode");
-            return "login";
-        }
+        return "login"; // viser Login-html via. Thymeleaf
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session){
-        session.invalidate();
-        return "redirect:/login";
+    public String logoutMessage(){
+        return "redirect:/login?logout=true";
     }
 }
