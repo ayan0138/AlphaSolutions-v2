@@ -23,6 +23,10 @@ public class UserService {
                 .filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()));
     }
 
+    public Optional<User> getUserByUsername(String username) {
+        return userRepo.findByUsername(username);
+    }
+
     // Added method to get user by ID
     public Optional<User> getUserById(Long userId) {
         return userRepo.findById(userId);
@@ -35,6 +39,8 @@ public class UserService {
                         "ADMIN".equalsIgnoreCase(user.getRole().getRoleName()))
                 .orElse(false);
     }
+
+
 
     // Method to get all users
     public List<User> getAllUsers() {

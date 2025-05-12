@@ -7,11 +7,11 @@ INSERT INTO roles (role_name) VALUES
 -- Indsæt brugere (med BCrypt-hashede adgangskoder – udskift evt. med egne)
 INSERT INTO users (username, email, password, role_id) VALUES
         ('admin', 'admin@example.com',
-         '$2a$10$7YVxkPo4uTwqZ7U7v7gfEe28pBOZJupAfAaJ67d3AH2aygk07L3Ya', 1),
+         '$2a$10$SMHANoSd/3je9FeY7uEFkuXMdEEpegi745iiufQjo5piYi9ohEQ3W', 1),
         ('marcus', 'marcus@firma.dk',
-         '$2a$10$6bIUfncfPjIjMyLXiJWiqe4NO6BAaJ6q2qowcAf1IoTrdoqL3NgX2', 2),
+         '$2a$10$DCpiidKn5AqJCcQG3RlokeZN1UegrHb1gbqYruVgisNj6OJdHNWWW', 2),
         ('najib', 'najib@firma.dk',
-         '$2a$10$8BF8mJPPZHg5fR11iKCyMeCJvq7WrNh5L3Vdj2.yopYbdwvppI8vC', 3);
+         '$2a$10$lwJ26Zp9fytdc/bXmvs6bugcxBThP6iEOW7CCSMcKeGUe72F7oSdq', 3);
 
 -- Indæst projekter
 INSERT INTO projects (name, description, start_date, end_date, created_by) VALUES

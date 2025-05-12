@@ -22,29 +22,11 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showLoginForm(){
-        return "login"; // viser Login-html
-    }
-
-    @PostMapping("/login")
-    public String handleLogin(@RequestParam String username,
-                              @RequestParam String password,
-                              HttpSession session, Model model){
-        Optional<User> userOpt = userService.authenticate(username, password);
-
-        if(userOpt.isPresent()){
-            User user = userOpt.get();
-            session.setAttribute("userID", user.getUserId());
-            session.setAttribute("loggedInUser", user);
-            return "redirect:/my-projects";
-        } else {
-            model.addAttribute("loginError", "Ugyldigt brugernavn eller adgangskode");
-            return "login";
-        }
+        return "login"; // viser Login-html via. Thymeleaf
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session){
-        session.invalidate();
-        return "redirect:/login";
+    public String logoutMessage(){
+        return "redirect:/login?logout=true";
     }
 }

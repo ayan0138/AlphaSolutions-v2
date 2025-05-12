@@ -11,7 +11,6 @@
     <h2>Login</h2>
 
     <form th:action="@{/login}" method="post">
-
         <label for="username">Brugernavn</label>
         <input type="text" id="username" name="username" required autofocus autocomplete="username">
 
@@ -19,11 +18,22 @@
         <input type="password" id="password" name="password" required autocomplete="current-password">
 
         <button type="submit">Log ind</button>
-    </form>
 
-    <!-- Korrekt visning af fejlbesked -->
-    <div class="error" th:if="${param.error}" style="color: red;">Ugyldigt brugernavn eller adgangskode</div>
-    <div class="success" th:if="${param.logout}" style="color: green;">Du er nu logget ud.</div>
+        <!-- Fejl fra Spring Security -->
+        <div th:if="${param.error}" class="error-message">
+            Ugyldigt brugernavn eller adgangskode
+        </div>
+
+        <!-- Logout-besked -->
+        <div th:if="${param.logout}" class="logout-message">
+            Du er nu logget ud.
+        </div>
+
+        <!-- Fejl fra LoginController (valgfri) -->
+        <div th:if="${loginError}" class="error-message">
+            <p th:text="${loginError}"></p>
+        </div>
+    </form>
 </div>
 
 </body>

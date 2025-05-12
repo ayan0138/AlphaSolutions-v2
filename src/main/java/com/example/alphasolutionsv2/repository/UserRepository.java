@@ -19,7 +19,8 @@ public class UserRepository {
 
     public Optional<User> findById(Long userId) {
         String sql = """
-            SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
+            SELECT u.user_id, u.username, u.email, u.password, 
+                   r.role_id, r.role_name
             FROM Users u
             JOIN Roles r ON u.role_id = r.role_id
             WHERE u.user_id = ?
@@ -32,7 +33,8 @@ public class UserRepository {
 
     public List<User> findAll() {
         String sql = """
-            SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
+            SELECT u.user_id, u.username, u.email, u.password,
+                   r.role_id, r.role_name 
             FROM Users u
             JOIN Roles r ON u.role_id = r.role_id
         """;
@@ -42,7 +44,8 @@ public class UserRepository {
 
     public Optional<User> findByUsername(String username) {
         String sql = """
-                SELECT u.user_id, u.username, u.email, u.password, r.role_name as role
+                SELECT u.user_id, u.username, u.email, u.password,
+                       r.role_id, r.role_name
                 FROM Users u
                 JOIN Roles r ON u.role_id = r.role_id
                 WHERE u.username = ?
