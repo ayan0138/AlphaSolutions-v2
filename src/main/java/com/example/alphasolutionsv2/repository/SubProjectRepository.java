@@ -11,10 +11,10 @@ public class SubProjectRepository {
             this.jdbcTemplate = jdbcTemplate;
         }
 
-    public boolean existsByIdAndProjectId(long subProjectId, long projectId) { //true or false om subproject er under project via id
-            String sql = "SELECT COUNT(*) FROM sub_projects WHERE id = ? AND project_id = ?";
-            Integer count = jdbcTemplate.queryForObject(sql, Integer.class, subProjectId, projectId);
-            return count != null && count > 0;
-        }
+    public boolean existsByIdAndProjectId(Long subProjectId, Long projectId) { //ændringer fra WHERE id til WHERE subproject
+        String sql = "SELECT COUNT(*) FROM sub_projects WHERE sub_project_id = ? AND project_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, subProjectId, projectId);
+        return count != null && count > 0;
+    }
     }
 
