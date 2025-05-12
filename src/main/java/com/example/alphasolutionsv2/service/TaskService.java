@@ -7,6 +7,7 @@ import com.example.alphasolutionsv2.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,7 +20,9 @@ public class TaskService {
         this.taskRepository = taskRepository;
         this.subProjectRepository = subprojectRepository;
     }
-
+    public List<Task> getTasksByProjectId(long projectId) {
+        return taskRepository.findTasksByProjectId(projectId);
+    }
     public void createTask(Task task, long projectId) {
         if (task.getName() == null || task.getName().isEmpty()) {
             throw new IllegalArgumentException("Opgavens navn er påkrævet");
