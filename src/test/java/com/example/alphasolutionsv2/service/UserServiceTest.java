@@ -3,70 +3,67 @@ package com.example.alphasolutionsv2.service;
 import com.example.alphasolutionsv2.model.Role;
 import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+
 class UserServiceTest {
-    @Mock
     private UserRepository userRepository;
-
-    @Mock
     private BCryptPasswordEncoder passwordEncoder;
-
-    @InjectMocks
     private UserService userService;
 
-    @Test
-    void testShouldAuthenticateUserWithCorrectCredentials() {
-        // Arrange
-        String username = "najib";
-        String rawPassword = "secret";
-        String hashedPassword = "$2a$10$abc..."; // fiktiv hash
-
-        User mockUser = new User(1L, username, "najib@test.com", hashedPassword, new Role("Medarbejder"));
-        when(userRepository.findByUsername(username)).thenReturn(mockUser);
-        when(passwordEncoder.matches(rawPassword, hashedPassword)).thenReturn(true);
-
-        // Act
-        User result = userService.authenticate(username, rawPassword);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("najib", result.getUsername());
+    @BeforeEach
+    public void setUp() {
+        userRepository = mock(UserRepository.class);
+        passwordEncoder = mock(BCryptPasswordEncoder.class);
+        userService = new UserService(userRepository, passwordEncoder);
     }
 
     @Test
-    void testShouldFailAuthenticationWithWrongPassword() {
-        // Arrange
-        String username = "najib";
-        String rawPassword = "wrong";
-        String hashedPassword = "$2a$10$abc...";
+    void authenticate_returnsUser_whenCredentialsAreValid() {
+        String username = "testuser";
+        String rawPassword = "password123";
+        String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        User mockUser = new User(1L, username, "najib@test.com", hashedPassword, new Role("Medarbejder"));
-        when(userRepository.findByUsername(username)).thenReturn(mockUser);
-        when(passwordEncoder.matches(rawPassword, hashedPassword)).thenReturn(false);
+        Role role = new Role(1L, "Admin");
+        User mockUser = new User(1L, username, "test@example.com", encodedPassword, role);
 
-        // Act
-        User result = userService.authenticate(username, rawPassword);
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(true);
 
-        // Assert
-        assertNull(result);
+        Optional<User> result = userService.authenticate(username, rawPassword);
+
+        assertTrue(result.isPresent());
+        assertEquals(mockUser, result.get());
     }
 
     @Test
-    void testShouldReturnNullIfUserNotFound() {
-        when(userRepository.findByUsername("ukendt")).thenReturn(null);
-        assertNull(userService.authenticate("ukendt", "any"));
+    void authenticate_returnsEmptyOptional_whenUserNotFound() {
+        when(userRepository.findByUsername("nonexistent")).thenReturn(Optional.empty());
+
+        Optional<User> result = userService.authenticate("nonexistent", "anyPassword");
+
+        assertTrue(result.isEmpty());
     }
 
+    @Test
+    void authenticate_returnsEmptyOptional_whenPasswordIsWrong() {
+        String username = "testuser";
+        String encodedPassword = passwordEncoder.encode("correctPassword");
+        Role role = new Role(1L, "Admin");
+        User mockUser = new User(1L, username, "test@example.com", encodedPassword, role);
 
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
+        Optional<User> result = userService.authenticate(username, "wrongPassword");
+
+        assertTrue(result.isEmpty());
+    }
 }

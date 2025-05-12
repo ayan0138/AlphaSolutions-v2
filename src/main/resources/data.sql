@@ -1,32 +1,32 @@
--- Roller
+-- Indsæt roller
 INSERT INTO roles (role_name) VALUES
         ('Admin'),
         ('Projektleder'),
         ('Medarbejder');
 
--- Brugere (med BCrypt-hashede adgangskoder – udskift evt. med egne)
+-- Indsæt brugere (med BCrypt-hashede adgangskoder – udskift evt. med egne)
 INSERT INTO users (username, email, password, role_id) VALUES
         ('admin', 'admin@example.com',
-         '$2a$10$7YVxkPo4uTwqZ7U7v7gfEe28pBOZJupAfAaJ67d3AH2aygk07L3Ya', 1),
+         '$2a$10$SMHANoSd/3je9FeY7uEFkuXMdEEpegi745iiufQjo5piYi9ohEQ3W', 1),
         ('marcus', 'marcus@firma.dk',
-         '$2a$10$6bIUfncfPjIjMyLXiJWiqe4NO6BAaJ6q2qowcAf1IoTrdoqL3NgX2', 2),
+         '$2a$10$DCpiidKn5AqJCcQG3RlokeZN1UegrHb1gbqYruVgisNj6OJdHNWWW', 2),
         ('najib', 'najib@firma.dk',
-         '$2a$10$gChbqzqvU1YEC8V7edTFneQv5j1Mc03QO9.A0jOkFjIXZ.MUOr1vS', 3);
+         '$2a$10$lwJ26Zp9fytdc/bXmvs6bugcxBThP6iEOW7CCSMcKeGUe72F7oSdq', 3);
 
--- Projekter
+-- Indæst projekter
 INSERT INTO projects (name, description, start_date, end_date, created_by) VALUES
         ('Website Redesign', 'Opdatering af firmaets hjemmeside',
          '2025-05-01', '2025-06-15', 1),
         ('Kampagne 2025', 'Marketingkampagne for Q3',
          '2025-05-10', '2025-07-01', 2);
 
--- Tildelinger
+-- Indsæt projekt-tilknytninger
 INSERT INTO project_assignments (user_id, project_id, project_role) VALUES
         (2, 1, 'Projektleder'),
         (3, 1, 'Udvikler'),
         (3, 2, 'Designer');
 
--- Subprojekter
+-- Indsæt subprojekter
 INSERT INTO sub_projects (project_id, name, description, start_date, end_date) VALUES
          (1, 'Designfase', 'Design af nye hjemmesidelayouts',
           '2025-05-01', '2025-05-15'),
@@ -35,7 +35,7 @@ INSERT INTO sub_projects (project_id, name, description, start_date, end_date) V
         (2, 'Kampagnemateriale', 'Udarbejdelse af grafik og tekster',
          '2025-05-10', '2025-06-01');
 
--- Opgaver (Tasks)
+-- Indsæt opgaver (Tasks)
 INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date) VALUES
         (1, 'Layout forslag', 'Lav 3 forskellige layout forslag',
          3, 'Ikke påbegyndt', '2025-05-05'),
