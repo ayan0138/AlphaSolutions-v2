@@ -25,6 +25,7 @@ public class TaskRepository {
 
         jdbcTemplate.update(sql,
                 task.getSubProjectId(),
+                task.getProjectId(),
                 task.getName(),
                 task.getDescription(),
                 task.getAssignedTo(),

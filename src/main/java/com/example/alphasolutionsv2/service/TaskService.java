@@ -23,7 +23,9 @@ public class TaskService {
     public List<Task> getTasksByProjectId(long projectId) {
         return taskRepository.findTasksByProjectId(projectId);
     }
+    // Create (Opret task/opgaver)
     public void createTask(Task task, long projectId) {
+
         if (task.getName() == null || task.getName().isEmpty()) {
             throw new IllegalArgumentException("Opgavens navn er påkrævet");
         }

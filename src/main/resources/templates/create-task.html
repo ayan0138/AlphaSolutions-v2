@@ -8,8 +8,8 @@
 <div class="container mt-4">
     <h1 class="mb-4">Opret Opgave</h1>
 
-    <form th:action="@{/tasks/create}" th:object="${task}" method="post">
-        <div class="mb-3">
+    <form th:action="@{'/projects/' + ${projectId} + '/tasks/create'}" th:object="${task}" method="post">
+    <div class="mb-3">
             <label for="name" class="form-label">Navn:</label>
             <input type="text" id="name" th:field="*{name}" class="form-control" required>
         </div>
