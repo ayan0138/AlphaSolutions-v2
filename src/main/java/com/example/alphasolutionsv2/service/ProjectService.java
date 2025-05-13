@@ -114,6 +114,12 @@ public class ProjectService {
     public String updateProjectDetails(Project project, String name, String description,
                                        String startDateStr, String endDateStr) {
         try {
+            // Tjek for tomt eller manglende projektnavn
+            if(name == null || name.isEmpty()) {
+                return "Projektnavn er påkrævet";
+            }
+
+
             LocalDate startDate = LocalDate.parse(startDateStr);
             LocalDate endDate = LocalDate.parse(endDateStr);
 
@@ -131,7 +137,7 @@ public class ProjectService {
                 return "Kunne ikke opdatere projektet i databasen";
             }
 
-            return null; // ingen fejl
+            return null; // Ingen fejl
         } catch (Exception e) {
             return "Ugyldige data: " + e.getMessage();
         }

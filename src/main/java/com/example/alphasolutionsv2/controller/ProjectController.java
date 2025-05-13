@@ -51,7 +51,7 @@ public class ProjectController {
 
         Optional<Project> projectOpt = projectService.getProjectById(projectId);
         if(projectOpt.isEmpty()){
-            return "redirect/my-projects?error=Projekt+ikke+fundet";
+            return "redirect:/my-projects?error=Projekt+ikke+fundet";
         }
 
         Project project = projectOpt.get();

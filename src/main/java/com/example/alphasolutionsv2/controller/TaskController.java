@@ -20,12 +20,14 @@ public class TaskController {
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
+
     @GetMapping("/project/{projectId}") //via udvalgte projekt og projekt id, fremvises oprettet projekt
     public String getTasksByProject(@PathVariable long projectId, Model model) {
         model.addAttribute("tasks", taskService.getTasksByProjectId(projectId));
         model.addAttribute("projectId", projectId);
         return "tasks/project-tasks"; // henviser til project-task HTML
     }
+
     @GetMapping("/project/{projectId}/tasks") //via udvalgte projekt og projekt id, fremvises oprettet projekt + tildelte opgaver
     public String showTasksUnderProject(@PathVariable long projectId, Model model) {
         List<Task> tasks = taskService.getTasksByProjectId(projectId);
@@ -33,6 +35,7 @@ public class TaskController {
         model.addAttribute("projectId", projectId);
         return "tasks/tasks-list"; // henviser til task-list HTMl
     }
+
     @PostMapping("/create") //opretter
     public String createTask(@RequestParam String name,
                              @RequestParam Long subProjectId,
