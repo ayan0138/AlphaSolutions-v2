@@ -12,6 +12,8 @@ public class Task {
     private String status;
     private LocalDate dueDate;
     private LocalDateTime createdAt;
+    private Double estimatedHours;
+    private Double hourlyRate;
 
     // Object references (not directly in database)
     private SubProject subProject;
@@ -23,7 +25,8 @@ public class Task {
 
     // Constructor with all database fields
     public Task(long taskId, Long subProjectId, String name, String description,
-                Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt) {
+                Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt, Double estimatedHours,
+                Double hourlyRate) {
         this.taskId = taskId;
         this.subProjectId = subProjectId;
         this.name = name;
@@ -32,6 +35,8 @@ public class Task {
         this.status = status;
         this.dueDate = dueDate;
         this.createdAt = createdAt;
+        this.estimatedHours = estimatedHours; //ift taskcontroller task 2.5
+        this.hourlyRate = hourlyRate; //ift taskcontroller task 2.5
     }
 
     // Constructor with both database fields and object references
@@ -113,6 +118,22 @@ public class Task {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Double getEstimatedHours() {
+        return estimatedHours;
+    }
+
+    public void setEstimatedHours(Double estimatedHours) {
+        this.estimatedHours = estimatedHours;
+    }
+
+    public Double getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public void setHourlyRate(Double hourlyRate) {
+        this.hourlyRate = hourlyRate;
     }
 
     public SubProject getSubProject() {
