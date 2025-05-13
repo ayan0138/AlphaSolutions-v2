@@ -1,6 +1,5 @@
 package com.example.alphasolutionsv2.service;
 
-import com.example.alphasolutionsv2.model.SubProject;
 import com.example.alphasolutionsv2.model.Task;
 import com.example.alphasolutionsv2.repository.SubProjectRepository;
 import com.example.alphasolutionsv2.repository.TaskRepository;
@@ -8,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class TaskService {
@@ -38,6 +37,7 @@ public class TaskService {
         if (task.getDueDate() == null) {
             throw new IllegalArgumentException("Deadline for opgaven er påkrævet");
         }
+
         if (task.getEstimatedHours() == null || task.getEstimatedHours() <= 0) {
             throw new IllegalArgumentException("Estimeret tid for opgaven er påkrævet"); // og skal være større end 0
         }
@@ -46,12 +46,9 @@ public class TaskService {
             throw new IllegalArgumentException("Timepris for opgaven er påkrævet"); //og skal være større end 0
         }
 
-
         if (task.getCreatedAt() == null) {
             task.setCreatedAt(LocalDateTime.now());
         }
-
         taskRepository.save(task);
     }
-
 }

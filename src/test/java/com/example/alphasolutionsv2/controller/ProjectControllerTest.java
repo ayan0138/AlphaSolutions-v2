@@ -187,7 +187,8 @@ class ProjectControllerTest {
         when(userService.getUserByUsername("najib")).thenReturn(Optional.of(user));
         when(projectService.getProjectById(10L)).thenReturn(Optional.of(project));
         when(projectService.userCanEditProject(user, project)).thenReturn(true);
-        when(projectService.updateProjectDetails(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        when(projectService.updateProjectDetails(Mockito.any(), Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(null); // ingen fejl = succes
 
         mockMvc.perform(post("/projects/10/edit")
@@ -213,7 +214,8 @@ class ProjectControllerTest {
         when(userService.getUserByUsername("najib")).thenReturn(Optional.of(user));
         when(projectService.getProjectById(11L)).thenReturn(Optional.of(project));
         when(projectService.userCanEditProject(user, project)).thenReturn(true);
-        when(projectService.updateProjectDetails(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        when(projectService.updateProjectDetails(Mockito.any(), Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("Ugyldige datoer");
 
         mockMvc.perform(post("/projects/11/edit")
@@ -236,7 +238,8 @@ class ProjectControllerTest {
 
         Project fakeProject = new Project();
         fakeProject.setProjectId(100L);
-        fakeProject.setCreatedBy(new User(2L, "creator", "creator@mail.com", "pw", new Role("Medarbejder")));
+        fakeProject.setCreatedBy(new User(2L, "creator", "creator@mail.com",
+                "pw", new Role("Medarbejder")));
 
         when(userService.getUserByUsername("admin")).thenReturn(Optional.of(admin));
         when(projectService.getProjectById(100L)).thenReturn(Optional.of(fakeProject));
@@ -261,7 +264,8 @@ class ProjectControllerTest {
         when(userService.getUserByUsername("marcus")).thenReturn(Optional.of(user));
         when(projectService.getProjectById(5L)).thenReturn(Optional.of(project));
         when(projectService.userCanEditProject(user, project)).thenReturn(true);
-        when(projectService.updateProjectDetails(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        when(projectService.updateProjectDetails(Mockito.any(),
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn("Ugyldig datoformat");
 
         mockMvc.perform(post("/projects/5/edit")
@@ -273,22 +277,4 @@ class ProjectControllerTest {
                 .andExpect(view().name("edit-project"))
                 .andExpect(model().attributeExists("error"));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
