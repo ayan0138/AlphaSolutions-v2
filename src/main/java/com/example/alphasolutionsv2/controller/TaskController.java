@@ -34,7 +34,7 @@ public class TaskController {
         return "create-task";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create-task")
     public String createTask(@PathVariable Long projectId,
                              @RequestParam String name,
                              @RequestParam Long subProjectId,
@@ -55,7 +55,7 @@ public class TaskController {
         try {
             taskService.createTask(task, projectId);
             redirectAttributes.addFlashAttribute("success", "Opgaven blev oprettet!");
-            return "redirect:/projects/" + projectId + "/tasks";
+            return "redirect:/projects/" + projectId + "/tasks/create"; // korrekt redirect med projektId
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("task", task);
@@ -83,7 +83,7 @@ public class TaskController {
     }
 
     // 2.1 + 2.2 + 2.5 - Håndter oprettelse af opgave
-    @PostMapping("/create-task")
+    @PostMapping("/create")
     public String createTask(@PathVariable Long projectId,
                              @RequestParam String name,
                              @RequestParam Long subProjectId,

@@ -12,13 +12,13 @@ public class Task {
     private String status;
     private LocalDate dueDate;
     private LocalDateTime createdAt;
-    private Double estimatedHours;
-    private Double hourlyRate;
+
 
     // Object references (not directly in database)
     private SubProject subProject;
     private User assignedUser;
-
+    private Double estimatedHours;
+    private Double hourlyRate;
     public Task() {
         // Default constructor
     }

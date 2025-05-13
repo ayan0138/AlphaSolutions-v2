@@ -20,6 +20,7 @@ public class TaskService {
         this.taskRepository = taskRepository;
         this.subProjectRepository = subprojectRepository;
     }
+
     public List<Task> getTasksByProjectId(long projectId) {
         return taskRepository.findTasksByProjectId(projectId);
     }
@@ -54,6 +55,7 @@ public class TaskService {
         }
 
         taskRepository.save(task);
+
     }
 
 }
