@@ -20,8 +20,8 @@ public class TaskRepository {
 
     // Gem en opgave i databasen
     public void save(Task task) {
-        String sql = "INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, created_at, estimated_hours, hourly_rate) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, created_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)"; // estimated_hours og hourly_rate mangler i SQL (7 paramatre istedet for 9)
 
         jdbcTemplate.update(sql,
                 task.getSubProjectId(),
@@ -30,9 +30,9 @@ public class TaskRepository {
                 task.getAssignedTo(),
                 task.getStatus(),
                 task.getDueDate(),
-                Timestamp.valueOf(task.getCreatedAt() != null ? task.getCreatedAt() : LocalDateTime.now()),
-                task.getEstimatedHours(),
-                task.getHourlyRate()
+                Timestamp.valueOf(task.getCreatedAt() != null ? task.getCreatedAt() : LocalDateTime.now())
+                //task.getEstimatedHours(), + estimated_hours er ikke implementeret i SQL
+                //task.getHourlyRate(), + hourly_rate er ikke implementeret i SQL
         );
     }
 

@@ -68,24 +68,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
         </dependency>
+
+        <dependency> <!--  mockito agent til test -->
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.3.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
-    <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>latest-version</version>
-        <scope>test</scope>
-    </dependency>
-
-//<!-- mockito agent mht. TaskControllerTest  -->
-    <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-agent</artifactId>
-        <version>latest-version</version>
-        <scope>test</scope>
-    </dependency>
 </project>
