@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Opret Subprojekt</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+  <!-- Display the logged-in user information -->
+  <div class="alert alert-info" th:if="${loggedInUser != null}">
+    Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
+  </div>
+
+  <h1 class="mb-4">Opret Subprojekt</h1>
+
+  <!-- Show which project we're creating a subproject for -->
+  <div th:if="${project != null}" class="alert alert-info">
+    Opretter subprojekt for: <strong th:text="${project.name}">Projektnavn</strong>
+  </div>
+
+  <!-- Error message display -->
+  <div th:if="${error}" class="alert alert-danger">
+    <span th:text="${error}"></span>
+  </div>
+
+  <form th:action="@{/projects/{id}/subprojects/create(id=${project.projectId})}"
+        th:object="${subProject}" method="post">
+
+    <!-- Hidden field for project ID -->
+    <input type="hidden" th:field="*{projectId}">
+
+    <div class="mb-3">
+      <label for="name" class="form-label">Subprojekt navn:</label>
+      <input type="text" id="name" th:field="*{name}" class="form-control" required
+             placeholder="F.eks. 'Backend Udvikling' eller 'Fase 1'">
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Beskrivelse:</label>
+      <textarea id="description" th:field="*{description}" class="form-control" rows="3"
+                placeholder="Beskriv hvad dette subprojekt indeholder..."></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="startDate" class="form-label">Startdato (valgfri):</label>
+          <input type="date" id="startDate" th:field="*{startDate}" class="form-control">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="endDate" class="form-label">Slutdato (valgfri):</label>
+          <input type="date" id="endDate" th:field="*{endDate}" class="form-control">
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary">Opret Subprojekt</button>
+      <a th:href="@{'/projects/' + ${project.projectId}}" class="btn btn-secondary ms-2">Annuller</a>
+    </div>
+  </form>
+</div>
+</body>
+</html>

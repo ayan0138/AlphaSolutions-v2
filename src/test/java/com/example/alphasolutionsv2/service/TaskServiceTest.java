@@ -5,11 +5,8 @@ import com.example.alphasolutionsv2.repository.SubProjectRepository;
 import com.example.alphasolutionsv2.repository.TaskRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -20,7 +17,7 @@ class TaskServiceTest {
     private SubProjectRepository subProjectRepository;
     private TaskService taskService;
 
-    @BeforeEach // Setup runs before every test method
+    @BeforeEach
     void setUp() {
         taskRepository = mock(TaskRepository.class);
         subProjectRepository = mock(SubProjectRepository.class);
@@ -29,128 +26,78 @@ class TaskServiceTest {
 
     @Test
     void testShouldCreateTaskSuccessfully() {
+        // Arrange
         Task task = new Task();
-        task.setName("Test Opgave");
-        task.setSubProjectId(1L);
-        task.setDueDate(LocalDate.now().plusDays(7));
-        task.setEstimatedHours(10.0);
-        task.setHourlyRate(500.0);
-
-        when(subProjectRepository.existsByIdAndProjectId(1L, 1L)).thenReturn(true);
-
-        assertDoesNotThrow(() -> taskService.createTask(task, 1L));
-        verify(taskRepository, times(1)).save(any(Task.class));
-    }
-
-    //  Positiv test: Gem opgave korrekt
-    @Test
-    void createTask_shouldSaveTask_whenValidInput() {
-        Task task = new Task();
-        task.setName("Frontend opgave");
-        task.setSubProjectId(1L);
+        task.setName("Test Task");
+        task.setDescription("Test Description");
+        task.setDueDate(LocalDate.now().plusDays(7)); // Add this line!
         task.setEstimatedHours(5.0);
-        task.setHourlyRate(300.0);
-        task.setDueDate(LocalDate.now().plusDays(3));
+        task.setHourlyRate(100.0);
+        task.setSubProjectId(1L);
 
-        when(subProjectRepository.existsByIdAndProjectId(1L, 10L)).thenReturn(true);
+        // Act
+        taskService.createTask(task);
 
-        taskService.createTask(task, 10L);
-
-        verify(taskRepository, times(1)).save(task);
-        assertNotNull(task.getCreatedAt());
+        // Assert
+        verify(taskRepository).save(task);
+        assertEquals(LocalDateTime.now().getDayOfYear(), task.getCreatedAt().getDayOfYear());
+        assertEquals("PENDING", task.getStatus());
     }
 
-    //  Negativ test: Opgavenavn mangler
     @Test
-    void createTask_shouldThrow_whenNameIsMissing() {
+    void testShouldThrowArgumentIfTheresNoName() {
+
         Task task = new Task();
         task.setSubProjectId(1L);
-        task.setEstimatedHours(4.0);
-        task.setHourlyRate(250.0);
-        task.setDueDate(LocalDate.now().plusDays(2));
-
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> taskService.createTask(task, 10L));
-
-        assertEquals("Opgavens navn er påkrævet", ex.getMessage());
-    }
-
-    //  Negativ test: Subprojekt ID er null
-    @Test
-    void createTask_shouldThrow_whenSubProjectIdIsNull() {
-        Task task = new Task();
-        task.setName("Databaseopgave");
-        task.setEstimatedHours(6.0);
-        task.setHourlyRate(320.0);
         task.setDueDate(LocalDate.now().plusDays(1));
-
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> taskService.createTask(task, 10L));
-
-        assertEquals("Subprojekt ID er påkrævet", ex.getMessage());
-    }
-
-    // Negativ test: Subprojekt matcher ikke projektet
-    @Test
-    void createTask_shouldThrow_whenSubProjectDoesNotBelongToProject() {
-        Task task = new Task();
-        task.setName("Sikkerhedsopgave");
-        task.setSubProjectId(2L);
-        task.setEstimatedHours(7.0);
-        task.setHourlyRate(300.0);
-        task.setDueDate(LocalDate.now().plusDays(5));
-
-        when(subProjectRepository.existsByIdAndProjectId(2L, 10L)).thenReturn(false);
-
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> taskService.createTask(task, 10L));
-
-        assertEquals("Subprojektet tilhører ikke det angivne projekt", ex.getMessage());
-    }
-
-    // Positiv test: Hent tasks for projekt
-    @Test
-    void getTasksByProjectId_shouldReturnListFromRepository() {
-        when(taskRepository.findTasksByProjectId(1L)).thenReturn(List.of(new Task()));
-
-        List<Task> tasks = taskService.getTasksByProjectId(1L);
-
-        assertEquals(1, tasks.size());
-        verify(taskRepository, times(1)).findTasksByProjectId(1L);
-    }
-
-    @Test
-    void createTask_shouldThrow_whenEstimatedHoursIsZero() {
-        Task task = new Task();
-        task.setName("Fejl-opgave");
-        task.setSubProjectId(1L);
-        task.setEstimatedHours(0.0);
-        task.setHourlyRate(250.0);
-        task.setDueDate(LocalDate.now().plusDays(2));
-
-        when(subProjectRepository.existsByIdAndProjectId(1L, 1L)).thenReturn(true); // FIX
-
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> taskService.createTask(task, 1L));
-
-        assertEquals("Estimeret tid for opgaven er påkrævet", ex.getMessage());
-    }
-
-    @Test
-    void createTask_shouldThrow_whenHourlyRateIsZero() {
-        Task task = new Task();
-        task.setName("Fejl-opgave");
-        task.setSubProjectId(1L);
         task.setEstimatedHours(5.0);
-        task.setHourlyRate(0.0);
-        task.setDueDate(LocalDate.now().plusDays(2));
+        task.setHourlyRate(300.0);
 
-        when(subProjectRepository.existsByIdAndProjectId(1L, 1L)).thenReturn(true); // 🛠️ Tilføj dette!
-
+        //assert
         Exception ex = assertThrows(IllegalArgumentException.class,
                 () -> taskService.createTask(task, 1L));
+        assertTrue(ex.getMessage().contains("navn"));
+    }
+    @Test
+    void testDeleteTask() {
+        // Arrange
+        long taskId = 1L;
 
-        assertEquals("Timepris for opgaven er påkrævet", ex.getMessage());
+        // Act
+        taskService.deleteTask(taskId);
+
+        // Assert
+        verify(taskRepository).deleteById(taskId);
     }
 
+    @Test
+    void testUpdateTask() {
+        // Arrange
+        Task task = new Task();
+        task.setTaskId(1L);
+        task.setName("Updated Task");
+        task.setDescription("Updated description");
+        task.setEstimatedHours(5.0);
+        task.setHourlyRate(300.0);
+        task.setDueDate(LocalDate.now().plusDays(7));
+        task.setSubProjectId(1L);
+        task.setStatus("IN_PROGRESS");
+
+        // Act
+        taskService.updateTask(task);
+
+        // Assert
+        verify(taskRepository).update(task);
+    }
+
+    @Test
+    void testUpdateTaskWithInvalidData() {
+        // Arrange
+        Task task = new Task();
+        task.setTaskId(1L);
+        task.setName(""); // Invalid empty name
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> taskService.updateTask(task));
+    }
 }

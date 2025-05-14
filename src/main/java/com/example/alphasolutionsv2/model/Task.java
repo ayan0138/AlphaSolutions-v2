@@ -6,16 +6,19 @@ import java.time.LocalDateTime;
 
 public class Task {
     private long taskId;
-    private Long subProjectId;    // Renamed to match database schema
+    private Long subProjectId;
     private String name;
     private String description;
-    private Long assignedTo;      // Changed to Long to match database schema
+    private Long assignedTo;
     private String status;
     private LocalDate dueDate;
     private LocalDateTime createdAt;
     private BigDecimal price;
     private Double estimatedHours;
     private Double hourlyRate;
+
+    // Add projectId field for form binding
+    private Long projectId; // This is for form binding, not stored in database
 
     // Object references (not directly in database)
     private SubProject subProject;
@@ -25,11 +28,10 @@ public class Task {
         // Default constructor
     }
 
-    //
+    // Constructor with all database fields
     public Task(long taskId, Long subProjectId, String name, String description,
                 Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt, BigDecimal price,
-                Double estimatedHours,
-                Double hourlyRate) {
+                Double estimatedHours, Double hourlyRate) {
         this.taskId = taskId;
         this.subProjectId = subProjectId;
         this.name = name;
@@ -39,27 +41,11 @@ public class Task {
         this.dueDate = dueDate;
         this.createdAt = createdAt;
         this.price = price;
-        this.estimatedHours = estimatedHours; //i ft taskcontroller task 2.5
-        this.hourlyRate = hourlyRate; // ift taskcontroller task 2.5
+        this.estimatedHours = estimatedHours;
+        this.hourlyRate = hourlyRate;
     }
 
-    // Constructor med databese, felter og objekt referencer
-    public Task(long taskId, Long subProjectId, String name, String description,
-                Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt,
-                SubProject subProject, User assignedUser) {
-        this.taskId = taskId;
-        this.subProjectId = subProjectId;
-        this.name = name;
-        this.description = description;
-        this.assignedTo = assignedTo;
-        this.status = status;
-        this.dueDate = dueDate;
-        this.createdAt = createdAt;
-        this.subProject = subProject;
-        this.assignedUser = assignedUser;
-    }
-
-    // Getters and Setters
+    // All getters and setters
     public long getTaskId() {
         return taskId;
     }
@@ -123,7 +109,6 @@ public class Task {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
     public BigDecimal getPrice() {
         return price;
     }
@@ -148,6 +133,22 @@ public class Task {
         this.hourlyRate = hourlyRate;
     }
 
+    // Add getter and setter for projectId (for form binding)
+    public Long getProjectId() {
+        if (projectId != null) {
+            return projectId;
+        }
+        // Fallback to getting project ID from subproject
+        if (subProject != null && subProject.getProject() != null) {
+            return subProject.getProject().getProjectId();
+        }
+        return null;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
     public SubProject getSubProject() {
         return subProject;
     }
@@ -168,13 +169,5 @@ public class Task {
         if (assignedUser != null) {
             this.assignedTo = assignedUser.getUserId();
         }
-    }
-
-    // Hjælpe metode for at få relateret projekt ID via. subprojekt.
-    public Long getProjectId() {
-        if (subProject != null && subProject.getProject() != null) {
-            return subProject.getProject().getProjectId();
-        }
-        return null;
     }
 }

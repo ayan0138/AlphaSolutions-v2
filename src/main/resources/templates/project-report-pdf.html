@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Projekt Rapport - <span th:text="${report.project.name}">Projektnavn</span></title>
+  <!-- CSS will be injected by the PdfGenerationService -->
+</head>
+<body class="pdf-body">
+<div class="pdf-container">
+  <!-- Header -->
+  <div class="pdf-header">
+    <h1>📄 Projekt Rapport</h1>
+    <h2 th:text="${report.project.name}">Projektnavn</h2>
+    <p>
+      Genereret: <span th:text="${#temporals.format(report.generatedAt, 'dd. MMMM yyyy HH:mm')}">Dato og tid</span>
+      | Af: <span th:text="${report.generatedBy != null ? report.generatedBy.username : 'Ukendt'}">Brugernavn</span>
+    </p>
+  </div>
+
+  <!-- Summary -->
+  <div class="pdf-summary">
+    <h3>📊 Oversigt</h3>
+    <div class="pdf-summary-grid">
+      <div class="pdf-summary-item">
+        <h4 th:text="${report.summary.totalTasks}">0</h4>
+        <p>Opgaver i alt</p>
+      </div>
+      <div class="pdf-summary-item">
+        <h4 th:text="${report.summary.formattedTotalHours}">0.0 timer</h4>
+        <p>Estimeret tid</p>
+      </div>
+      <div class="pdf-summary-item">
+        <h4 th:text="${report.summary.formattedTotalCost}">0.00 DKK</h4>
+        <p>Estimeret pris</p>
+      </div>
+      <div class="pdf-summary-item">
+        <h4 th:text="${#lists.size(report.subProjects)}">0</h4>
+        <p>Subprojekter</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Information -->
+  <div class="pdf-section">
+    <h3>📋 Projektinformation</h3>
+    <div class="pdf-info-grid">
+      <div class="pdf-info-item">
+        <span class="pdf-info-label">Beskrivelse:</span>
+        <span class="pdf-info-value" th:text="${report.project.description ?: 'Ingen beskrivelse'}">Projektbeskrivelse</span>
+      </div>
+      <div class="pdf-info-item">
+        <span class="pdf-info-label">Startdato:</span>
+        <span class="pdf-info-value" th:text="${report.project.startDate}">Startdato</span>
+      </div>
+      <div class="pdf-info-item">
+        <span class="pdf-info-label">Slutdato:</span>
+        <span class="pdf-info-value" th:text="${report.project.endDate}">Slutdato</span>
+      </div>
+      <div class="pdf-info-item">
+        <span class="pdf-info-label">Projektleder:</span>
+        <span class="pdf-info-value" th:text="${report.project.createdBy != null ? report.project.createdBy.username : 'Ikke angivet'}">Projektleder</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Overview -->
+  <div class="pdf-section" th:if="${!report.summary.tasksByStatus.isEmpty()}">
+    <h3>📈 Status Oversigt</h3>
+    <div class="pdf-summary-grid">
+      <div class="pdf-summary-item" th:each="status : ${report.summary.tasksByStatus}">
+        <h4 th:text="${status.value}">0</h4>
+        <p th:text="${status.key == 'PENDING' ? 'Ikke begyndt' :
+                                 (status.key == 'IN_PROGRESS' ? 'Igangværende' :
+                                 (status.key == 'COMPLETED' ? 'Færdig' :
+                                 (status.key == 'ON_HOLD' ? 'På pause' : status.key)))}">Status</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks by Subproject -->
+  <div class="pdf-section">
+    <h3>📝 Opgaver pr. Subprojekt</h3>
+    <div th:each="subProjectEntry : ${report.tasksBySubProject}">
+      <div class="pdf-subproject-section">
+        <div class="pdf-subproject-title" th:text="${subProjectEntry.key}">Subprojekt navn</div>
+        <table class="pdf-table">
+          <thead>
+          <tr>
+            <th>Opgave</th>
+            <th>Beskrivelse</th>
+            <th>Status</th>
+            <th>Deadline</th>
+            <th>Timer</th>
+            <th>Timepris</th>
+            <th class="pdf-cost-column">Estimeret Cost</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="task : ${subProjectEntry.value}">
+            <td>
+              <strong th:text="${task.name}">Opgave navn</strong>
+            </td>
+            <td th:text="${task.description ?: 'Ingen beskrivelse'}">Beskrivelse</td>
+            <td>
+              <span th:text="${task.status == 'PENDING' ? 'Ikke begyndt' :
+                             (task.status == 'IN_PROGRESS' ? 'Igangværende' :
+                             (task.status == 'COMPLETED' ? 'Færdig' :
+                             (task.status == 'ON_HOLD' ? 'På pause' : task.status)))}">Status</span>
+            </td>
+            <td th:text="${task.dueDate}">Deadline</td>
+            <td>
+              <strong th:text="${task.estimatedHours} + ' timer'">Timer</strong>
+            </td>
+            <td th:text="${task.hourlyRate} + ' DKK/time'">Timepris</td>
+            <td class="pdf-cost-column">
+              <strong th:text="${(task.estimatedHours != null and task.hourlyRate != null) ? (#numbers.formatDecimal(task.estimatedHours * task.hourlyRate, 0, 2) + ' DKK') : 'N/A'}">Cost</strong>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

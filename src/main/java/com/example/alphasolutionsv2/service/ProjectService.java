@@ -20,42 +20,48 @@ public class ProjectService {
     }
 
     // Create (Opret projekt)
-    public void createProject(Project project) {
-        // validation checks
-        if (project.getName() == null || project.getName().isEmpty()) {
-            throw new IllegalArgumentException("Projekt navn er påkrævet");
-        }
+    public String createProject(Project project) {
+        try {
+            if (project.getName() == null || project.getName().isEmpty()) {
+                return "Projekt navn er påkrævet";
+            }
 
-        if (project.getStartDate() == null) {
-            throw new IllegalArgumentException("Startdato er påkrævet");
-        }
+            if (project.getStartDate() == null) {
+                return "Startdato er påkrævet";
+            }
 
-        if (project.getEndDate() == null) {
-            throw new IllegalArgumentException("Slutdato er påkrævet");
-        }
+            if (project.getEndDate() == null) {
+                return "Slutdato er påkrævet";
+            }
 
-        if (project.getCreatedBy() == null) {
-            throw new IllegalArgumentException("Projektet skal tilknyttes en bruger - feltet 'createdBy' mangler");
-        }
+            if (project.getCreatedBy() == null) {
+                return "Projektet skal tilknyttes en bruger - feltet 'createdBy' mangler";
+            }
 
-        Long userId = project.getCreatedBy().getUserId();
-        if (userId <= 0) {
-            throw new IllegalArgumentException("Brugerens ID er ugyldigt - oprettelse af projekt afvist");
-        }
+            Long userId = project.getCreatedBy().getUserId();
+            if (userId == null || userId <= 0) {
+                return "Brugerens ID er ugyldigt - oprettelse af projekt afvist";
+            }
 
-        if (project.getCreatedAt() == null) {
-            project.setCreatedAt(LocalDateTime.now());
-        }
+            if (project.getCreatedAt() == null) {
+                project.setCreatedAt(LocalDateTime.now());
+            }
 
-        projectRepository.save(project);
+            projectRepository.save(project);
+            return null; // ingen fejl
+        } catch (Exception e) {
+            return "Fejl ved oprettelse: " + e.getMessage();
+        }
     }
+
 
     public List<Project> getProjectsByUserId(Long userId) {
         if (userId == null || userId <= 0) {
             throw new IllegalArgumentException("Ugyldig bruger-ID er ugyldig");
         }
 
-        return projectRepository.findUserById(userId);
+        // Use the new method that combines both created and assigned projects
+        return projectRepository.findAllProjectsForUser(userId);
     }
 
     public Optional<Project> getProjectById(Long projectId) {
@@ -141,5 +147,42 @@ public class ProjectService {
         } catch (Exception e) {
             return "Ugyldige data: " + e.getMessage();
         }
+    }
+    public boolean deleteProject(Long projectId, User user) {
+        if (projectId == null || projectId <= 0) {
+            return false;
+        }
+
+        Optional<Project> projectOpt = getProjectById(projectId);
+        if (projectOpt.isEmpty()) {
+            return false;
+        }
+
+        Project project = projectOpt.get();
+
+        // Check if user has permission to delete this project
+        if (!userCanDeleteProject(user, project)) {
+            return false;
+        }
+
+        try {
+            projectRepository.deleteById(projectId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean userCanDeleteProject(User user, Project project) {
+        if (user == null || project == null || user.getRole() == null) {
+            return false;
+        }
+
+        // Only admins and the project creator can delete projects
+        return "Admin".equalsIgnoreCase(user.getRole().getRoleName()) ||
+                user.getUserId().equals(project.getCreatedBy().getUserId());
+    }
+    public List<Project> getAllProjects() {
+        return projectRepository.findAll();
     }
 }

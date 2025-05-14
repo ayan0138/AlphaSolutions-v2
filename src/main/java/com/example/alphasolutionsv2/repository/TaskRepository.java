@@ -1,14 +1,13 @@
 package com.example.alphasolutionsv2.repository;
 
+import com.example.alphasolutionsv2.model.SubProject;
 import com.example.alphasolutionsv2.model.Task;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -20,12 +19,10 @@ public class TaskRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Gem en opgave i databasen
+    // Save a task to the database
     public void save(Task task) {
-        String sql = """
-        INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, created_at, price)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """;
+        String sql = "INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, created_at, estimated_hours, hourly_rate) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 task.getSubProjectId(),
@@ -34,46 +31,113 @@ public class TaskRepository {
                 task.getAssignedTo(),
                 task.getStatus(),
                 task.getDueDate(),
-                task.getCreatedAt(),
-                task.getPrice()  // 💰 VIGTIGT!
+                Timestamp.valueOf(task.getCreatedAt() != null ? task.getCreatedAt() : LocalDateTime.now()),
+                task.getEstimatedHours(),
+                task.getHourlyRate()
         );
     }
 
-    // Hent alle opgaver for et givent projekt
-    public List<Task> findTasksByProjectId(long projectId) {
+    // Update an existing task
+    public void update(Task task) {
         String sql = """
-                SELECT t.* 
-                FROM tasks t
-                JOIN sub_projects sp ON t.sub_project_id = sp.sub_project_id
-                WHERE sp.project_id = ?
+                UPDATE tasks 
+                SET sub_project_id = ?, name = ?, description = ?, assigned_to = ?, 
+                    status = ?, due_date = ?, estimated_hours = ?, hourly_rate = ?
+                WHERE task_id = ?
             """;
 
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Task.class), projectId);
+        jdbcTemplate.update(sql,
+                task.getSubProjectId(),
+                task.getName(),
+                task.getDescription(),
+                task.getAssignedTo(),
+                task.getStatus(),
+                task.getDueDate(),
+                task.getEstimatedHours(),
+                task.getHourlyRate(),
+                task.getTaskId()
+        );
     }
 
-    public BigDecimal calculateTotalPriceBySubprojectId(Long subProjectId) {
+    // Get all tasks for a given project with subproject info
+    public List<Task> findTasksByProjectId(long projectId) {
         String sql = """
-        SELECT COALESCE(SUM(price), 0.00)
-        FROM Tasks
-        WHERE sub_project_id = ?
-    """;
-        return jdbcTemplate.queryForObject(sql, BigDecimal.class, subProjectId);
+                SELECT t.task_id as taskId, t.sub_project_id as subProjectId, t.name, t.description, 
+                       t.assigned_to as assignedTo, t.status, t.due_date as dueDate, t.created_at as createdAt, 
+                       t.estimated_hours as estimatedHours, t.hourly_rate as hourlyRate,
+                       sp.name as subProjectName, sp.project_id as 'subProject.projectId'
+                FROM tasks t
+                LEFT JOIN sub_projects sp ON t.sub_project_id = sp.sub_project_id
+                WHERE sp.project_id = ? OR (t.sub_project_id IS NULL AND ? IS NOT NULL)
+            """;
+
+        List<Task> tasks = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Task task = new Task();
+            task.setTaskId(rs.getLong("taskId"));
+            task.setSubProjectId(rs.getLong("subProjectId"));
+            task.setName(rs.getString("name"));
+            task.setDescription(rs.getString("description"));
+            task.setAssignedTo(rs.getLong("assignedTo"));
+            task.setStatus(rs.getString("status"));
+            task.setDueDate(rs.getDate("dueDate") != null ? rs.getDate("dueDate").toLocalDate() : null);
+            task.setCreatedAt(rs.getTimestamp("createdAt") != null ? rs.getTimestamp("createdAt").toLocalDateTime() : null);
+            task.setEstimatedHours(rs.getDouble("estimatedHours"));
+            task.setHourlyRate(rs.getDouble("hourlyRate"));
+
+            // Set subproject name if available
+            String subProjectName = rs.getString("subProjectName");
+            if (subProjectName != null) {
+                SubProject subProject = new SubProject();
+                subProject.setSubProjectId(rs.getLong("subProjectId"));
+                subProject.setName(subProjectName);
+                subProject.setProjectId(rs.getLong("subProject.projectId"));
+                task.setSubProject(subProject);
+            }
+
+            return task;
+        }, projectId, projectId);
+
+        return tasks;
     }
 
-    public BigDecimal getTotalPriceForSubProject(Long subProjectId) {
-        String sql = "SELECT COALESCE(SUM(price), 0.00) FROM tasks WHERE sub_project_id = ?";
-        return jdbcTemplate.queryForObject(sql, BigDecimal.class, subProjectId);
-    }
-
-    public List<Task> findBySubProjectId(Long subProjectId) {
+    // Get all tasks
+    public List<Task> findAll() {
         String sql = """
-        SELECT task_id, sub_project_id, name, description, assigned_to,
-               status, due_date, created_at, price,
-               estimated_hours, hourly_rate
-        FROM tasks
-        WHERE sub_project_id = ?
-    """;
+                SELECT task_id as taskId, sub_project_id as subProjectId, name, description, 
+                       assigned_to as assignedTo, status, due_date as dueDate, created_at as createdAt,
+                       estimated_hours as estimatedHours, hourly_rate as hourlyRate
+                FROM tasks
+            """;
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Task.class));
+    }
 
-        return jdbcTemplate.query(sql, new TaskRowMapper(), subProjectId);
+    // Get a specific task by ID
+    public Task findById(long taskId) {
+        String sql = """
+                SELECT task_id as taskId, sub_project_id as subProjectId, name, description, 
+                       assigned_to as assignedTo, status, due_date as dueDate, created_at as createdAt,
+                       estimated_hours as estimatedHours, hourly_rate as hourlyRate
+                FROM tasks 
+                WHERE task_id = ?
+            """;
+        List<Task> tasks = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Task.class), taskId);
+        return !tasks.isEmpty() ? tasks.get(0) : null;
+    }
+
+    // Delete a task
+    public void deleteById(long taskId) {
+        String sql = "DELETE FROM tasks WHERE task_id = ?";
+        jdbcTemplate.update(sql, taskId);
+    }
+    public List<Task> findTasksBySubProjectId(long subProjectId) {
+        String sql = """
+            SELECT task_id as taskId, sub_project_id as subProjectId, name, description, 
+                   assigned_to as assignedTo, status, due_date as dueDate, created_at as createdAt, 
+                   estimated_hours as estimatedHours, hourly_rate as hourlyRate
+            FROM tasks
+            WHERE sub_project_id = ?
+        """;
+
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Task.class), subProjectId);
     }
 }
