@@ -44,7 +44,6 @@
         <div class="col-md-9" th:text="${project.endDate}">2023-12-31</div>
       </div>
 
-      <!-- Show who created the project -->
       <div class="row mb-3">
         <div class="col-md-3 fw-bold">Oprettet af:</div>
         <div class="col-md-9" th:text="${project.createdBy.username}">Projektleder navn</div>
@@ -55,7 +54,6 @@
         <div class="col-md-9" th:text="${project.createdBy.role.roleName}">Rolle navn</div>
       </div>
 
-      <!-- Display the logged-in user's role -->
       <div class="row mb-3">
         <div class="col-md-3 fw-bold">Din rolle:</div>
         <div class="col-md-9" th:text="${loggedInUser.role.roleName}">Din rolle</div>
@@ -63,13 +61,143 @@
     </div>
   </div>
 
+  <!-- Subprojects Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+      <h2 class="card-title h5 mb-0">Subprojekter</h2>
+      <a th:href="@{/projects/{id}/subprojects/create(id=${project.projectId})}" class="btn btn-light btn-sm">
+        Opret subprojekt
+      </a>
+    </div>
+    <div class="card-body">
+      <div th:if="${subProjects != null and #lists.size(subProjects) > 0}">
+        <div class="row">
+          <div th:each="subProject : ${subProjects}" class="col-md-6 mb-3">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="card-title">
+                  <a th:href="@{/tasks/subproject/{id}(id=${subProject.subProjectId})}"
+                     th:text="${subProject.name}"
+                     class="text-decoration-none">Subprojekt navn</a>
+                </h6>
+                <p class="card-text" th:text="${subProject.description}">Beskrivelse</p>
+                <small class="text-muted">
+                  <span th:if="${subProject.startDate}" th:text="'Start: ' + ${subProject.startDate}"></span>
+                  <span th:if="${subProject.endDate}" th:text="' | Slut: ' + ${subProject.endDate}"></span>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${subProjects == null or #lists.isEmpty(subProjects)}" class="text-center py-4">
+        <p class="text-muted">Dette projekt har endnu ikke nogen subprojekter.</p>
+        <a th:href="@{/projects/{id}/subprojects/create(id=${project.projectId})}" class="btn btn-primary">
+          Opret første subprojekt
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+      <h2 class="card-title h5 mb-0">Opgaver</h2>
+      <div>
+        <a th:href="@{/projects/{id}/subprojects/create(id=${project.projectId})}" class="btn btn-light btn-sm me-2"
+           th:if="${subProjects == null or #lists.isEmpty(subProjects)}">
+          Opret subprojekt
+        </a>
+        <a th:href="@{/tasks/project/{id}/create(id=${project.projectId})}" class="btn btn-light btn-sm">
+          Tilføj opgave
+        </a>
+      </div>
+    </div>
+    <div class="card-body">
+      <div th:if="${tasks != null and #lists.size(tasks) > 0}">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>Subprojekt</th>
+              <th>Navn</th>
+              <th>Beskrivelse</th>
+              <th>Status</th>
+              <th>Deadline</th>
+              <th>Estimeret tid</th>
+              <th>Timepris</th>
+              <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${tasks}">
+              <td>
+                  <span th:if="${task.subProject != null and task.subProject.name != null}"
+                        class="badge bg-secondary" th:text="${task.subProject.name}">Subprojekt</span>
+                <span th:if="${task.subProject == null or task.subProject.name == null}"
+                      class="badge bg-light text-dark">Ingen subprojekt</span>
+              </td>
+              <td th:text="${task.name}"></td>
+              <td th:text="${task.description}"></td>
+              <td>
+                    <span class="badge"
+                          th:classappend="${task.status == 'PENDING' ? 'bg-secondary text-light' :
+                                          (task.status == 'IN_PROGRESS' ? 'bg-warning text-dark' :
+                                          (task.status == 'COMPLETED' ? 'bg-success text-light' :
+                                          (task.status == 'ON_HOLD' ? 'bg-info text-light' : 'bg-secondary text-light')))}"
+                          th:text="${task.status == 'PENDING' ? 'Ikke begyndt' :
+                                   (task.status == 'IN_PROGRESS' ? 'Igangværende' :
+                                   (task.status == 'COMPLETED' ? 'Færdig' :
+                                   (task.status == 'ON_HOLD' ? 'På pause' : task.status)))}">Status</span>
+              </td>
+              <td th:text="${task.dueDate}"></td>
+              <td th:text="${task.estimatedHours} + ' timer'"></td>
+              <td th:text="${task.hourlyRate} + ' DKK/time'"></td>
+              <td>
+                <div class="btn-group">
+                  <a th:href="@{'/tasks/edit/' + ${task.taskId}}" class="btn btn-sm btn-warning">
+                    Redigér
+                  </a>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Show all tasks link -->
+        <div class="mt-3" th:if="${tasks != null and #lists.size(tasks) > 0}">
+          <a th:href="@{/tasks/project/{id}(id=${project.projectId})}" class="btn btn-outline-primary">
+            Se alle opgaver
+          </a>
+        </div>
+      </div>
+
+      <!-- No tasks message -->
+      <div th:if="${tasks == null or #lists.isEmpty(tasks)}" class="text-center py-4">
+        <p class="text-muted">Der er endnu ikke oprettet opgaver for dette projekt.</p>
+        <a th:href="@{/tasks/project/{id}/create(id=${project.projectId})}" class="btn btn-primary">
+          Opret første opgave
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
   <div class="mt-4">
+    <!-- Generate Report Button - Add this above your existing buttons -->
+    <a th:href="@{'/reports/project/' + ${project.projectId}}"
+       class="btn btn-success me-2">
+      <i class="fas fa-file-alt"></i> Generér rapport
+    </a>
+
+    <!-- Your existing buttons -->
     <a th:href="@{/my-projects}" class="btn btn-secondary">Tilbage til projekter</a>
     <!-- Show edit button only for project creator or admins -->
     <a th:if="${loggedInUser.role.roleName == 'Admin' or loggedInUser.role.roleName == 'Projektleder'}"
        th:href="@{/projects/{id}/edit(id=${project.projectId})}"
        class="btn btn-primary">Rediger</a>
-
   </div>
 </div>
 </body>

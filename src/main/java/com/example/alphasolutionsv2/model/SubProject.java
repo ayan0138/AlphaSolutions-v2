@@ -1,34 +1,33 @@
 package com.example.alphasolutionsv2.model;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class SubProject {
     private long subProjectId;
-    private Project project;
+    private long projectId;
     private String name;
     private String description;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private LocalDateTime createdAt;
-    private BigDecimal price;
+    private Project project;
+    // Default constructor
+    public SubProject() {}
 
-    public SubProject() {
-        // Default constructor
-    }
-
-    public SubProject(long subProjectId, Project project, String name, String description, LocalDateTime startDate,
-                      LocalDateTime endDate, LocalDateTime createdAt,  BigDecimal price) {
+    // Constructor with all fields
+    public SubProject(long subProjectId, long projectId, String name, String description,
+                      LocalDate startDate, LocalDate endDate, LocalDateTime createdAt) {
         this.subProjectId = subProjectId;
-        this.project = project;
+        this.projectId = projectId;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.createdAt = createdAt;
-        this.price = price;
     }
 
+    // Getters and setters
     public long getSubProjectId() {
         return subProjectId;
     }
@@ -37,12 +36,12 @@ public class SubProject {
         this.subProjectId = subProjectId;
     }
 
-    public Project getProject() {
-        return project;
+    public long getProjectId() {
+        return projectId;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setProjectId(long projectId) {
+        this.projectId = projectId;
     }
 
     public String getName() {
@@ -61,19 +60,19 @@ public class SubProject {
         this.description = description;
     }
 
-    public LocalDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -84,12 +83,14 @@ public class SubProject {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
-    public BigDecimal getPrice() {
-        return price;
+    public Project getProject() {
+        return project;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setProject(Project project) {
+        this.project = project;
+        if (project != null) {
+            this.projectId = project.getProjectId();
+        }
     }
 }

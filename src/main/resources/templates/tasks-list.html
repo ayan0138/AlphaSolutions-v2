@@ -7,33 +7,73 @@
 </head>
 <body>
 <div class="container mt-4">
+    <!-- Display the logged-in user information -->
+    <div class="alert alert-info" th:if="${loggedInUser != null}">
+        Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
+    </div>
+
     <h1 class="mb-4">Opgaver under Projekt ID: <span th:text="${projectId}"></span></h1>
     <a th:href="@{/projects/{id}/tasks/create(id=${projectId})}" class="btn btn-primary mt-4">Opret Opgave</a>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Navn</th>
-            <th>Beskrivelse</th>
-            <th>Status</th>
-            <th>Deadline</th>
-            <th>Estimeret tid</th>
-            <th>Timepris</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="task : ${tasks}">
-            <td th:text="${task.name}"></td>
-            <td th:text="${task.description}"></td>
-            <td th:text="${task.status}"></td>
-            <td th:text="${task.dueDate}"></td>
-            <td th:text="${task.estimatedHours}"></td>
-            <td th:text="${task.hourlyRate}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- Add task button -->
+    <div class="mb-3">
+        <a th:href="@{'/tasks/project/' + ${projectId} + '/create'}" class="btn btn-success">
+            Tilføj ny opgave
+        </a>
+    </div>
 
-    <a th:href="@{'/projects/' + ${projectId}}" class="btn btn-secondary mt-4">Tilbage til projekt</a>
+    <div th:if="${#lists.isEmpty(tasks)}" class="alert alert-info">
+        <p>Der er ikke oprettet opgaver for dette projekt endnu.</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(tasks)}">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Beskrivelse</th>
+                <th>Status</th>
+                <th>Deadline</th>
+                <th>Estimeret tid</th>
+                <th>Timepris</th>
+                <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${tasks}">
+                <td th:text="${task.name}"></td>
+                <td th:text="${task.description}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${task.status == 'PENDING' ? 'bg-secondary text-light' :
+                                          (task.status == 'IN_PROGRESS' ? 'bg-warning text-dark' :
+                                          (task.status == 'COMPLETED' ? 'bg-success text-light' :
+                                          (task.status == 'ON_HOLD' ? 'bg-info text-light' : 'bg-secondary text-light')))}"
+                          th:text="${task.status == 'PENDING' ? 'Ikke begyndt' :
+                                   (task.status == 'IN_PROGRESS' ? 'Igangværende' :
+                                   (task.status == 'COMPLETED' ? 'Færdig' :
+                                   (task.status == 'ON_HOLD' ? 'På pause' : task.status)))}">Status</span>
+                </td>
+                <td th:text="${task.dueDate}"></td>
+                <td th:text="${task.estimatedHours} + ' timer'"></td>
+                <td th:text="${task.hourlyRate} + ' DKK/time'"></td>
+                <td>
+                    <div class="btn-group">
+                        <a th:href="@{'/tasks/edit/' + ${task.taskId}}" class="btn btn-sm btn-warning">
+                            Redigér
+                        </a>
+                        <a th:href="@{'/tasks/' + ${task.taskId} + '/delete'}" class="btn btn-sm btn-danger">
+                            Slet
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a th:href="@{'/projects/' + ${projectId}}" class="btn btn-secondary mt-4" th:if="${projectId != null}">Tilbage til projekt</a>
+    <a th:href="@{/my-projects}" class="btn btn-secondary mt-4" th:if="${projectId == null}">Tilbage til projekter</a>
 </div>
 </body>
 </html>

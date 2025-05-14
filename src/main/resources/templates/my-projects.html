@@ -51,7 +51,9 @@
       <td>
         <div class="btn-group">
           <a th:href="@{/projects/{id}(id=${project.projectId})}" class="btn btn-sm btn-info">Se detaljer</a>
-          <a th:if="${loggedInUser.userId == project.createdBy.userId || loggedInUser.role.roleName == 'Admin'}"
+          <a th:if="${loggedInUser.userId == project.createdBy.userId ||
+            loggedInUser.role.roleName == 'Admin' ||
+            loggedInUser.role.roleName == 'Projektleder'}"
              th:href="@{/projects/{id}/edit(id=${project.projectId})}"
              class="btn btn-sm btn-danger ms-1">Se task</a>
         </div>

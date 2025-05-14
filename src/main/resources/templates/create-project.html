@@ -45,13 +45,16 @@
         </div>
 
         <!-- Fallback if no user list is provided -->
-        <div class="mb-3" th:if="${users == null}">
-            <label for="userId" class="form-label">Bruger-ID (projektleder):</label>
-            <input type="number" id="userId" name="userId" class="form-control" required>
+        <div class="mb-3">
+            <input type="text"
+                   id="projectLeader"
+                   class="form-control"
+                   th:value="${loggedInUser.username + ' (' + (loggedInUser.role != null ? loggedInUser.role.roleName : 'Ingen rolle') + ')'}"
+                   readonly>
         </div>
 
         <button type="submit" class="btn btn-primary">Opret projekt</button>
-        <a href="/projects/my" class="btn btn-secondary ms-2">Tilbage</a>
+        <a th:href="@{/my-projects}" class="btn btn-secondary">Tilbage til projekter</a>
     </form>
 </div>
 </body>
