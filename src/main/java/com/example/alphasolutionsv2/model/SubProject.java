@@ -1,5 +1,6 @@
 package com.example.alphasolutionsv2.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class SubProject {
@@ -10,13 +11,14 @@ public class SubProject {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime createdAt;
+    private BigDecimal price;
 
     public SubProject() {
         // Default constructor
     }
 
     public SubProject(long subProjectId, Project project, String name, String description, LocalDateTime startDate,
-                      LocalDateTime endDate, LocalDateTime createdAt) {
+                      LocalDateTime endDate, LocalDateTime createdAt,  BigDecimal price) {
         this.subProjectId = subProjectId;
         this.project = project;
         this.name = name;
@@ -24,6 +26,7 @@ public class SubProject {
         this.startDate = startDate;
         this.endDate = endDate;
         this.createdAt = createdAt;
+        this.price = price;
     }
 
     public long getSubProjectId() {
@@ -80,5 +83,13 @@ public class SubProject {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }

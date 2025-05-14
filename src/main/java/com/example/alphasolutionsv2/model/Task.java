@@ -1,5 +1,6 @@
 package com.example.alphasolutionsv2.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ public class Task {
     private String status;
     private LocalDate dueDate;
     private LocalDateTime createdAt;
+    private BigDecimal price;
     private Double estimatedHours;
     private Double hourlyRate;
 
@@ -23,9 +25,10 @@ public class Task {
         // Default constructor
     }
 
-    // Constructor with all database fields
+    //
     public Task(long taskId, Long subProjectId, String name, String description,
-                Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt, Double estimatedHours,
+                Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt, BigDecimal price,
+                Double estimatedHours,
                 Double hourlyRate) {
         this.taskId = taskId;
         this.subProjectId = subProjectId;
@@ -35,11 +38,12 @@ public class Task {
         this.status = status;
         this.dueDate = dueDate;
         this.createdAt = createdAt;
-        this.estimatedHours = estimatedHours; //ift taskcontroller task 2.5
-        this.hourlyRate = hourlyRate; //ift taskcontroller task 2.5
+        this.price = price;
+        this.estimatedHours = estimatedHours; //i ft taskcontroller task 2.5
+        this.hourlyRate = hourlyRate; // ift taskcontroller task 2.5
     }
 
-    // Constructor with both database fields and object references
+    // Constructor med databese, felter og objekt referencer
     public Task(long taskId, Long subProjectId, String name, String description,
                 Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt,
                 SubProject subProject, User assignedUser) {
@@ -120,6 +124,14 @@ public class Task {
         this.createdAt = createdAt;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
     public Double getEstimatedHours() {
         return estimatedHours;
     }
@@ -158,7 +170,7 @@ public class Task {
         }
     }
 
-    // Helper method to get the related project ID via subProject
+    // Hjælpe metode for at få relateret projekt ID via. subprojekt.
     public Long getProjectId() {
         if (subProject != null && subProject.getProject() != null) {
             return subProject.getProject().getProjectId();

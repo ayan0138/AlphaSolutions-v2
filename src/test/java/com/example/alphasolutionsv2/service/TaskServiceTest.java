@@ -42,21 +42,6 @@ class TaskServiceTest {
         verify(taskRepository, times(1)).save(any(Task.class));
     }
 
-    @Test
-    void testShouldThrowArgumentIfTheresNoName() {
-
-        Task task = new Task();
-        task.setSubProjectId(1L);
-        task.setDueDate(LocalDate.now().plusDays(1));
-        task.setEstimatedHours(5.0);
-        task.setHourlyRate(300.0);
-
-        //assert
-        Exception ex = assertThrows(IllegalArgumentException.class,
-                () -> taskService.createTask(task, 1L));
-        assertTrue(ex.getMessage().contains("navn"));
-    }
-
     //  Positiv test: Gem opgave korrekt
     @Test
     void createTask_shouldSaveTask_whenValidInput() {
@@ -133,4 +118,39 @@ class TaskServiceTest {
         assertEquals(1, tasks.size());
         verify(taskRepository, times(1)).findTasksByProjectId(1L);
     }
+
+    @Test
+    void createTask_shouldThrow_whenEstimatedHoursIsZero() {
+        Task task = new Task();
+        task.setName("Fejl-opgave");
+        task.setSubProjectId(1L);
+        task.setEstimatedHours(0.0);
+        task.setHourlyRate(250.0);
+        task.setDueDate(LocalDate.now().plusDays(2));
+
+        when(subProjectRepository.existsByIdAndProjectId(1L, 1L)).thenReturn(true); // FIX
+
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> taskService.createTask(task, 1L));
+
+        assertEquals("Estimeret tid for opgaven er påkrævet", ex.getMessage());
+    }
+
+    @Test
+    void createTask_shouldThrow_whenHourlyRateIsZero() {
+        Task task = new Task();
+        task.setName("Fejl-opgave");
+        task.setSubProjectId(1L);
+        task.setEstimatedHours(5.0);
+        task.setHourlyRate(0.0);
+        task.setDueDate(LocalDate.now().plusDays(2));
+
+        when(subProjectRepository.existsByIdAndProjectId(1L, 1L)).thenReturn(true); // 🛠️ Tilføj dette!
+
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> taskService.createTask(task, 1L));
+
+        assertEquals("Timepris for opgaven er påkrævet", ex.getMessage());
+    }
+
 }

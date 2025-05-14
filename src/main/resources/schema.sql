@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS sub_projects (
     sub_project_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     project_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) DEFAULT 0.00,
     description TEXT,
     start_date DATE,
     end_date DATE,
@@ -57,7 +58,7 @@ CREATE TABLE IF NOT EXISTS sub_projects (
 );
 
 -- Opret opgaver (Tasks)
-CREATE TABLE IF NOT EXISTS  tasks (
+CREATE TABLE IF NOT EXISTS tasks (
     task_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     sub_project_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -66,6 +67,10 @@ CREATE TABLE IF NOT EXISTS  tasks (
     status VARCHAR(100),
     due_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    price DECIMAL(10,2) DEFAULT 0.00,
+    estimated_hours DOUBLE,
+    hourly_rate DOUBLE,
     FOREIGN KEY (sub_project_id) REFERENCES sub_projects(sub_project_id) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users(user_id) ON DELETE SET NULL
-);
+    );
+

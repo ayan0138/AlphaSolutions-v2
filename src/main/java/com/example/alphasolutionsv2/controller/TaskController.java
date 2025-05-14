@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,8 +38,9 @@ public class TaskController {
         return "tasks/tasks-list"; // henviser til task-list HTMl
     }
 
-    @PostMapping("/create") //opretter
+    @PostMapping("/create")
     public String createTask(@RequestParam String name,
+                             @RequestParam Long projectId,
                              @RequestParam Long subProjectId,
                              @RequestParam Double estimatedHours,
                              @RequestParam Double hourlyRate,
@@ -48,14 +51,15 @@ public class TaskController {
         task.setSubProjectId(subProjectId);
         task.setEstimatedHours(estimatedHours);
         task.setHourlyRate(hourlyRate);
-        task.setDueDate(LocalDate.from(dueDate));
+        task.setDueDate(dueDate);
         task.setCreatedAt(LocalDateTime.now());
 
         try {
-            taskService.createTask(task, subProjectId);
-            return "redirect:/tasks/success";
+            taskService.createTask(task, projectId); // <-- korrekt parameter
+            return "redirect:/tasks/project/" + projectId + "?success=true";
         } catch (IllegalArgumentException e) {
-            return "redirect:/tasks/error";
+            return "redirect:/tasks/project/" + projectId + "?error=" + URLEncoder.encode(e.getMessage(),
+                    StandardCharsets.UTF_8);
         }
     }
 }
