@@ -63,7 +63,8 @@ public class ProjectRepository {
         } else {
             return Optional.of(results.get(0));
         }
-    }
+
+}
 
     // Method to update a project
     public void updateProject(Project project) {

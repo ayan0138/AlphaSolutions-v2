@@ -8,6 +8,7 @@
 <body>
 <div class="container mt-4">
     <h1 class="mb-4">Opgaver under Projekt ID: <span th:text="${projectId}"></span></h1>
+    <a th:href="@{/projects/{id}/tasks/create(id=${projectId})}" class="btn btn-primary mt-4">Opret Opgave</a>
 
     <table class="table table-striped">
         <thead>

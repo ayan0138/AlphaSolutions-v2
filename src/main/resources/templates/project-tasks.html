@@ -6,7 +6,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
+
 <div class="container mt-4">
+    <!-- Feedback-melding -->
+    <div th:if="${param.success}" class="alert alert-success">
+        Opgaven blev oprettet!
+    </div>
+
+    <div th:if="${param.error}" class="alert alert-danger">
+        Fejl: <span th:text="${param.error}"></span>
+    </div>
+
     <h1 class="mb-4">Opgaver for projekt ID: <span th:text="${projectId}"></span></h1>
 
     <table class="table table-striped">
@@ -33,6 +43,7 @@
     </table>
 
     <a th:href="@{'/projects/' + ${projectId}}" class="btn btn-secondary mt-4">Tilbage til projekt</a>
+
 </div>
 </body>
 </html>
