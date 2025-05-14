@@ -5,8 +5,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -20,8 +22,10 @@ public class TaskRepository {
 
     // Gem en opgave i databasen
     public void save(Task task) {
-        String sql = "INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)"; // estimated_hours og hourly_rate mangler i SQL (7 paramatre istedet for 9)
+        String sql = """
+        INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, created_at, price)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """;
 
         jdbcTemplate.update(sql,
                 task.getSubProjectId(),
@@ -31,9 +35,8 @@ public class TaskRepository {
                 task.getAssignedTo(),
                 task.getStatus(),
                 task.getDueDate(),
-                Timestamp.valueOf(task.getCreatedAt() != null ? task.getCreatedAt() : LocalDateTime.now())
-                //task.getEstimatedHours(), + estimated_hours er ikke implementeret i SQL
-                //task.getHourlyRate(), + hourly_rate er ikke implementeret i SQL
+                task.getCreatedAt(),
+                task.getPrice()  // 💰 VIGTIGT!
         );
     }
 
@@ -47,5 +50,31 @@ public class TaskRepository {
             """;
 
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Task.class), projectId);
+    }
+
+    public BigDecimal calculateTotalPriceBySubprojectId(Long subProjectId) {
+        String sql = """
+        SELECT COALESCE(SUM(price), 0.00)
+        FROM Tasks
+        WHERE sub_project_id = ?
+    """;
+        return jdbcTemplate.queryForObject(sql, BigDecimal.class, subProjectId);
+    }
+
+    public BigDecimal getTotalPriceForSubProject(Long subProjectId) {
+        String sql = "SELECT COALESCE(SUM(price), 0.00) FROM tasks WHERE sub_project_id = ?";
+        return jdbcTemplate.queryForObject(sql, BigDecimal.class, subProjectId);
+    }
+
+    public List<Task> findBySubProjectId(Long subProjectId) {
+        String sql = """
+        SELECT task_id, sub_project_id, name, description, assigned_to,
+               status, due_date, created_at, price,
+               estimated_hours, hourly_rate
+        FROM tasks
+        WHERE sub_project_id = ?
+    """;
+
+        return jdbcTemplate.query(sql, new TaskRowMapper(), subProjectId);
     }
 }

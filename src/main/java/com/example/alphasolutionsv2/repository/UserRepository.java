@@ -53,4 +53,21 @@ public class UserRepository {
         List<User> results = jdbcTemplate.query(sql, new UserRowMapper(), username);
         return results.stream().findFirst();
     }
+
+    public void saveUser(User user) {
+        String checkSql = "SELECT COUNT(*) FROM Users WHERE username = ?";
+        Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, user.getUsername());
+
+        if (count != null && count == 0) {
+            String sql = """
+            INSERT INTO Users (username, email, password, role_id)
+            VALUES (?, ?, ?, ?)
+        """;
+            jdbcTemplate.update(sql,
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getRole().getRoleId());
+        }
+    }
 }

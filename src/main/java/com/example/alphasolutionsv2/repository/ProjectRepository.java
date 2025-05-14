@@ -2,6 +2,8 @@ package com.example.alphasolutionsv2.repository;
 
 import com.example.alphasolutionsv2.model.Project;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,19 +17,33 @@ public class ProjectRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Save a new project
+    // Gemmer et nyt projekt og sætter det genererede ID på objektet
     public void save(Project project) {
-        String sql = "INSERT INTO Projects (name, description, start_date, end_date, created_by) " +
-                "VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                project.getName(),
-                project.getDescription(),
-                project.getStartDate(),
-                project.getEndDate(),
-                project.getCreatedBy().getUserId());
+        String sql = """
+        INSERT INTO Projects (name, description, start_date, end_date, created_at, created_by)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """;
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            var ps = connection.prepareStatement(sql, new String[] { "project_id" });
+            ps.setString(1, project.getName());
+            ps.setString(2, project.getDescription());
+            ps.setObject(3, project.getStartDate());
+            ps.setObject(4, project.getEndDate());
+            ps.setObject(5, project.getCreatedAt());
+            ps.setLong(6, project.getCreatedBy().getUserId());
+            return ps;
+        }, keyHolder);
+
+        Number key = keyHolder.getKey();
+        if (key != null) {
+            project.setProjectId(key.longValue());
+        }
     }
 
-    // Find projects by user ID
+    // Finder alle projekter, som en bruger er tilknyttet
     public List<Project> findUserById(Long userId) {
         String sql = """
                 SELECT p.project_id, p.name, p.description, p.start_date, p.end_date,
@@ -43,7 +59,7 @@ public class ProjectRepository {
         return jdbcTemplate.query(sql, new ProjectRowMapper(), userId);
     }
 
-    // Find a project by ID
+    // Finder et projekt baseret på dets ID
     public Optional<Project> findById(Long projectId) {
         String sql = """
                 SELECT p.project_id, p.name, p.description, p.start_date, p.end_date,
@@ -66,7 +82,7 @@ public class ProjectRepository {
 
 }
 
-    // Method to update a project
+    // Opdaterer et eksisterende projekt i databasen
     public void updateProject(Project project) {
         String sql = """
                 UPDATE Projects
@@ -92,7 +108,7 @@ public class ProjectRepository {
         return count != null && count > 0;
     }
 
-    // Check if a user has access to the project
+    // Tjekker om brugeren har redigeringsroller i projektet (EDITOR eller MANAGER)
     public boolean userHasAccessToProject(Long userId, Long projectId) {
         String sql = """
             SELECT COUNT(*) FROM Project_Assignments pa
@@ -102,5 +118,4 @@ public class ProjectRepository {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, userId, projectId);
         return count != null && count > 0;
     }
-
 }

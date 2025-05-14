@@ -1,50 +1,82 @@
 package com.example.alphasolutionsv2.controller;
 
-import com.example.alphasolutionsv2.model.Task;
 import com.example.alphasolutionsv2.repository.TaskRepository;
-import com.example.alphasolutionsv2.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest // Starter hele Spring Boot konteksten
-@AutoConfigureMockMvc // (Bruges hvis du vil teste Controllers med MockMvc)
-@Transactional // Sikrer at ændringer bliver rullet tilbage
-@Rollback // Sørger for at databasen nulstilles efter testen
+@SpringBootTest(properties = "spring.config.location=classpath:/application-test.properties")
+@AutoConfigureMockMvc
+@Transactional // så testdata ryddes op bagefter
 public class TaskControllerTest {
 
     @Autowired
-    private TaskService taskService;
+    private MockMvc mockMvc;
 
     @Autowired
     private TaskRepository taskRepository;
 
+    /**
+     * Tester at oprettelse af gyldig opgave redirecter korrekt til success-side.
+     */
     @Test
-    void testShouldSaveAndFetchTask() {
-        // ----------- ARRANGE -----------
-        // ex. subprojectId(1) hører til projectId(1) i test
-        Task task = new Task();
-        task.setName("Integration Opgave");
-        task.setSubProjectId(1L); // Subprojekt 1 skal eksistere og høre til projekt 1 i testdata
-        task.setDueDate(LocalDate.now().plusDays(2));
-        task.setEstimatedHours(8.0);
-        task.setHourlyRate(450.0);
+    @WithMockUser(username = "najib", roles = {"Medarbejder"})
+    void createTask_shouldRedirectToSuccess_whenValidInput() throws Exception {
+        mockMvc.perform(post("/tasks/create")
+                        .with(csrf())
+                        .param("name", "Opgave A")
+                        .param("projectId", "1")
+                        .param("subProjectId", "1")
+                        .param("estimatedHours", "5")
+                        .param("hourlyRate", "450")
+                        .param("dueDate", LocalDate.now().plusDays(3).toString()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/tasks/project/1?success=true"));
+    }
 
-        // ----------- ACT -----------
-        taskService.createTask(task, 1L); // Gem opgaven via servicelaget
-        List<Task> tasks = taskRepository.findTasksByProjectId(1L); // Hent alle tasks for projektId = 1
+    /**
+     * Tester at oprettelse med ugyldig input (fx tomt navn) redirecter til fejl-side.
+     */
+    @Test
+    @WithMockUser(username = "najib", roles = {"Medarbejder"})
+    void createTask_shouldRedirectToError_whenNameMissing() throws Exception {
+        mockMvc.perform(post("/tasks/create")
+                        .with(csrf())
+                        .param("name", "")
+                        .param("projectId", "1")
+                        .param("subProjectId", "1")
+                        .param("estimatedHours", "5")
+                        .param("hourlyRate", "450")
+                        .param("dueDate", LocalDate.now().plusDays(3).toString()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/tasks/project/1?error=*"));
+    }
 
-        // ----------- ASSERT -----------
-        assertFalse(tasks.isEmpty(), "Listen af opgaver bør ikke være tom");
-        assertTrue(tasks.stream().anyMatch(t -> t.getName().equals("Integration Opgave")),
-                "Opgaven med det forventede navn burde være til stede");
+    /**
+     * Tester at oprettelse fejler med fejlbesked, hvis subprojektet ikke tilhører det angivne projekt.
+     */
+
+    @Test
+    @WithMockUser(username = "najib", roles = {"Medarbejder"})
+    void createTask_shouldRedirectToError_whenSubProjectMismatch() throws Exception {
+        mockMvc.perform(post("/tasks/create")
+                        .with(csrf())
+                        .param("name", "Test")
+                        .param("projectId", "999")
+                        .param("subProjectId", "1")
+                        .param("estimatedHours", "3")
+                        .param("hourlyRate", "400")
+                        .param("dueDate", LocalDate.now().plusDays(2).toString()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/tasks/project/999?error=*"));
     }
 }

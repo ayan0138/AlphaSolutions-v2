@@ -47,18 +47,22 @@ CREATE TABLE Sub_Projects (
     start_date DATE,
     end_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    price DECIMAL(10,2) DEFAULT 0.00,
     FOREIGN KEY (project_id) REFERENCES Projects(project_id)
 );
 
 CREATE TABLE Tasks (
-    task_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    sub_project_id BIGINT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    assigned_to BIGINT,
-    status VARCHAR(100),
-    due_date DATE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (sub_project_id) REFERENCES Sub_Projects(sub_project_id),
-    FOREIGN KEY (assigned_to) REFERENCES Users(user_id)
+task_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+sub_project_id BIGINT NOT NULL,
+name VARCHAR(255) NOT NULL,
+description TEXT,
+assigned_to BIGINT,
+status VARCHAR(100),
+due_date DATE,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+price DECIMAL(10,2) DEFAULT 0.00,
+estimated_hours DOUBLE,
+hourly_rate DOUBLE,
+FOREIGN KEY (sub_project_id) REFERENCES sub_projects(sub_project_id) ON DELETE CASCADE,
+FOREIGN KEY (assigned_to) REFERENCES users(user_id) ON DELETE SET NULL
 );

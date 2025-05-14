@@ -27,19 +27,20 @@ INSERT INTO project_assignments (user_id, project_id, project_role) VALUES
         (3, 2, 'Designer');
 
 -- Indsæt subprojekter
-INSERT INTO sub_projects (project_id, name, description, start_date, end_date) VALUES
+INSERT INTO sub_projects (project_id, name, description, start_date, end_date, price) VALUES
          (1, 'Designfase', 'Design af nye hjemmesidelayouts',
-          '2025-05-01', '2025-05-15'),
+          '2025-05-01', '2025-05-15', 0.00),
         (1, 'Udviklingsfase', 'Kodning og implementering',
-         '2025-05-16', '2025-06-10'),
+         '2025-05-16', '2025-06-10', 0.00),
         (2, 'Kampagnemateriale', 'Udarbejdelse af grafik og tekster',
-         '2025-05-10', '2025-06-01');
+         '2025-05-10', '2025-06-01', 0.00);
 
 -- Indsæt opgaver (Tasks)
-INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date) VALUES
-        (1, 'Layout forslag', 'Lav 3 forskellige layout forslag',
-         3, 'Ikke påbegyndt', '2025-05-05'),
-        (2, 'Implementering', 'Kodning af frontend i HTML/CSS',
-         3, 'I gang', '2025-06-01'),
-        (3, 'Grafik', 'Design af bannere og ikoner',
-         3, 'Afventer', '2025-05-20');
+INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, price, estimated_hours, hourly_rate) VALUES
+(1, 'Layout forslag', 'Lav 3 forskellige layout forslag',
+ 3, 'Ikke påbegyndt', '2025-05-05', 800.00, 10.0, 80.0),
+(2, 'Implementering', 'Kodning af frontend i HTML/CSS',
+ 3, 'I gang', '2025-06-01', 1200.00, 12.0, 100.0),
+(3, 'Grafik', 'Design af bannere og ikoner',
+3, 'Afventer', '2025-05-20', 600.00, 6.0, 100.0);
+
