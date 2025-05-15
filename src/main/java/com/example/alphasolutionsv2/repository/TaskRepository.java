@@ -21,12 +21,12 @@ public class TaskRepository {
 
     // Save a task to the database
     public void save(Task task) {
-        String sql = "INSERT INTO tasks (sub_project_id, project_id, name, description, assigned_to, status, due_date, created_at, estimated_hours, hourly_rate) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; //glemte at implementere project_id i query, derfor den gav out of bound
+        String sql = "INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, " +
+                "created_at, estimated_hours, hourly_rate) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 task.getSubProjectId(),
-                task.getProjectId(),
                 task.getName(),
                 task.getDescription(),
                 task.getAssignedTo(),
@@ -41,15 +41,14 @@ public class TaskRepository {
     // Update an existing task
     public void update(Task task) {
         String sql = """
-                UPDATE tasks 
-                SET sub_project_id = ?,project_id = ?, name = ?, description = ?, assigned_to = ?, 
-                    status = ?, due_date = ?, estimated_hours = ?, hourly_rate = ?
-                WHERE task_id = ?
-            """;
+        UPDATE tasks
+        SET sub_project_id = ?, name = ?, description = ?, assigned_to = ?,
+            status = ?, due_date = ?, estimated_hours = ?, hourly_rate = ?
+        WHERE task_id = ?
+    """;
 
         jdbcTemplate.update(sql,
                 task.getSubProjectId(),
-                task.getProjectId(),
                 task.getName(),
                 task.getDescription(),
                 task.getAssignedTo(),
