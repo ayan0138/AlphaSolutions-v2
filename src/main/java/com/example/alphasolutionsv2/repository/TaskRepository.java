@@ -61,7 +61,7 @@ public class TaskRepository {
         );
     }
 
-    // Get all tasks for a given project with subproject info
+    // Get all tasks for a given project with subproject info.
     public List<Task> findTasksByProjectId(long projectId) {
         String sql = """
                 SELECT t.task_id as taskId, t.sub_project_id as subProjectId, t.name, t.description, 
@@ -86,7 +86,7 @@ public class TaskRepository {
             task.setEstimatedHours(rs.getDouble("estimatedHours"));
             task.setHourlyRate(rs.getDouble("hourlyRate"));
 
-            // Set subproject name if available
+            // Set subproject name if available.
             String subProjectName = rs.getString("subProjectName");
             if (subProjectName != null) {
                 SubProject subProject = new SubProject();
