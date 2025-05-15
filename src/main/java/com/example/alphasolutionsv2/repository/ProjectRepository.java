@@ -2,6 +2,8 @@ package com.example.alphasolutionsv2.repository;
 
 import com.example.alphasolutionsv2.model.Project;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,26 +17,41 @@ public class ProjectRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Save a new project
+    // Gem et nyt projekt
     public void save(Project project) {
-        String sql = "INSERT INTO Projects (name, description, start_date, end_date, created_by) " +
-                "VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                project.getName(),
-                project.getDescription(),
-                project.getStartDate(),
-                project.getEndDate(),
-                project.getCreatedBy().getUserId());
+        String sql = """
+        INSERT INTO Projects (name, description, start_date, end_date, created_by)
+        VALUES (?, ?, ?, ?, ?)
+    """;
 
-        // Get the newly inserted project ID
-        Long projectId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        // Add the creator to the Project_Assignments table automatically
-        if (projectId != null && project.getCreatedBy() != null && project.getCreatedBy().getUserId() != null) {
-            String assignSql = "INSERT INTO Project_Assignments (project_id, user_id, project_role) VALUES (?, ?, 'OWNER')";
-            jdbcTemplate.update(assignSql, projectId, project.getCreatedBy().getUserId());
+        jdbcTemplate.update(connection -> {
+            var ps = connection.prepareStatement(sql, new String[] { "project_id" });
+            ps.setString(1, project.getName());
+            ps.setString(2, project.getDescription());
+            ps.setObject(3, project.getStartDate());
+            ps.setObject(4, project.getEndDate());
+            ps.setLong(5, project.getCreatedBy().getUserId());
+            return ps;
+        }, keyHolder);
+
+        Number key = keyHolder.getKey();
+        if (key != null) {
+            long projectId = key.longValue();
+            project.setProjectId(projectId);
+
+            // Opret automatisk projektassignment
+            if (project.getCreatedBy() != null && project.getCreatedBy().getUserId() != null) {
+                String assignSql = """
+                INSERT INTO Project_Assignments (project_id, user_id, project_role)
+                VALUES (?, ?, 'OWNER')
+            """;
+                jdbcTemplate.update(assignSql, projectId, project.getCreatedBy().getUserId());
+            }
         }
     }
+
 
     // Find all projects created by a specific user
     public List<Project> findProjectsCreatedByUser(Long userId) {

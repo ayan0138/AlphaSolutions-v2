@@ -4,6 +4,8 @@ import com.example.alphasolutionsv2.model.Project;
 import com.example.alphasolutionsv2.model.Role;
 import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.service.ProjectService;
+import com.example.alphasolutionsv2.service.SubProjectService;
+import com.example.alphasolutionsv2.service.TaskService;
 import com.example.alphasolutionsv2.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -47,6 +49,16 @@ class ProjectControllerTest {
         @Bean
         public ProjectService projectService(){
             return Mockito.mock(ProjectService.class);
+        }
+
+        @Bean
+        public TaskService taskService() {
+            return Mockito.mock(TaskService.class);
+        }
+
+        @Bean
+        public SubProjectService subProjectService() {
+            return Mockito.mock(SubProjectService.class);
         }
     }
 

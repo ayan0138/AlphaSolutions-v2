@@ -67,7 +67,7 @@ public class TaskRepository {
                 SELECT t.task_id as taskId, t.sub_project_id as subProjectId, t.name, t.description, 
                        t.assigned_to as assignedTo, t.status, t.due_date as dueDate, t.created_at as createdAt, 
                        t.estimated_hours as estimatedHours, t.hourly_rate as hourlyRate,
-                       sp.name as subProjectName, sp.project_id as 'subProject.projectId'
+                       sp.name as subProjectName, sp.project_id as subProjectProjectId
                 FROM tasks t
                 LEFT JOIN sub_projects sp ON t.sub_project_id = sp.sub_project_id
                 WHERE sp.project_id = ? OR (t.sub_project_id IS NULL AND ? IS NOT NULL)
@@ -92,7 +92,7 @@ public class TaskRepository {
                 SubProject subProject = new SubProject();
                 subProject.setSubProjectId(rs.getLong("subProjectId"));
                 subProject.setName(subProjectName);
-                subProject.setProjectId(rs.getLong("subProject.projectId"));
+                subProject.setProjectId(rs.getLong("subProjectProjectId"));
                 task.setSubProject(subProject);
             }
 
