@@ -188,14 +188,14 @@ public class ProjectController {
 
         project.setCreatedBy(loggedInUser);
 
-        String error = projectService.createProject(project);
-        if (error != null) {
-            redirectAttributes.addFlashAttribute("error", error);
+        try {
+            projectService.createProject(project);
+            redirectAttributes.addFlashAttribute("success", "Projekt oprettet!");
+            return "redirect:/my-projects";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/projects/create";
         }
-
-        redirectAttributes.addFlashAttribute("success", "Projekt oprettet!");
-        return "redirect:/my-projects";
     }
 
     @GetMapping("/projects/{id}/delete")

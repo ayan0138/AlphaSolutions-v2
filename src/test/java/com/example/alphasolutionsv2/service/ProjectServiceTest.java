@@ -16,130 +16,104 @@ class ProjectServiceTest {
     private ProjectRepository projectRepository;
     private ProjectService projectService;
 
+
     @BeforeEach
     void setUp() {
         projectRepository = mock(ProjectRepository.class);
         projectService = new ProjectService(projectRepository);
     }
 
-    // =======================
-    //  NEGATIVE TESTS (fejlhåndtering)
-    // =======================
+    // NEGATIVE TESTS
 
     @Test
-    void testCreateProject_shouldThrowException_whenNameIsNull() {
-        User user = new User();
-        user.setUserId(1L);
+    void testShouldThrow_whenNameIsNull() {
+        Project p = validProject();
+        p.setName(null);
 
-        Project project = new Project();
-        project.setName(null); // null navn
-        project.setStartDate(LocalDate.now());
-        project.setEndDate(LocalDate.now().plusDays(7));
-        project.setCreatedBy(user);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            projectService.createProject(project);
-        });
-
-        assertEquals("Projekt navn er påkrævet", exception.getMessage());
-    }
-
-
-    @Test
-    void testCreateProject_shouldThrowException_whenStartDateMissing() {
-        User user = new User();
-        user.setUserId(1L);
-
-        Project project = new Project();
-        project.setName("Test");
-        project.setStartDate(null); // mangler
-        project.setEndDate(LocalDate.now());
-        project.setCreatedBy(user);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            projectService.createProject(project);
-        });
-
-        assertEquals("Startdato er påkrævet", exception.getMessage());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                projectService.createProject(p)
+        );
+        assertEquals("Projekt navn er påkrævet", ex.getMessage());
     }
 
     @Test
-    void testCreateProject_shouldThrowException_whenEndDateMissing() {
-        User user = new User();
-        user.setUserId(1L);
+    void testShouldThrow_whenStartDateIsNull() {
+        Project p = validProject();
+        p.setStartDate(null);
 
-        Project project = new Project();
-        project.setName("Test");
-        project.setStartDate(LocalDate.now());
-        project.setEndDate(null); // mangler
-        project.setCreatedBy(user);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            projectService.createProject(project);
-        });
-
-        assertEquals("Slutdato er påkrævet", exception.getMessage());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                projectService.createProject(p)
+        );
+        assertEquals("Startdato er påkrævet", ex.getMessage());
     }
-
-    // ========================
-    //  POSITIVE TESTS (OK gyldige scenarier)
-    // ========================
 
     @Test
-    void testCreateProject_shouldThrowException_whenUserIdInvalid() {
-        User user = new User();
-        user.setUserId(0L); // ugyldigt ID
+    void testShouldThrow_whenEndDateIsNull() {
+        Project p = validProject();
+        p.setEndDate(null);
 
-        Project project = new Project();
-        project.setName("Test");
-        project.setStartDate(LocalDate.now());
-        project.setEndDate(LocalDate.now().plusDays(7));
-        project.setCreatedBy(user);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            projectService.createProject(project);
-        });
-
-        assertEquals("Brugerens ID er ugyldigt - oprettelse af projekt afvist", exception.getMessage());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                projectService.createProject(p)
+        );
+        assertEquals("Slutdato er påkrævet", ex.getMessage());
     }
+
+    @Test
+    void testShouldThrow_whenUserMissing() {
+        Project p = validProject();
+        p.setCreatedBy(null);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                projectService.createProject(p)
+        );
+        assertEquals("Projektet skal tilknyttes en gyldig bruger", ex.getMessage());
+    }
+
+    @Test
+    void testShouldThrow_whenUserIdInvalid() {
+        Project p = validProject();
+        User u = new User();
+        u.setUserId(0L);
+        p.setCreatedBy(u);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                projectService.createProject(p)
+        );
+        assertEquals("Projektet skal tilknyttes en gyldig bruger", ex.getMessage());
+    }
+
+    // POSITIVE TESTS
 
     @Test
     void testShouldSetCreatedAt_whenMissing() {
-        User user = new User();
-        user.setUserId(1L);
+        Project p = validProject();
+        p.setCreatedAt(null);
 
-        Project project = new Project();
-        project.setName("Test");
-        project.setStartDate(LocalDate.now());
-        project.setEndDate(LocalDate.now().plusDays(7));
-        project.setCreatedBy(user);
-        project.setCreatedAt(null); // simuler at dato mangler
+        projectService.createProject(p);
 
-        projectService.createProject(project);
-
-        assertNotNull(project.getCreatedAt());
-        verify(projectRepository).save(project);
+        assertNotNull(p.getCreatedAt());
+        verify(projectRepository).save(p);
     }
 
     @Test
-    void testShouldSaveProject_whenAllFieldsValid() {
-        User user = new User();
-        user.setUserId(1L);
+    void testShouldSaveProject_whenValid() {
+        Project p = validProject();
 
-        Project project = new Project();
-        project.setName("Valid Name");
-        project.setStartDate(LocalDate.now());
-        project.setEndDate(LocalDate.now().plusDays(5));
-        project.setCreatedBy(user);
+        projectService.createProject(p);
 
-        projectService.createProject(project);
-
-        verify(projectRepository).save(project);
+        verify(projectRepository).save(p);
     }
 
+    // UTIL
 
-
-
-
-
+    private Project validProject() {
+        Project p = new Project();
+        p.setName("Projekt A");
+        p.setStartDate(LocalDate.now());
+        p.setEndDate(LocalDate.now().plusDays(5));
+        User u = new User();
+        u.setUserId(1L);
+        p.setCreatedBy(u);
+        return p;
+    }
 }

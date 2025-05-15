@@ -40,8 +40,6 @@ public class UserService {
                 .orElse(false);
     }
 
-
-
     // Method to get all users
     public List<User> getAllUsers() {
         return userRepo.findAll();

@@ -15,43 +15,33 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
+    // Create (Opret projekt)
     public ProjectService(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
     }
 
-    // Create (Opret projekt)
-    public String createProject(Project project) {
-        try {
-            if (project.getName() == null || project.getName().isEmpty()) {
-                return "Projekt navn er påkrævet";
-            }
-
-            if (project.getStartDate() == null) {
-                return "Startdato er påkrævet";
-            }
-
-            if (project.getEndDate() == null) {
-                return "Slutdato er påkrævet";
-            }
-
-            if (project.getCreatedBy() == null) {
-                return "Projektet skal tilknyttes en bruger - feltet 'createdBy' mangler";
-            }
-
-            Long userId = project.getCreatedBy().getUserId();
-            if (userId == null || userId <= 0) {
-                return "Brugerens ID er ugyldigt - oprettelse af projekt afvist";
-            }
-
-            if (project.getCreatedAt() == null) {
-                project.setCreatedAt(LocalDateTime.now());
-            }
-
-            projectRepository.save(project);
-            return null; // ingen fejl
-        } catch (Exception e) {
-            return "Fejl ved oprettelse: " + e.getMessage();
+    public void createProject(Project project) {
+        if (project.getName() == null || project.getName().isEmpty()) {
+            throw new IllegalArgumentException("Projekt navn er påkrævet");
         }
+
+        if (project.getStartDate() == null) {
+            throw new IllegalArgumentException("Startdato er påkrævet");
+        }
+
+        if (project.getEndDate() == null) {
+            throw new IllegalArgumentException("Slutdato er påkrævet");
+        }
+
+        if (project.getCreatedBy() == null || project.getCreatedBy().getUserId() == null || project.getCreatedBy().getUserId() <= 0) {
+            throw new IllegalArgumentException("Projektet skal tilknyttes en gyldig bruger");
+        }
+
+        if (project.getCreatedAt() == null) {
+            project.setCreatedAt(LocalDateTime.now());
+        }
+
+        projectRepository.save(project);
     }
 
 
