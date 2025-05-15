@@ -96,7 +96,9 @@ public class ProjectRepository {
                 JOIN Roles r ON u.role_id = r.role_id
                 LEFT JOIN Project_Assignments pa ON p.project_id = pa.project_id
                 WHERE p.created_by = ? OR pa.user_id = ?
-        """;
+                ORDER BY p.start_date ASC, p.end_date ASC
+        
+        """; //ASC i my-project
         return jdbcTemplate.query(sql, new ProjectRowMapper(), userId, userId);
     }
 
@@ -111,6 +113,7 @@ public class ProjectRepository {
                 JOIN Users u ON p.created_by = u.user_id
                 JOIN Roles r ON u.role_id = r.role_id
                 WHERE p.project_id = ?
+                ORDER BY p.start_date ASC, p.end_date ASC
         """;
 
         List<Project> results = jdbcTemplate.query(sql, new ProjectRowMapper(), projectId);
