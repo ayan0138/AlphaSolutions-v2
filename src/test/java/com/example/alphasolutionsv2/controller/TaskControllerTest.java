@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -212,9 +214,10 @@ public class TaskControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/tasks/" + createdTask.getTaskId() + "/delete")
-                        .with(user("marcus").roles("USER")))
+                        .with(user("marcus").roles("USER"))
+                        .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("Delete-task"))
+                .andExpect(view().name("delete-task"))
                 .andExpect(model().attributeExists("task"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }
