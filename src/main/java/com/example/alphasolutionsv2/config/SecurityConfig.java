@@ -1,5 +1,6 @@
 package com.example.alphasolutionsv2.config;
 
+import com.example.alphasolutionsv2.repository.UserRepository;
 import com.example.alphasolutionsv2.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/").permitAll()
+                        .requestMatchers("/", "/frontpage", "/login", "/css/**",
+                                "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -39,12 +42,11 @@ public class SecurityConfig {
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
-                .logout(logout ->
-                        logout.logoutSuccessUrl("/login?logout=true")
-                        .invalidateHttpSession(true)
+                .logout(logout ->  // Task 7.1 En metode til at logge brugeren ud
+                        logout.logoutSuccessUrl("/login?logout=true") //Task 7.4: Redirect til login-siden efter logout
+                        .invalidateHttpSession(true)  //Task 7.3: Lav en metode der afslutter sessionen
                         .deleteCookies("JSESSIONID")
                 );
         return http.build();
     }
-
 }

@@ -331,7 +331,7 @@ public class TaskController {
         model.addAttribute("loggedInUser", loggedInUser);
         model.addAttribute("from", from);
 
-        return "Delete-task";
+        return "delete-task";
     }
 
     @PostMapping("/{taskId}/delete")

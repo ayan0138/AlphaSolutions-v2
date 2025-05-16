@@ -20,7 +20,7 @@ public class LoginController {
         this.userService = userService;
     }
 
-    @GetMapping("/login")
+    @GetMapping("/simpel-login")
     public String showLoginForm(){
         return "login"; // viser Login-html via. Thymeleaf
     }

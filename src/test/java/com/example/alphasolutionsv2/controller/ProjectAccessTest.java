@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -24,7 +25,7 @@ class ProjectAccessTest {
     void testRedirectToLoginWhenNotAuthenticated() throws Exception {
         mockMvc.perform(get("/my-projects"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
     }
 
 
@@ -46,5 +47,14 @@ class ProjectAccessTest {
                 .andExpect(view().name("my-projects"))
                 .andExpect(model().attributeExists("projects"))
                 .andExpect(model().attributeExists("loggedInUser"));
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
+    void testLogoutShouldRedirectAndInvalidateSession() throws Exception {
+        mockMvc.perform(post("/logout"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?logout=true"))
+                .andExpect(cookie().maxAge("JSESSIONID", 0)); // Session-cookie slettes
     }
 }

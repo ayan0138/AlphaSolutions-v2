@@ -15,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Pattern;
 
 @Service
 public class PdfGenerationService {
@@ -28,7 +27,7 @@ public class PdfGenerationService {
         String htmlContent = templateEngine.process(templateName, context);
 
         // Read CSS file from classpath
-        String cssContent = readCssFromClasspath("/static/css/style.css");
+        String cssContent = readCssFromClasspath("/static/style.css");
 
         // Clean CSS to remove properties that cause warnings
         String cleanedCss = cleanCssForPdf(cssContent);
