@@ -1,9 +1,8 @@
-package com.example.alphasolutionsv2.controller;
+package com.example.alphasolutionsv2.service;
 
 import com.example.alphasolutionsv2.model.Role;
 import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.repository.UserRepository;
-import com.example.alphasolutionsv2.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
