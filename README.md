@@ -4,3 +4,5 @@
 ### Velkommen til Calcura!📈
 
 ##### Dette er et projektkalkulationsværktøj, som er blevet udarbejdet af 2. semester studerende på KEA. Vi har udviklet et kalkulationsværktøj, til virksomheden Alpha Solutions, hvor vores formål har været at kunne bearbejde et letanvendeligt og effektivt kalkulationsværktøj.
+
+### ARBEJDES VIDERE PÅ.....
