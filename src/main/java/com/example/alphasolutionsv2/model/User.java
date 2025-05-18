@@ -8,7 +8,7 @@ public class User {
     private Role role;  // Changed from String to Role object
 
     public User() {
-        // Default constructor
+        // Default constructor – nødvendig for binding i Thymeleaf
     }
 
     public User(Long userId, String username, String email, String password, Role role) {
@@ -59,7 +59,7 @@ public class User {
         this.role = role;
     }
 
-    // Add toString method to provide a nice string representation
+    // Brugervenlig visning (f.eks. til dropdowns eller lister)
     @Override
     public String toString() {
         return username + " (" + (role != null ? role.getRoleName() : "Ingen rolle") + ")";

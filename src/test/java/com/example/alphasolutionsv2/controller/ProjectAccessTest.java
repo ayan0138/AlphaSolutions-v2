@@ -25,7 +25,7 @@ class ProjectAccessTest {
     void testRedirectToLoginWhenNotAuthenticated() throws Exception {
         mockMvc.perform(get("/my-projects"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login"));
+                .andExpect(redirectedUrlPattern("**/login"));
     }
 
 

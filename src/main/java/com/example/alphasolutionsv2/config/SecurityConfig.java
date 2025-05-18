@@ -33,7 +33,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/frontpage", "/login", "/css/**",
                                 "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/**").permitAll()
+
+                        // Kun administratorer må tilgå alt under /admin/**
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // Alt andet kræver login
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

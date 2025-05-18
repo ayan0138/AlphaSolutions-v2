@@ -5,13 +5,13 @@ import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 class UserServiceTest {
@@ -27,12 +27,41 @@ class UserServiceTest {
     }
 
     @Test
+    void createUser_shouldHashPasswordAndSaveUser() {
+        // Arrange
+        Role role = new Role(3L, "MEDARBEJDER");
+        User user = new User(null, "testuser", "test@example.com", "plaintext123", role);
+
+        // 👉 MOCK før createUser kaldes
+        when(passwordEncoder.encode("plaintext123")).thenReturn("hashed123");
+        when(passwordEncoder.matches("plaintext123", "hashed123")).thenReturn(true);
+
+        // Act
+        userService.createUser(user);
+
+        // Assert
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository, times(1)).createUser(userCaptor.capture());
+
+        User savedUser = userCaptor.getValue();
+
+        assertEquals("testuser", savedUser.getUsername());
+        assertEquals("test@example.com", savedUser.getEmail());
+        assertEquals("MEDARBEJDER", savedUser.getRole().getRoleName());
+
+        // Nu giver det mening
+        assertEquals("hashed123", savedUser.getPassword());
+        assertTrue(passwordEncoder.matches("plaintext123", savedUser.getPassword()));
+    }
+
+
+    @Test
     void authenticate_returnsUser_whenCredentialsAreValid() {
         String username = "testuser";
         String rawPassword = "password123";
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        Role role = new Role(1L, "Admin");
+        Role role = new Role(1L, "ADMIN");
         User mockUser = new User(1L, username, "test@example.com", encodedPassword, role);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));

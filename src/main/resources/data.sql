@@ -1,8 +1,8 @@
 -- Indsæt roller
 INSERT INTO roles (role_name) VALUES
-        ('Admin'),
-        ('Projektleder'),
-        ('Medarbejder');
+        ('ADMIN'),
+        ('PROJEKTLEDER'),
+        ('MEDARBEJDER');
 
 -- Indsæt brugere (med BCrypt-hashede adgangskoder – udskift evt. med egne)
 INSERT INTO users (username, email, password, role_id) VALUES

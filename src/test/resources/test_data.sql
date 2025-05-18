@@ -2,7 +2,7 @@
 
 -- Roller
 INSERT INTO Roles (role_name) VALUES
-('Admin'), ('Projektleder'), ('Medarbejder');
+('ADMIN'), ('PROJEKTLEDER'), ('MEDARBEJDER');
 
 -- Brugere (med hashed adgangskoder)
 INSERT INTO Users (username, email, password, role_id) VALUES
