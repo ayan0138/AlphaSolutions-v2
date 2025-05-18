@@ -3,22 +3,22 @@
 
 -- ========== SCHEMA ==========
 
-CREATE TABLE Roles (
+CREATE TABLE roles (
     role_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     role_name VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE Users (
+CREATE TABLE users (
     user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (role_id) REFERENCES Roles(role_id)
+    FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
-CREATE TABLE Projects (
+CREATE TABLE projects (
     project_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -26,20 +26,20 @@ CREATE TABLE Projects (
     end_date DATE,
     created_by BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES Users(user_id)
+    FOREIGN KEY (created_by) REFERENCES users(user_id)
 );
 
-CREATE TABLE Project_Assignments (
+CREATE TABLE project_assignments (
     assignment_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
     project_id BIGINT NOT NULL,
     project_role VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (project_id) REFERENCES Projects(project_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (project_id) REFERENCES projects(project_id)
 );
 
-CREATE TABLE Sub_Projects (
+CREATE TABLE sub_projects (
     sub_project_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     project_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -48,10 +48,10 @@ CREATE TABLE Sub_Projects (
     end_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     price DECIMAL(10,2) DEFAULT 0.00,
-    FOREIGN KEY (project_id) REFERENCES Projects(project_id)
+    FOREIGN KEY (project_id) REFERENCES projects(project_id)
 );
 
-CREATE TABLE Tasks (
+CREATE TABLE tasks (
 task_id BIGINT PRIMARY KEY AUTO_INCREMENT,
 sub_project_id BIGINT NOT NULL,
 name VARCHAR(255) NOT NULL,

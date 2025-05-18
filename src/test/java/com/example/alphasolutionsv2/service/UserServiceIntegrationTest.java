@@ -1,11 +1,14 @@
 package com.example.alphasolutionsv2.service;
 
+import com.example.alphasolutionsv2.config.SecurityConfig;
 import com.example.alphasolutionsv2.model.Role;
 import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +19,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Import(SecurityConfig.class)
 @Transactional  // Sikrer at testdata rulles tilbage efter testen
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class UserServiceIntegrationTest {
+
 
     @Autowired
     private UserService userService;
