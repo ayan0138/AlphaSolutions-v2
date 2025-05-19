@@ -124,6 +124,7 @@
               <th>Navn</th>
               <th>Beskrivelse</th>
               <th>Status</th>
+              <th>Tildelt til</th>
               <th>Deadline</th>
               <th>Estimeret tid</th>
               <th>Timepris</th>
@@ -151,13 +152,31 @@
                                    (task.status == 'COMPLETED' ? 'Færdig' :
                                    (task.status == 'ON_HOLD' ? 'På pause' : task.status)))}">Status</span>
               </td>
+              <td>
+                <span th:if="${task.assignedUser != null}" th:text="${task.assignedUser.username}"></span>
+                <span th:unless="${task.assignedUser != null}" class="text-muted">Ikke tildelt</span>
+              </td>
               <td th:text="${task.dueDate}"></td>
               <td th:text="${task.estimatedHours} + ' timer'"></td>
               <td th:text="${task.hourlyRate} + ' DKK/time'"></td>
+              <!-- Erstat den eksisterende "Handlinger" celle i tabellen med dette: -->
               <td>
                 <div class="btn-group">
                   <a th:href="@{'/tasks/edit/' + ${task.taskId}}" class="btn btn-sm btn-warning">
                     Redigér
+                  </a>
+
+                  <!-- Ny Tildel-knap kun synlig for admin og projektledere -->
+                  <a th:if="${loggedInUser.role.roleName == 'Admin' || loggedInUser.role.roleName == 'Projektleder'}"
+                     th:href="@{/tasks/{id}/assign(id=${task.taskId})}"
+                     class="btn btn-sm btn-outline-primary">
+                    <span th:if="${task.assignedUser == null}">Tildel</span>
+                    <span th:unless="${task.assignedUser == null}">Skift tildeling</span>
+                  </a>
+
+                  <!-- Slet-knap -->
+                  <a th:href="@{/tasks/{id}/delete(id=${task.taskId})}" class="btn btn-sm btn-danger">
+                    Slet
                   </a>
                 </div>
               </td>

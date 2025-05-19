@@ -3,6 +3,7 @@ package com.example.alphasolutionsv2.controller;
 import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.service.RoleService;
 import com.example.alphasolutionsv2.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +25,7 @@ public class UserController {
     }
 
     // Vis formularen
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/admin/create-user")
     public String showCreateUserForm(Model model) {
         model.addAttribute("user",  new User());
@@ -32,6 +34,7 @@ public class UserController {
     }
 
     // Modtag POST fra formular
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/admin/create-user")
     public String createUser(@ModelAttribute("user") User user, Model model) {
         try {
@@ -43,7 +46,7 @@ public class UserController {
         }
         return "redirect:/admin/users?success";
     }
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/admin/users")
     public String showAllUsers(Model model, @RequestParam(required = false) String success) {
         model.addAttribute("users", userService.getAllUsers());

@@ -73,3 +73,4 @@ CREATE TABLE IF NOT EXISTS tasks (
     FOREIGN KEY (sub_project_id) REFERENCES sub_projects(sub_project_id) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users(user_id) ON DELETE SET NULL
 );
+

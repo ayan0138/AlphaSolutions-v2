@@ -2,6 +2,7 @@
 package com.example.alphasolutionsv2.repository;
 
 import com.example.alphasolutionsv2.model.User;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -92,5 +93,14 @@ public class UserRepository {
                 user.getRole().getRoleId(),
                 user.getUserId() // korrekt primærnøgle
         );
+    }
+    public List<User> findByRoleName(String roleName) {
+        String sql = "SELECT u.*, r.role_id, r.role_name FROM users u " +
+                "JOIN roles r ON u.role_id = r.role_id " +
+                "WHERE r.role_name = ?";
+
+        return jdbcTemplate.query(sql,
+                new BeanPropertyRowMapper<>(User.class),
+                roleName);
     }
 }

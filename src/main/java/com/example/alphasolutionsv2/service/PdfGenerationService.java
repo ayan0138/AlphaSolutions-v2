@@ -27,7 +27,7 @@ public class PdfGenerationService {
         String htmlContent = templateEngine.process(templateName, context);
 
         // Read CSS file from classpath
-        String cssContent = readCssFromClasspath("/static/style.css");
+        String cssContent = readCssFromClasspath("/static/css/style.css");
 
         // Clean CSS to remove properties that cause warnings
         String cleanedCss = cleanCssForPdf(cssContent);

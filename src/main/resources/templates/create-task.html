@@ -13,8 +13,7 @@
         Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
     </div>
 
-    <h1 class="mb-4">Opret Opgave</h1>
-
+    <a th:href="@{/tasks/project/{id}/create(id=${projectId})}" class="btn btn-primary">Opret Opgave</a>
     <!-- Error message display -->
     <div th:if="${error}" class="alert alert-danger">
         <span th:text="${error}"></span>

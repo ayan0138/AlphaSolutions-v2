@@ -1,19 +1,16 @@
 package com.example.alphasolutionsv2.config;
-
-import com.example.alphasolutionsv2.repository.UserRepository;
-import com.example.alphasolutionsv2.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @EnableWebSecurity
+@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
@@ -21,6 +18,7 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
@@ -31,13 +29,25 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/frontpage", "/login", "/css/**",
-                                "/js/**", "/images/**").permitAll()
+                        // Offentlige ressourcer
+                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/frontpage", "/").permitAll()
 
-                        // Kun administratorer må tilgå alt under /admin/**
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // Admin-kun ressourcer - KUN hasAuthority overalt
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 
-                        // Alt andet kræver login
+                        // Projektleder og Admin kan oprette og slette projekter/subprojekter/opgaver
+                        .requestMatchers("/projects/create", "/projects/*/subprojects/create")
+                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_PROJEKTLEDER")
+                        .requestMatchers("/tasks/create", "/tasks/project/*/create")
+                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_PROJEKTLEDER")
+                        .requestMatchers("/tasks/*/delete", "/projects/*/delete")
+                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_PROJEKTLEDER")
+
+                        // Projektleder og Admin kan tildele opgaver
+                        .requestMatchers("/tasks/*/assign")
+                        .hasAnyAuthority("ROLE_ADMIN", "ROLE_PROJEKTLEDER")
+
+                        // Alle andre kræver authentication
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -46,10 +56,10 @@ public class SecurityConfig {
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
-                .logout(logout ->  // Task 7.1 En metode til at logge brugeren ud
-                        logout.logoutSuccessUrl("/login?logout=true") //Task 7.4: Redirect til login-siden efter logout
-                        .invalidateHttpSession(true)  //Task 7.3: Lav en metode der afslutter sessionen
-                        .deleteCookies("JSESSIONID")
+                .logout(logout ->
+                        logout.logoutSuccessUrl("/login?logout=true")
+                                .invalidateHttpSession(true)
+                                .deleteCookies("JSESSIONID")
                 );
         return http.build();
     }

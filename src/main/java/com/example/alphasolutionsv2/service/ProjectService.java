@@ -55,12 +55,12 @@ public class ProjectService {
     }
 
     public Optional<Project> getProjectById(Long projectId) {
-        if( projectId == null || projectId <= 0) {
-            throw new IllegalArgumentException("Ugyldig projekt-ID");
+        if (projectId == null || projectId <= 0) {
+            // Returnér et tomt Optional i stedet for at kaste en exception
+            return Optional.empty();
         }
         return projectRepository.findById(projectId);
     }
-
     public boolean userCanViewProject(Long userId, Long projectId) {
         Optional<Project> projectOptional = projectRepository.findById(projectId);
         if (projectOptional.isEmpty()) {
