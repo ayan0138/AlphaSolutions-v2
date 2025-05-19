@@ -58,6 +58,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'AlphaSolutions-v2'
+          app-name: 'AlphaSolution-Gruppe3'
           slot-name: 'Production'
           package: java-app/*.jar
