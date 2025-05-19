@@ -14,13 +14,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+
+
 import org.springframework.security.test.context.support.WithMockUser;
+
 import org.springframework.test.web.servlet.MockMvc;
+
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,13 +65,14 @@ class ProjectControllerTest {
         public SubProjectService subProjectService() {
             return Mockito.mock(SubProjectService.class);
         }
+
     }
 
     @Test
-    @WithMockUser(username = "najib", roles = {"Medarbejder"})
+    @WithMockUser(username = "najib", roles = {"MEDARBEJDER"})
     void testShouldReturnProjectList_whenUserIsAuthenticated() throws Exception {
         // Arrange - mock bruger
-        Role medarbejder = new Role("Medarbejder");
+        Role medarbejder = new Role("MEDARBEJDER");
         User fakeUser = new User(3L,"najib", "najib@firma.dk", "hashed",  medarbejder);
 
         when(userService.getUserByUsername("najib")).thenReturn(Optional.of(fakeUser));
@@ -83,10 +89,10 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "najib", roles = {"Medarbejder"})
+    @WithMockUser(username = "najib", roles = {"MEDARBEJDER"})
     void testShouldShowProjectDetails_whenUserHasAccess() throws Exception {
         // Arrange
-        Role role = new Role("Medarbejder");
+        Role role = new Role("MEDARBEJDER");
         User user = new User(3L, "najib", "najib@firma.dk", "hashed", role);
 
         Project project = new Project();
@@ -108,9 +114,9 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "najib", roles = {"Medarbejder"})
+    @WithMockUser(username = "najib", roles = {"MEDARBEJDER"})
     void testShouldRedirect_whenProjectNotFound() throws Exception {
-        Role role = new Role("Medarbejder");
+        Role role = new Role("MEDARBEJDER");
         User user = new User(3L, "najib", "najib@firma.dk", "hashed", role);
 
         when(userService.getUserByUsername("najib")).thenReturn(Optional.of(user));
@@ -122,9 +128,9 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "najib", roles = {"Medarbejder"})
+    @WithMockUser(username = "najib", roles = {"MEDARBEJDER"})
     void testShouldRedirect_whenUserHasNoAccessToProject() throws Exception {
-        Role role = new Role("Medarbejder");
+        Role role = new Role("MEDARBEJDER");
         User user = new User(3L, "najib", "najib@firma.dk", "hashed", role);
 
         User creator = new User(2L, "marcus", "marcus@firma.dk", "hashed", new Role("Projektleder"));
@@ -143,9 +149,9 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "najib", roles = {"Admin"})
+    @WithMockUser(username = "najib", roles = {"ADMIN"})
     void testShouldShowEditForm_whenUserHasPermission() throws Exception {
-        Role role = new Role("Admin");
+        Role role = new Role("ADMIN");
         User user = new User(1L, "najib", "najib@firma.dk", "hashed", role);
 
         Project project = new Project();
@@ -165,9 +171,9 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "najib", roles = {"Medarbejder"})
+    @WithMockUser(username = "najib", roles = {"MEDARBEJDER"})
     void testShouldRedirect_whenUserCannotEditProject() throws Exception {
-        Role role = new Role("Medarbejder");
+        Role role = new Role("MEDARBEJDER");
         User user = new User(3L, "najib", "najib@firma.dk", "hashed", role);
 
         User creator = new User(1L, "admin", "admin@example.com", "hashed", new Role("Admin"));
@@ -186,9 +192,9 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "najib", roles = {"Admin"})
+    @WithMockUser(username = "najib", roles = {"ADMIN"})
     void testShouldUpdateProjectAndRedirect_whenValidInputAndPermission() throws Exception {
-        Role role = new Role("Admin");
+        Role role = new Role("ADMIN");
         User user = new User(1L, "najib", "najib@firma.dk", "hashed", role);
 
         Project project = new Project();
@@ -199,7 +205,7 @@ class ProjectControllerTest {
         when(userService.getUserByUsername("najib")).thenReturn(Optional.of(user));
         when(projectService.getProjectById(10L)).thenReturn(Optional.of(project));
         when(projectService.userCanEditProject(user, project)).thenReturn(true);
-        when(projectService.updateProjectDetails(Mockito.any(), Mockito.anyString(),
+        when(projectService.updateProjectDetails(any(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(null); // ingen fejl = succes
 
@@ -213,9 +219,9 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "najib", roles = {"Admin"})
+    @WithMockUser(username = "najib", roles = {"ADMIN"})
     void testShouldReturnToForm_whenUpdateFails() throws Exception {
-        Role role = new Role("Admin");
+        Role role = new Role("ADMIN");
         User user = new User(1L, "najib", "najib@firma.dk", "hashed", role);
 
         Project project = new Project();
@@ -226,7 +232,7 @@ class ProjectControllerTest {
         when(userService.getUserByUsername("najib")).thenReturn(Optional.of(user));
         when(projectService.getProjectById(11L)).thenReturn(Optional.of(project));
         when(projectService.userCanEditProject(user, project)).thenReturn(true);
-        when(projectService.updateProjectDetails(Mockito.any(), Mockito.anyString(),
+        when(projectService.updateProjectDetails(any(), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("Ugyldige datoer");
 
@@ -243,9 +249,9 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"Admin"})
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testShouldShowProjectDetails_whenUserIsAdmin() throws Exception {
-        Role adminRole = new Role("Admin");
+        Role adminRole = new Role("ADMIN");
         User admin = new User(1L, "admin", "admin@example.com", "hashed", adminRole);
 
         Project fakeProject = new Project();
@@ -265,9 +271,9 @@ class ProjectControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "marcus", roles = {"Projektleder"})
+    @WithMockUser(username = "marcus", roles = {"PROJEKTLEDER"})
     void testShouldReturnToEditForm_whenDateParsingFails() throws Exception {
-        Role role = new Role("Projektleder");
+        Role role = new Role("PROJEKTLEDER");
         User user = new User(2L, "marcus", "marcus@firma.dk", "hashed", role);
         Project project = new Project();
         project.setProjectId(5L);
@@ -276,8 +282,8 @@ class ProjectControllerTest {
         when(userService.getUserByUsername("marcus")).thenReturn(Optional.of(user));
         when(projectService.getProjectById(5L)).thenReturn(Optional.of(project));
         when(projectService.userCanEditProject(user, project)).thenReturn(true);
-        when(projectService.updateProjectDetails(Mockito.any(),
-                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        when(projectService.updateProjectDetails(any(),
+                any(), any(), any(), any()))
                 .thenReturn("Ugyldig datoformat");
 
         mockMvc.perform(post("/projects/5/edit")
@@ -288,5 +294,74 @@ class ProjectControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("edit-project"))
                 .andExpect(model().attributeExists("error"));
+    }
+    @Test
+    @WithMockUser(username = "testuser", roles = {"PROJEKTLEDER"})
+    void showCreateProjectForm_shouldReturnFormWithMode() throws Exception{
+        Role role = new Role("PROJEKTLEDER");
+        User user = new User(1L, "testuser", "mail@test.dk", "hashed", role);
+        when(userService.getUserByUsername("testuser")).thenReturn(Optional.of(user));
+
+        mockMvc.perform(get("/projects/create"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("create-project"))
+                .andExpect(model().attributeExists("project"))
+                .andExpect(model().attribute("loggedInUser", user));
+    }
+    @Test
+    @WithMockUser(username = "testuser", roles = {"PROJEKTLEDER"})
+    void createProject_shouldRedirectToMyProjectsOnSuccess() throws Exception{
+        Role role = new Role("PROJEKTLEDER");
+        User user = new User(1L, "testuser", "mail@test.dk", "hashed", role);
+        when(userService.getUserByUsername("testuser")).thenReturn(Optional.of(user));
+        doNothing().when(projectService).createProject(any(Project.class));
+
+        mockMvc.perform(post("/projects/create")
+                .param("name", "Projekt x")
+                .param("description", "Beskrivelse"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/my-projects"))
+                .andExpect(flash().attribute("success", "Projekt oprettet!"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = {"PROJEKTLEDER"})
+    void createProject_shouldRedirectBackOnError() throws Exception {
+        Role role = new Role("PROJEKTLEDER");
+        User user = new User(1L, "testuser", "mail@test.dk", "hashed", role);
+
+        when(userService.getUserByUsername("testuser")).thenReturn(Optional.of(user));
+        doThrow(new IllegalArgumentException("Noget gik galt"))
+                .when(projectService).createProject(any(Project.class));
+
+        mockMvc.perform(post("/projects/create")
+                        .param("name", "Projekt X")
+                        .param("description", "Fejl test"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/projects/create"))
+                .andExpect(flash().attribute("error", "Noget gik galt"));
+    }
+
+    @Test
+    @WithMockUser(username = "najib", roles = {"ADMIN"})
+    void showEditForm_shouldReturnEditViewWithProject() throws Exception {
+        Role role = new Role("ADMIN");
+        User user = new User(3L, "najib", "najib@firma.dk", "hashed", role);
+
+        Project project = new Project();
+        project.setProjectId(3L);
+        project.setName("Testprojekt");
+        project.setCreatedBy(user);
+
+        when(userService.getUserByUsername("najib")).thenReturn(Optional.of(user));
+        when(projectService.getProjectById(3L)).thenReturn(Optional.of(project));
+        when(projectService.userCanEditProject(user, project)).thenReturn(true);
+
+        mockMvc.perform(get("/projects/3/edit"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("edit-project"))
+                .andExpect(model().attributeExists("project"))
+                .andExpect(model().attributeExists("loggedInUser"));
     }
 }

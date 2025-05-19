@@ -149,6 +149,7 @@ class ReportControllerTest {
         mockMvc.perform(get("/reports/project/1"))
                 .andExpect(status().is3xxRedirection());
     }
+
     @TestConfiguration
     static class MockConfig {
         @Bean
