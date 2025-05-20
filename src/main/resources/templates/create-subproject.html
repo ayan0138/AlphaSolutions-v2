@@ -8,19 +8,19 @@
 </head>
 <body>
 <div class="container mt-4">
-  <!-- Display the logged-in user information -->
+  <!-- Vis oplysninger om den indloggede bruger -->
   <div class="alert alert-info" th:if="${loggedInUser != null}">
     Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
   </div>
 
   <h1 class="mb-4">Opret Subprojekt</h1>
 
-  <!-- Show which project we're creating a subproject for -->
+  <!-- Vis hvilket projekt vi opretter et subprojekt for -->
   <div th:if="${project != null}" class="alert alert-info">
     Opretter subprojekt for: <strong th:text="${project.name}">Projektnavn</strong>
   </div>
 
-  <!-- Error message display -->
+  <!-- Visning af fejlmeddelser -->
   <div th:if="${error}" class="alert alert-danger">
     <span th:text="${error}"></span>
   </div>

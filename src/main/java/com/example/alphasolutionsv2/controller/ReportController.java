@@ -44,7 +44,7 @@ public class ReportController {
                                         Model model,
                                         RedirectAttributes redirectAttributes) {
         try {
-            // Get the logged-in user
+            // Hent den indloggede bruger
             User loggedInUser = userService.getUserByUsername(userDetails.getUsername())
                     .orElse(null);
 
@@ -52,10 +52,10 @@ public class ReportController {
                 return "redirect:/login";
             }
 
-            // Generate the report
+            // Generer rapporten
             ProjectReport report = reportService.generateProjectReport(projectId, loggedInUser);
 
-            // Add data to model for the view
+            // Tilføj data til modellen for visning
             model.addAttribute("report", report);
             model.addAttribute("loggedInUser", loggedInUser);
 
@@ -79,7 +79,7 @@ public class ReportController {
                                          HttpServletResponse response,
                                          RedirectAttributes redirectAttributes) {
         try {
-            // Get the logged-in user
+            // Hent den ind loggede bruger
             User loggedInUser = userService.getUserByUsername(userDetails.getUsername())
                     .orElse(null);
 
@@ -88,18 +88,18 @@ public class ReportController {
                 return;
             }
 
-            // Generate the report
+            // Generer rapporten
             ProjectReport report = reportService.generateProjectReport(projectId, loggedInUser);
 
-            // Create Thymeleaf context
+            // Opret Thymeleaf kontekst
             Context context = new Context();
             context.setVariable("report", report);
             context.setVariable("loggedInUser", loggedInUser);
 
-            // Generate PDF using the PDF template
+            // Generer PDF ved hjælp af PDF skabelonen
             byte[] pdfBytes = pdfGenerationService.generatePdfFromTemplate("project-report-pdf", context);
 
-            // Set response headers for PDF download
+            // Angiv respons-headere for PDF download
             String filename = "projekt-rapport-" +
                     report.getProject().getName().replaceAll("[^a-zA-Z0-9\\-_]", "-") +
                     ".pdf";
@@ -108,7 +108,7 @@ public class ReportController {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
             response.setHeader("Content-Length", String.valueOf(pdfBytes.length));
 
-            // Write PDF to response
+            // Skirv pdf til respons
             response.getOutputStream().write(pdfBytes);
             response.getOutputStream().flush();
 

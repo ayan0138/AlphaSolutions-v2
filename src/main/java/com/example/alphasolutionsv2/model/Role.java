@@ -5,7 +5,7 @@ public class Role {
     private String roleName;
 
     public Role() {
-        // Default constructor
+        // Standard kunstruktør
     }
 
     public Role(long roleId, String roleName) {

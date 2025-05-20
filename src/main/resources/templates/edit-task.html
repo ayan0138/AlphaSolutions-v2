@@ -9,19 +9,19 @@
     <link rel="stylesheet" th:href="@{/style.css}"></head>
 <body>
 <div class="container mt-4">
-    <!-- Display the logged-in user information -->
+    <!-- Vis oplysninger om den indloggede bruger -->
     <div class="alert alert-info" th:if="${loggedInUser != null}">
         Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
     </div>
 
     <h1 class="mb-4">Redigér Opgave</h1>
 
-    <!-- Error message display -->
+    <!-- Visning af fejlmeddelser -->
     <div th:if="${error}" class="alert alert-danger">
         <span th:text="${error}"></span>
     </div>
 
-    <!-- Show which project this task belongs to -->
+    <!-- Vis hvilket projekt denne task tilhører -->
     <div th:if="${project != null}" class="alert alert-info">
         Redigerer opgave for projektet: <strong th:text="${project.name}">Projektnavn</strong>
     </div>
@@ -67,7 +67,7 @@
             </select>
         </div>
 
-        <!-- Subproject selection - Optional based on availability -->
+        <!-- Valg af subprojekter - valgffrit afhængigt af tilgængelighed -->
         <div th:if="${subProjects != null and #lists.size(subProjects) > 0}" class="mb-3">
             <label for="subProjectId" class="form-label">Subprojekt:</label>
             <select id="subProjectId" th:field="*{subProjectId}" class="form-select" required>
@@ -79,10 +79,10 @@
             </select>
         </div>
 
-        <!-- Keep subproject ID if no dropdown is available -->
+        <!-- Behold subprojekt-ID, hvis der ikke er nogen dropdown tilgængelig -->
         <input type="hidden" th:field="*{subProjectId}" th:if="${subProjects == null or #lists.isEmpty(subProjects)}">
 
-        <!-- Message if no subprojects exist -->
+        <!-- Besked, hvis der ikke findes nogen subprojekter -->
         <div th:if="${subProjects == null or #lists.isEmpty(subProjects)}" class="alert alert-warning">
             <strong>Bemærk:</strong> Dette projekt har ingen subprojekter.
         </div>

@@ -45,7 +45,7 @@ public class Task {
         this.hourlyRate = hourlyRate;
     }
 
-    // All getters and setters
+    // Alle getters og setters
     public long getTaskId() {
         return taskId;
     }

@@ -44,7 +44,7 @@ public class TaskController {
         this.userService = userService;
     }
 
-    // ============= HELPER METHODS =============
+    // ============= HJÆLPE-METODER =============
 
     private User loadUser(UserDetails userDetails) {
         if (userDetails == null) return null;
@@ -59,20 +59,20 @@ public class TaskController {
         model.addAttribute("task", task);
         model.addAttribute("loggedInUser", loggedInUser);
 
-        // Add projects if projectId is not set
+        // Tilføj projekter hvis projectId ikke er angivet
         if (task.getProjectId() == null) {
             List<Project> projects = projectService.getProjectsByUserId(loggedInUser.getUserId());
             model.addAttribute("projects", projects);
         } else {
-            // Add subprojects for the specific project
+            // Tilføj subprojekter for det specifikke projekt
             List<SubProject> subProjects = subProjectService.getSubProjectsByProjectId(task.getProjectId());
             model.addAttribute("subProjects", subProjects);
 
-            // Add project details
+            // Tilføj projekt detaljer
             Optional<Project> projectOpt = projectService.getProjectById(task.getProjectId());
             projectOpt.ifPresent(project -> model.addAttribute("project", project));
 
-            // Add selected subproject details if available
+            // Tilføj valgte subprojekter hvis tilgengelige
             if (task.getSubProjectId() != null) {
                 SubProject selectedSubProject = subProjectService.getSubProjectById(task.getSubProjectId());
                 if (selectedSubProject != null) {
@@ -93,7 +93,7 @@ public class TaskController {
         }
     }
 
-    // ============= VIEW METHODS =============
+    // ============= VISNINGS-METODER =============
 
     @GetMapping("")
     public String showAllTasks(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -146,7 +146,7 @@ public class TaskController {
         return "subproject-tasks";
     }
 
-    // ============= CREATE METHODS =============
+    // ============= OPRET-METODER =============
 
     @GetMapping("/create")
     public String showCreateTaskForm(@RequestParam(required = false) Long projectId,
@@ -193,7 +193,7 @@ public class TaskController {
         if (redirect != null) return redirect;
 
         try {
-            // Set default values
+            // Angiv standardværdier
             task.setCreatedAt(LocalDateTime.now());
             if (task.getStatus() == null || task.getStatus().isEmpty()) {
                 task.setStatus("PENDING");
@@ -201,7 +201,7 @@ public class TaskController {
 
             taskService.createTask(task);
 
-            // Redirect based on context
+            // Redirect baseret på kontekst
             if (task.getProjectId() != null) {
                 return "redirect:/tasks/project/" + task.getProjectId();
             } else {
@@ -214,7 +214,7 @@ public class TaskController {
         }
     }
 
-    // ============= EDIT METHODS =============
+    // ============= REDIGER-METODER =============
 
     @GetMapping("/edit/{taskId}")
     public String showEditTaskForm(@PathVariable long taskId,
@@ -230,14 +230,14 @@ public class TaskController {
             return "redirect:/tasks";
         }
 
-        // Ensure project ID is set
+        // Sørg for projectId er angivet
         Long projectId = task.getProjectId();
         if (projectId == null && task.getSubProjectId() != null) {
             projectId = subProjectService.getProjectIdBySubProjectId(task.getSubProjectId());
             task.setProjectId(projectId);
         }
 
-        // Load current subproject info
+        // indlæs oplysninger om det aktuelle subprojekt
         if (task.getSubProjectId() != null) {
             SubProject currentSubProject = subProjectService.getSubProjectById(task.getSubProjectId());
             task.setSubProject(currentSubProject);
@@ -246,7 +246,7 @@ public class TaskController {
         model.addAttribute("task", task);
         model.addAttribute("loggedInUser", loggedInUser);
 
-        // Add subprojects and project info
+        // tilføj subproject og projetk info
         if (projectId != null) {
             List<SubProject> subProjects = subProjectService.getSubProjectsByProjectId(projectId);
             model.addAttribute("subProjects", subProjects);
@@ -271,7 +271,7 @@ public class TaskController {
             task.setTaskId(taskId);
             taskService.updateTask(task);
 
-            // Redirect based on context
+            // Redirect baseret på kontekst
             if (task.getProjectId() != null) {
                 return "redirect:/tasks/project/" + task.getProjectId();
             } else {
@@ -282,7 +282,7 @@ public class TaskController {
             model.addAttribute("task", task);
             model.addAttribute("loggedInUser", loggedInUser);
 
-            // Re-populate form data
+            // Genudfyld formularens data
             if (task.getProjectId() != null) {
                 List<SubProject> subProjects = subProjectService.getSubProjectsByProjectId(task.getProjectId());
                 model.addAttribute("subProjects", subProjects);
@@ -292,7 +292,7 @@ public class TaskController {
         }
     }
 
-    // ============= DELETE METHODS =============
+    // ============= SLETTE-METODER =============
 
     @GetMapping("/{taskId}/delete")
     public String showDeleteTaskConfirmation(@PathVariable long taskId,
@@ -308,20 +308,20 @@ public class TaskController {
             return "redirect:/my-projects?error=Opgave+ikke+fundet";
         }
 
-        // Ensure project ID is set
+        // Sørger for projectId er angivet
         Long projectId = task.getProjectId();
         if (projectId == null && task.getSubProjectId() != null) {
             projectId = subProjectService.getProjectIdBySubProjectId(task.getSubProjectId());
             task.setProjectId(projectId);
         }
 
-        // Load subproject info
+        // indlæs subprojekt oplysninger
         if (task.getSubProjectId() != null) {
             SubProject subProject = subProjectService.getSubProjectById(task.getSubProjectId());
             task.setSubProject(subProject);
         }
 
-        // Add project for display
+        // Tilføj projekt til visning
         if (projectId != null) {
             Optional<Project> projectOpt = projectService.getProjectById(projectId);
             projectOpt.ifPresent(project -> model.addAttribute("project", project));
@@ -350,14 +350,14 @@ public class TaskController {
             return "redirect:/my-projects";
         }
 
-        // Verify password
+        // Bekræft adgangskode
         if (!verifyPassword(userDetails.getUsername(), confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Forkert adgangskode. Kunne ikke slette opgave.");
             return "redirect:/tasks/" + taskId + "/delete" + (from != null ? "?from=" + from : "");
         }
 
         try {
-            // Get IDs before deletion for redirect
+            // Hent ID´s før sletning til redirect
             Long projectId = task.getProjectId();
             Long subProjectId = task.getSubProjectId();
 
@@ -368,7 +368,7 @@ public class TaskController {
             taskService.deleteTask(taskId);
             redirectAttributes.addFlashAttribute("success", "Opgave er blevet slettet");
 
-            // Smart redirect based on context
+            // Smart redirect baseret på kontekst
             if ("subproject".equals(from) && subProjectId != null) {
                 return "redirect:/tasks/subproject/" + subProjectId;
             } else if (projectId != null) {

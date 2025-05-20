@@ -35,10 +35,10 @@ public class ReportService {
     public ProjectReport generateProjectReport(Long projectId, User generatedBy) {
         ProjectReportData data = getProjectReportData(projectId);
 
-        // Calculate summary
+        // Beregn summary
         ReportSummary summary = calculateReportSummary(data.getTasks());
 
-        // Group tasks by subproject for better organization
+        // Gruppér tasks efter subprojekter for bedre organisering
         Map<String, List<Task>> tasksBySubProject = groupTasksBySubProject(data.getTasks());
 
         return new ProjectReport(
@@ -57,7 +57,7 @@ public class ReportService {
      * for report generation
      */
     public ProjectReportData getProjectReportData(Long projectId) {
-        // Get the main project
+        // Get hovedeprojektet
         Optional<Project> projectOpt = projectService.getProjectById(projectId);
         if (projectOpt.isEmpty()) {
             throw new IllegalArgumentException("Projekt ikke fundet med ID: " + projectId);
@@ -65,13 +65,13 @@ public class ReportService {
 
         Project project = projectOpt.get();
 
-        // Get all subprojects for this project
+        // Get alle subprojekter for projektet
         List<SubProject> subProjects = subProjectService.getSubProjectsByProjectId(projectId);
 
-        // Get all tasks for this project
+        // Get alle tasks for projektet
         List<Task> tasks = taskService.getTasksByProjectId(projectId);
 
-        // Enrich tasks with subproject information
+        // Enrich tasks med subprojekt informationer
         for (Task task : tasks) {
             if (task.getSubProjectId() != null) {
                 SubProject subProject = subProjectService.getSubProjectById(task.getSubProjectId());
@@ -98,14 +98,14 @@ public class ReportService {
 
         int totalTasks = tasks.size();
 
-        // Group tasks by status
+        // Gruppér tasks efter status
         Map<String, Long> tasksByStatus = tasks.stream()
                 .collect(Collectors.groupingBy(
                         task -> task.getStatus() != null ? task.getStatus() : "UNKNOWN",
                         Collectors.counting()
                 ));
 
-        // Convert Long to Integer for easier handling
+        // Konverter Long til Integer for nemmere håndtering
         Map<String, Integer> tasksByStatusInt = tasksByStatus.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,

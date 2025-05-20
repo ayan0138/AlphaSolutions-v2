@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="container mt-4">
-    <!-- Display the logged-in user information -->
+    <!-- Vis oplysninger om den indloggede bruger -->
     <div class="alert alert-info no-print" th:if="${loggedInUser != null}">
         Logget ind som: <span th:text="${loggedInUser.username + (loggedInUser.role != null ? ' (' + loggedInUser.role.roleName + ')' : '')}">Username (Role)</span>
     </div>
@@ -24,7 +24,7 @@
         </p>
     </div>
 
-    <!-- Summary Section -->
+    <!-- Summary Sektion -->
     <div class="card summary-card mb-4">
         <div class="card-body">
             <h3><i class="fas fa-chart-bar me-2"></i>Oversigt</h3>
@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <!-- Project Details -->
+    <!-- Projekt Detaljer -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
             <h3 class="card-title h5 mb-0"><i class="fas fa-project-diagram me-2"></i>Projektinformation</h3>
@@ -106,7 +106,7 @@
         </div>
     </div>
 
-    <!-- Tasks by Subproject -->
+    <!-- Tasks efter Subprojekter -->
     <div class="card mb-4">
         <div class="card-header bg-success text-white">
             <h3 class="card-title h5 mb-0"><i class="fas fa-list-ul me-2"></i>Opgaver pr. Subprojekt</h3>

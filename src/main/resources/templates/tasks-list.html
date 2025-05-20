@@ -9,7 +9,7 @@
     <link rel="stylesheet" th:href="@{/style.css}"></head>
 <body>
 <div class="container mt-4">
-    <!-- Display the logged-in user information -->
+    <!-- Vis oplysninger om den indloggede bruger -->
     <div class="alert alert-info" th:if="${loggedInUser != null}">
         Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
     </div>
@@ -17,7 +17,7 @@
     <h1 class="mb-4">Opgaver under Projekt ID: <span th:text="${projectId}"></span></h1>
     <a th:href="@{/projects/{id}/tasks/create(id=${projectId})}" class="btn btn-primary mt-4">Opret Opgave</a>
 
-    <!-- Add task button -->
+    <!-- Tilføj task button -->
     <div class="mb-3">
         <a th:href="@{'/tasks/project/' + ${projectId} + '/create'}" class="btn btn-success">
             Tilføj ny opgave

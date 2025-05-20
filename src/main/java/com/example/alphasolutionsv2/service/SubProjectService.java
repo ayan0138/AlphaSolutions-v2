@@ -34,7 +34,7 @@ public class SubProjectService {
      * Create a new subproject
      */
     public SubProject createSubProject(SubProject subProject) {
-        // Add validation
+        // Tilføj validering
         if (subProject.getName() == null || subProject.getName().isEmpty()) {
             throw new IllegalArgumentException("Subprojekt navn er påkrævet");
         }
@@ -43,7 +43,7 @@ public class SubProjectService {
             throw new IllegalArgumentException("Projekt ID er påkrævet");
         }
 
-        // Set creation time if not already set
+        // Set oprettelsestidpunkt  hvis det ikke allered er set
         if (subProject.getCreatedAt() == null) {
             subProject.setCreatedAt(LocalDateTime.now());
         }

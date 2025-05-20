@@ -27,7 +27,7 @@ public class SubProject {
         this.createdAt = createdAt;
     }
 
-    // Getters and setters
+    // Getters og setters
     public long getSubProjectId() {
         return subProjectId;
     }

@@ -7,19 +7,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <body>
 <div class="container mt-4">
-    <!-- Display the logged-in user information -->
+    <!-- Vis oplysninger om den indloggede bruger -->
     <div class="alert alert-info" th:if="${loggedInUser != null}">
         Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
     </div>
 
     <h1 class="mb-4">Rediger Projekt</h1>
 
-    <!-- Show errors if any -->
+    <!-- Vis eventuelle fejlmeddelser -->
     <div class="alert alert-danger" th:if="${param.error}">
         <span th:text="${param.error}">Error message</span>
     </div>
 
-    <!-- Show direct error messages set in controller -->
+    <!-- Vis dirkete fejlmeddelser angivet i controlleren -->
     <div class="alert alert-danger" th:if="${error != null}">
         <span th:text="${error}">Error message</span>
     </div>
@@ -30,25 +30,25 @@
                 <h2 class="card-title h5 mb-0">Projektinformation</h2>
             </div>
             <div class="card-body">
-                <!-- Project Name -->
+                <!-- Projeckt navn -->
                 <div class="mb-3">
                     <label for="name" class="form-label">Projektnavn</label>
                     <input type="text" class="form-control" id="name" name="name" th:value="${project.name}" required>
                 </div>
 
-                <!-- Project Description -->
+                <!-- Projekt Beskvrivelse -->
                 <div class="mb-3">
                     <label for="description" class="form-label">Beskrivelse</label>
                     <textarea class="form-control" id="description" name="description" rows="3" th:text="${project.description}" required></textarea>
                 </div>
 
-                <!-- Start Date -->
+                <!-- Start Dato -->
                 <div class="mb-3">
                     <label for="startDate" class="form-label">Startdato</label>
                     <input type="date" class="form-control" id="startDate" name="startDate" th:value="${project.startDate}" required>
                 </div>
 
-                <!-- End Date -->
+                <!-- Slut Dato -->
                 <div class="mb-3">
                     <label for="endDate" class="form-label">Slutdato</label>
                     <input type="date" class="form-control" id="endDate" name="endDate" th:value="${project.endDate}" required>

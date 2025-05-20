@@ -50,7 +50,7 @@ public class ProjectService {
             throw new IllegalArgumentException("Ugyldig bruger-ID er ugyldig");
         }
 
-        // Use the new method that combines both created and assigned projects
+        // Brug den nye metode, der kombinerer både oprettede og tildelte projekter
         return projectRepository.findAllProjectsForUser(userId);
     }
 
@@ -76,7 +76,7 @@ public class ProjectService {
         return project.getUserId() != null && project.getUserId().equals(userId);
     }
 
-    // Update the project
+    // Opdater projektet
     public boolean updateProject(Project project) {
         try {
             if (project.getName() == null || project.getName().isEmpty()) {
@@ -150,7 +150,7 @@ public class ProjectService {
 
         Project project = projectOpt.get();
 
-        // Check if user has permission to delete this project
+        // Check om brugeren har tilladelse til at slette projektet
         if (!userCanDeleteProject(user, project)) {
             return false;
         }
@@ -168,7 +168,7 @@ public class ProjectService {
             return false;
         }
 
-        // Only admins and the project creator can delete projects
+        // Kun admins og projekt oprettern kan slette projekter
         return "Admin".equalsIgnoreCase(user.getRole().getRoleName()) ||
                 user.getUserId().equals(project.getCreatedBy().getUserId());
     }

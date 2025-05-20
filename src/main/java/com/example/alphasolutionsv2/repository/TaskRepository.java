@@ -19,7 +19,7 @@ public class TaskRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Save a task to the database
+    // Gem en task i databasen
     public void save(Task task) {
         String sql = "INSERT INTO tasks (sub_project_id, name, description, assigned_to, status, due_date, " +
                 "created_at, estimated_hours, hourly_rate) " +
@@ -38,7 +38,7 @@ public class TaskRepository {
         );
     }
 
-    // Update an existing task
+    // Opdater en eksisterende task
     public void update(Task task) {
         String sql = """
         UPDATE tasks
@@ -60,7 +60,7 @@ public class TaskRepository {
         );
     }
 
-    // Get all tasks for a given project with subproject info.
+    // Hent alle task for et given projekt med subprojekt oplysninger
     public List<Task> findTasksByProjectId(long projectId) {
         String sql = """
                 SELECT t.task_id as taskId, t.sub_project_id as subProjectId, t.name, t.description, 
@@ -85,7 +85,7 @@ public class TaskRepository {
             task.setEstimatedHours(rs.getDouble("estimatedHours"));
             task.setHourlyRate(rs.getDouble("hourlyRate"));
 
-            // Set subproject name if available.
+            // Set subproject navn hvis tilgengæligt
             String subProjectName = rs.getString("subProjectName");
             if (subProjectName != null) {
                 SubProject subProject = new SubProject();
@@ -101,7 +101,7 @@ public class TaskRepository {
         return tasks;
     }
 
-    // Get all tasks
+    // hent alle tasks
     public List<Task> findAll() {
         String sql = """
                 SELECT task_id as taskId, sub_project_id as subProjectId, name, description, 
@@ -112,7 +112,7 @@ public class TaskRepository {
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Task.class));
     }
 
-    // Get a specific task by ID
+    // Hent en specifik task ud fra ID
     public Task findById(long taskId) {
         String sql = """
                 SELECT task_id as taskId, sub_project_id as subProjectId, name, description, 
@@ -125,7 +125,7 @@ public class TaskRepository {
         return !tasks.isEmpty() ? tasks.get(0) : null;
     }
 
-    // Delete a task
+    // Slet en task
     public void deleteById(long taskId) {
         String sql = "DELETE FROM tasks WHERE task_id = ?";
         jdbcTemplate.update(sql, taskId);

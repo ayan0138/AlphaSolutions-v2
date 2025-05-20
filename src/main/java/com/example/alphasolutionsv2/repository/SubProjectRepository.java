@@ -23,7 +23,7 @@ public class SubProjectRepository {
         return count != null && count > 0;
     }
 
-    // Find all subprojects for a specific project
+    // Find alle subprojekter for et specifik projekt
     public List<SubProject> findByProjectId(long projectId) {
         String sql = """
                 SELECT sub_project_id as subProjectId, project_id as projectId, name, description, 
@@ -34,7 +34,7 @@ public class SubProjectRepository {
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(SubProject.class), projectId);
     }
 
-    // Find a specific subproject by ID
+    // Find et specifikt subprojekt ud fra ID
     public SubProject findById(long subProjectId) {
         String sql = """
                 SELECT sub_project_id as subProjectId, project_id as projectId, name, description, 
@@ -46,7 +46,7 @@ public class SubProjectRepository {
         return !subProjects.isEmpty() ? subProjects.get(0) : null;
     }
 
-    // Save a subproject
+    // Gem et subprojekt
     public SubProject save(SubProject subProject) {
         if (subProject.getSubProjectId() == 0) {
             // Insert new
@@ -63,13 +63,13 @@ public class SubProjectRepository {
                     Timestamp.valueOf(subProject.getCreatedAt() != null ? subProject.getCreatedAt() : LocalDateTime.now())
             );
 
-            // Get the generated ID and set it on the subProject
+            // Hent det generede ID og angiv det på et Subproject
             Long generatedId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
             if (generatedId != null) {
                 subProject.setSubProjectId(generatedId);
             }
         } else {
-            // Update existing
+            // Opdater eksisterende
             String sql = "UPDATE sub_projects SET name = ?, description = ?, start_date = ?, end_date = ? " +
                     "WHERE sub_project_id = ?";
             jdbcTemplate.update(sql,
@@ -83,7 +83,7 @@ public class SubProjectRepository {
         return subProject;
     }
 
-    // Delete a subproject
+    // Slet et subprojekt
     public void deleteById(long subProjectId) {
         String sql = "DELETE FROM sub_projects WHERE sub_project_id = ?";
         jdbcTemplate.update(sql, subProjectId);
