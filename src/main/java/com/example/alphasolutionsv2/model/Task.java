@@ -25,7 +25,7 @@ public class Task {
     private User assignedUser;
 
     public Task() {
-        // Default constructor
+        // Default constructor - nødvendig for binding i Thymeleaf
     }
 
     // Constructor with all database fields

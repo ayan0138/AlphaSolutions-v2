@@ -12,8 +12,10 @@ public class SubProject {
     private LocalDate endDate;
     private LocalDateTime createdAt;
     private Project project;
-    // Default constructor
-    public SubProject() {}
+
+    public SubProject() {
+        // Default constructor - nødvendig for binding i Thymeleaf
+    }
 
     // Constructor with all fields
     public SubProject(long subProjectId, long projectId, String name, String description,

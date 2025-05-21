@@ -13,7 +13,7 @@ public class Project {
     private LocalDateTime createdAt;
 
     public Project() {
-        // Default constructor
+        // Default constructor.
     }
 
     public Project(Long projectId, String name, String description, LocalDate startDate,
