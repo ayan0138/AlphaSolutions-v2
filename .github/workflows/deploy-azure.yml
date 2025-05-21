@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
       - name: Set up Java version
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'microsoft'
 
       - name: Build with Maven
@@ -40,27 +40,24 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-  
+      id-token: write
+      contents: read
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: java-app
-      
+
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F369BB632A2947B08FC7101D9FA0A063 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_350E530EC1CD48A0A934DD8752211061 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3A4D8A5205A940A1AB27BAECC0C44561 }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'AlphaSolutions-v2'
+          app-name: 'AlphaSolution-Gruppe3'
           slot-name: 'Production'
-          package: '*.jar'
-          
+          package: java-app/*.jar

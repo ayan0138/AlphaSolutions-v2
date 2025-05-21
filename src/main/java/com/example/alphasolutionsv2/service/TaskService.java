@@ -24,16 +24,16 @@ public class TaskService {
         this.userRepository = userRepository;
     }
     public void createTask(Task task, long projectId) {
-        // If the task doesn't have a projectId set, use the provided one
+        // Hvis task ikke har et projectId angivet, så brug det angivne
         if (task.getProjectId() == null) {
             task.setProjectId(projectId);
         }
 
-        // Call the main createTask method
+        // Kald hovedemetoden createTask
         createTask(task);
     }
 
-    // Create a task
+    // Opret en task
     public void createTask(Task task) {
         // Validation
         if (task.getName() == null || task.getName().isEmpty()) {
@@ -52,7 +52,7 @@ public class TaskService {
             throw new IllegalArgumentException("Timepris for opgaven er påkrævet");
         }
 
-        // Set default values if needed
+        // Set default values hvis nødvændigt
         if (task.getCreatedAt() == null) {
             task.setCreatedAt(LocalDateTime.now());
         }
@@ -63,12 +63,12 @@ public class TaskService {
 
         taskRepository.save(task);
     }
-    // Get all tasks
+    // Get alle tasks
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
 
-    // Get tasks by project ID (if you need this)
+    // Get tasks efter project ID (hvis du har brug det)
     public List<Task> getTasksByProjectId(long projectId) {
         return taskRepository.findTasksByProjectId(projectId);
     }
@@ -102,7 +102,7 @@ public class TaskService {
             throw new IllegalArgumentException("Subprojekt skal vælges");
         }
 
-        // Set default status if needed
+        // Set default status hvis der er brug for det
         if (task.getStatus() == null || task.getStatus().isEmpty()) {
             task.setStatus("PENDING");
         }

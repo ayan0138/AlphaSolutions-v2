@@ -268,7 +268,7 @@ public class ProjectController {
         return "create-subproject";
     }
 
-    // Create a new subproject
+    // Opret et nyt subprojekt
     @PostMapping("/projects/{projectId}/subprojects/create")
     public String createSubproject(@PathVariable long projectId,
                                    @ModelAttribute SubProject subProject,
@@ -296,12 +296,12 @@ public class ProjectController {
             return "redirect:/projects/" + projectId;
         } catch (Exception e) {
             System.err.println("Error creating subproject: " + e.getMessage());
-            e.printStackTrace(); // This will help us see the full error
+            e.printStackTrace(); // Dette vil hjælpe med at se hele fejlen
 
             model.addAttribute("error", e.getMessage());
             model.addAttribute("subProject", subProject);
 
-            // Get project for display
+            // Hent projekt til visning
             Optional<Project> projectOpt = projectService.getProjectById(projectId);
             if (projectOpt.isPresent()) {
                 model.addAttribute("project", projectOpt.get());

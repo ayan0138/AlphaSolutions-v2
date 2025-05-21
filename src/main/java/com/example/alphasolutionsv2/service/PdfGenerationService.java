@@ -23,27 +23,27 @@ public class PdfGenerationService {
     private TemplateEngine templateEngine;
 
     public byte[] generatePdfFromTemplate(String templateName, Context context) throws Exception {
-        // Process the Thymeleaf template to HTML
+        // Behandl Thymeleaf skabelonen til HTML
         String htmlContent = templateEngine.process(templateName, context);
 
-        // Read CSS file from classpath
-        String cssContent = readCssFromClasspath("/static/css/style.css");
+        // Læs ccs fil fra classpath
+        String cssContent = readCssFromClasspath("/static/style.css");
 
-        // Clean CSS to remove properties that cause warnings
+        // Rens CSS for at fjerne egenskaber, der foråsager advarlser
         String cleanedCss = cleanCssForPdf(cssContent);
 
-        // Parse HTML with JSoup and inline the cleaned CSS
+        // Parse HTML med JSoup og inline den rensede CSS
         Document document = Jsoup.parse(htmlContent);
 
-        // Remove existing CSS link and add inline styles
+        // Fjern eksisterende CSS link og tilføj inline-stilarter
         document.select("link[rel=stylesheet]").remove();
         document.head().appendElement("style").text(cleanedCss);
 
-        // Convert to XHTML for OpenHTMLToPDF
+        // Konventer til XHTML for OpenHTMLToPDF
         W3CDom w3cDom = new W3CDom();
         org.w3c.dom.Document xhtmlDocument = w3cDom.fromJsoup(document);
 
-        // Generate PDF
+        // Generer PDF
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         PdfRendererBuilder builder = new PdfRendererBuilder();
@@ -62,36 +62,36 @@ public class PdfGenerationService {
             return "";
         }
 
-        // Remove box-shadow properties
+        // Fjern box-shadow properties
         cssContent = cssContent.replaceAll("box-shadow\\s*:[^;]+;", "/* box-shadow removed for PDF */");
 
-        // Remove webkit and color-adjust properties
+        // Fjern webkit og color-adjust properties
         cssContent = cssContent.replaceAll("-webkit-print-color-adjust\\s*:[^;]+;", "");
         cssContent = cssContent.replaceAll("color-adjust\\s*:[^;]+;", "");
         cssContent = cssContent.replaceAll("print-color-adjust\\s*:[^;]+;", "");
 
-        // Remove opacity (replace with comment to maintain the effect visually)
+        // Fjern opacity (erstat med kommentar for at bevare den visuelle effekt
         cssContent = cssContent.replaceAll("opacity\\s*:[^;]+;", "/* opacity removed for PDF */");
 
-        // Replace linear-gradient with solid color
+        // Erstat linear-gradient med solid farve
         cssContent = cssContent.replaceAll(
                 "background:\\s*linear-gradient\\([^)]+\\);",
                 "background: #007bff;"
         );
 
-        // Replace CSS Grid with PDF-friendly alternatives
+        // Erstat CSS Grid med PDF-friendly alternativer
         cssContent = replaceCssGrid(cssContent);
 
-        // Remove flexbox and replace with block
+        // Fjern flexbox og erstat with block
         cssContent = cssContent.replaceAll("display\\s*:\\s*flex;", "display: block;");
 
-        // Remove break-inside properties
+        // Fjern break-inside properties
         cssContent = cssContent.replaceAll("break-inside\\s*:[^;]+;", "");
 
-        // Remove page-break properties that might cause issues
+        // Fjern page-break properties som potentialt kan forårsage problemer
         cssContent = cssContent.replaceAll("page-break-after\\s*:[^;]+;", "");
 
-        // Remove tr:hover as it's not needed in PDF
+        // Fjern tr:hover da det ikke er nødvændigt i pdf
         cssContent = cssContent.replaceAll("\\.pdf-table\\s+tr:hover\\s*\\{[^}]+\\}", "");
 
         return cssContent;
@@ -101,16 +101,16 @@ public class PdfGenerationService {
      * Replace CSS Grid with PDF-friendly layout
      */
     private String replaceCssGrid(String cssContent) {
-        // Replace grid display with block
+        // Erstat grid display med block
         cssContent = cssContent.replaceAll("display\\s*:\\s*grid;", "display: block;");
 
-        // Remove grid-template-columns
+        // Fjern grid-template-columns
         cssContent = cssContent.replaceAll("grid-template-columns\\s*:[^;]+;", "");
 
-        // Remove gap property
+        // Fjern gap property
         cssContent = cssContent.replaceAll("gap\\s*:[^;]+;", "");
 
-        // Add PDF-friendly alternative for summary grid
+        // Tilføj PDF-venlig alternativer til summary grid
         String pdfGridStyles = """
             .pdf-summary-item {
                 display: inline-block;
@@ -132,7 +132,7 @@ public class PdfGenerationService {
             }
             """;
 
-        // Add the PDF-friendly styles at the end
+        // Tilføj den PDF-venlige styles i slutningen
         cssContent += "\n/* PDF-friendly grid alternatives */\n" + pdfGridStyles;
 
         return cssContent;

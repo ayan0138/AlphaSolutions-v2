@@ -42,7 +42,7 @@ public class Task {
         this.assignedUser = assignedUser;
     }
 
-    // All getters and setters
+    // Alle getters og setters
     public long getTaskId() {
         return taskId;
     }

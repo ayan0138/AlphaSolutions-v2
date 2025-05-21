@@ -10,7 +10,7 @@
 <div class="container mt-4">
     <h1 class="mb-4">Opret nyt projekt</h1>
 
-    <!-- Show any error messages -->
+    <!-- Vis eventuelle fejlmeddelser -->
     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
     <form th:action="@{/projects/create}" th:object="${project}" method="post">
@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        <!-- If you have User objects in your controller -->
+        <!-- Hvis du har User objects i din controller -->
         <div class="mb-3" th:if="${users != null}">
             <label for="createdBy" class="form-label">Projektleder:</label>
             <select id="createdBy" th:field="*{createdBy.userId}" class="form-select" required>
@@ -45,7 +45,7 @@
             </select>
         </div>
 
-        <!-- Fallback if no user list is provided -->
+        <!-- Fallback hvis ingen user list er angivet -->
         <div class="mb-3">
             <input type="text"
                    id="projectLeader"

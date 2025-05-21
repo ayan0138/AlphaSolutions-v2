@@ -25,7 +25,7 @@ public class ReportSummary {
     public int getTotalTasks() { return totalTasks; }
     public Map<String, Integer> getTasksByStatus() { return tasksByStatus; }
 
-    // Utility methods
+    // Hjælpe metoder
     public String getFormattedTotalCost() {
         return String.format("%.2f DKK", totalCost);
     }

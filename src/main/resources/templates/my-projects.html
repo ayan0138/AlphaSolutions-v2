@@ -14,18 +14,18 @@
 
   <a th:href="@{/projects/create}" class="btn btn-primary mb-3">Opret nyt projekt</a>
 
-  <!-- Display the logged-in user information -->
+  <!-- Vis oplysninger om den indloggede bruger -->
   <div class="alert alert-info" th:if="${loggedInUser != null}">
     Logget ind som: <span th:text="${loggedInUser.username + ' (' + loggedInUser.role.roleName + ')'}">Username (Role)</span>
 
   </div>
 
-  <!-- Show success messages -->
+  <!-- Vis succesmeddelser -->
   <div class="alert alert-success" th:if="${param.success}">
     <span th:text="${param.success}">Success message</span>
   </div>
 
-  <!-- Show error messages -->
+  <!-- Vis fejlmeddelser -->
   <div class="alert alert-danger" th:if="${param.error}">
     <span th:text="${param.error}">Error message</span>
   </div>

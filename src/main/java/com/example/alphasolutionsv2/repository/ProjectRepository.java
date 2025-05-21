@@ -53,7 +53,7 @@ public class ProjectRepository {
     }
 
 
-    // Find all projects created by a specific user
+    // Find alle projekter oprettet af en bestemt bruger
     public List<Project> findProjectsCreatedByUser(Long userId) {
         String sql = """
                 SELECT p.project_id, p.name, p.description, p.start_date, p.end_date,
@@ -68,7 +68,7 @@ public class ProjectRepository {
         return jdbcTemplate.query(sql, new ProjectRowMapper(), userId);
     }
 
-    // Find projects assigned to a user (from Project_Assignments table)
+    // Find projekter tildelt en bruger (fra Project_Assignments table)
     public List<Project> findUserById(Long userId) {
         String sql = """
                 SELECT p.project_id, p.name, p.description, p.start_date, p.end_date,
@@ -84,7 +84,7 @@ public class ProjectRepository {
         return jdbcTemplate.query(sql, new ProjectRowMapper(), userId);
     }
 
-    // Get all projects for a user (both created by and assigned to)
+    // Hent alle projekter for en bruger (både oprettet af og tildelt)
     public List<Project> findAllProjectsForUser(Long userId) {
         String sql = """
                 SELECT DISTINCT p.project_id, p.name, p.description, p.start_date, p.end_date,
@@ -102,7 +102,7 @@ public class ProjectRepository {
         return jdbcTemplate.query(sql, new ProjectRowMapper(), userId, userId);
     }
 
-    // Find a project by ID
+    // Find et projekt ud fra ID
     public Optional<Project> findById(Long projectId) {
         String sql = """
                 SELECT p.project_id, p.name, p.description, p.start_date, p.end_date,
@@ -126,7 +126,7 @@ public class ProjectRepository {
 
 }
 
-    // Method to update a project
+    // Metode til at opdatere et projekt
     public void updateProject(Project project) {
         String sql = """
                 UPDATE Projects
@@ -141,7 +141,7 @@ public class ProjectRepository {
                 project.getProjectId());
     }
 
-    // Check if a user has a role in the project (e.g., Editor, Manager)
+    // Tjek om en bruger har en rolle i projektet (f.eks. Manager, Editor)
     public boolean userHasRoleInProject(Long userId, Long projectId) {
         String sql = """
             SELECT COUNT(*) FROM Project_Assignments pa
@@ -152,7 +152,7 @@ public class ProjectRepository {
         return count != null && count > 0;
     }
 
-    // Check if a user has access to the project
+    // Tjek om en bruger har adgang til projektet
     public boolean userHasAccessToProject(Long userId, Long projectId) {
         String sql = """
             SELECT COUNT(*) FROM Project_Assignments pa
@@ -163,11 +163,11 @@ public class ProjectRepository {
         return count != null && count > 0;
     }
     public void deleteById(Long projectId) {
-        // First delete all references in Project_Assignments table
+        // Slet først alle referencer i Project_Assignments table
         String deleteAssignmentsSql = "DELETE FROM Project_Assignments WHERE project_id = ?";
         jdbcTemplate.update(deleteAssignmentsSql, projectId);
 
-        // Then delete the project itself
+        // Slet derefter selve projektet
         String deleteProjectSql = "DELETE FROM Projects WHERE project_id = ?";
         jdbcTemplate.update(deleteProjectSql, projectId);
     }
