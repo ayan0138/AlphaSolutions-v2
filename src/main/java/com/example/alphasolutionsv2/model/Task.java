@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Task {
-    private long taskId;
+    private Long taskId;
     private Long subProjectId;
     private String name;
     private String description;
@@ -29,7 +29,7 @@ public class Task {
     }
 
     // Constructor with all database fields
-    public Task(long taskId, Long subProjectId, String name, String description,
+    public Task(Long taskId, Long subProjectId, String name, String description,
                 Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt, BigDecimal price,
                 Double estimatedHours, Double hourlyRate) {
         this.taskId = taskId;
@@ -46,7 +46,7 @@ public class Task {
     }
 
     // Alle getters og setters
-    public long getTaskId() {
+    public Long getTaskId() {
         return taskId;
     }
 
