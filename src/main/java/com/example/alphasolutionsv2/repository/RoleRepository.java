@@ -1,16 +1,18 @@
 package com.example.alphasolutionsv2.repository;
 
 import com.example.alphasolutionsv2.model.Role;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class RoleRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public  RoleRepository(JdbcTemplate jdbcTemplate) {
+    public RoleRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -20,10 +22,15 @@ public class RoleRepository {
                 new Role(rs.getLong("role_id"), rs.getString("role_name")));
     }
 
-    public Role findById(Long id) {
-        String sql = "SELECT role_id, role_name FROM roles WHERE role_id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
-                new Role(rs.getLong("role_id"), rs.getString("role_name")), id);
+    public Optional<Role> findById(Long id) {
+        try {
+            String sql = "SELECT role_id, role_name FROM roles WHERE role_id = ?";
+            Role role = jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
+                    new Role(rs.getLong("role_id"), rs.getString("role_name")), id);
+            return Optional.ofNullable(role);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void saveRole(Role role) {

@@ -514,4 +514,79 @@ public class TaskController {
             return "redirect:/tasks/" + taskId + "/assign";
         }
     }
+    // Add this method to TaskController class
+
+    @GetMapping("/my-assigned-tasks")
+    public String showMyAssignedTasks(@AuthenticationPrincipal UserDetails userDetails,
+                                      Model model) {
+        User loggedInUser = loadUser(userDetails);
+        String redirect = redirectIfNotLoggedIn(loggedInUser);
+        if (redirect != null) return redirect;
+
+        // Get all tasks assigned to the logged-in user
+        List<Task> assignedTasks = taskService.getTasksByAssignedUserId(loggedInUser.getUserId());
+
+        model.addAttribute("tasks", assignedTasks);
+        model.addAttribute("loggedInUser", loggedInUser);
+
+        return "my-assigned-tasks";
+    }
+    // Add this to TaskController class
+    @GetMapping("/my-tasks")
+    public String showMyTasks(@AuthenticationPrincipal UserDetails userDetails,
+                              Model model) {
+        User loggedInUser = loadUser(userDetails);
+        String redirect = redirectIfNotLoggedIn(loggedInUser);
+        if (redirect != null) return redirect;
+
+        // Get all tasks assigned to the logged-in user
+        List<Task> assignedTasks = taskService.getTasksByAssignedUserId(loggedInUser.getUserId());
+
+        model.addAttribute("tasks", assignedTasks);
+        model.addAttribute("loggedInUser", loggedInUser);
+        model.addAttribute("title", "Mine Opgaver");
+
+        return "my-tasks";
+    }
+    // Add this method to TaskController class
+    @GetMapping("/view/{taskId}")
+    public String viewTask(@PathVariable long taskId,
+                           @AuthenticationPrincipal UserDetails userDetails,
+                           Model model) {
+        User loggedInUser = loadUser(userDetails);
+        String redirect = redirectIfNotLoggedIn(loggedInUser);
+        if (redirect != null) return redirect;
+
+        Task task = taskService.getTaskById(taskId);
+        if (task == null) {
+            return "redirect:/tasks/my-tasks?error=Opgave+ikke+fundet";
+        }
+
+        // Check if the user is assigned to this task or has admin/projektleder role
+        boolean isAssigned = task.getAssignedToId() != null &&
+                task.getAssignedToId().equals(loggedInUser.getUserId());
+        boolean hasHigherRole = "Admin".equals(loggedInUser.getRole().getRoleName()) ||
+                "Projektleder".equals(loggedInUser.getRole().getRoleName());
+
+        if (!isAssigned && !hasHigherRole) {
+            return "redirect:/tasks/my-tasks?error=Du+har+ikke+adgang+til+denne+opgave";
+        }
+
+        // Load project information
+        Long projectId = task.getProjectId();
+        if (projectId == null && task.getSubProjectId() != null) {
+            projectId = subProjectService.getProjectIdBySubProjectId(task.getSubProjectId());
+            task.setProjectId(projectId);
+        }
+
+        if (projectId != null) {
+            Optional<Project> projectOpt = projectService.getProjectById(projectId);
+            projectOpt.ifPresent(project -> model.addAttribute("project", project));
+        }
+
+        model.addAttribute("task", task);
+        model.addAttribute("loggedInUser", loggedInUser);
+
+        return "view-task";
+    }
 }

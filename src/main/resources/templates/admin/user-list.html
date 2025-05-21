@@ -38,6 +38,9 @@
                 Brugeren blev oprettet!
             </div>
 
+            <!-- Error message if present -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
             <table class="table table-striped mt-3">
                 <thead>
                 <tr>
@@ -55,8 +58,8 @@
                     <td th:text="${user.email}"></td>
                     <td th:text="${user.role.roleName}"></td>
                     <td>
-                        <!-- Handlinger (kan udvides) -->
-                        <a href="#" class="btn btn-sm btn-outline-primary">Rediger</a>
+                        <!-- Change the "Rediger" button in user-list.html -->
+                        <a th:href="@{/admin/edit-user/{id}(id=${user.userId})}" class="btn btn-sm btn-outline-primary">Rediger</a>
                     </td>
                 </tr>
                 </tbody>

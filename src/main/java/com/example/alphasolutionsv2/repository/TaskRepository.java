@@ -61,6 +61,7 @@ public class TaskRepository {
         // For debugging: Print et log for at se, hvad der gemmes
         System.out.println("Updating task " + task.getTaskId() + " with assignedTo: " + task.getAssignedTo());
     }
+
     // Get all tasks for a given project with subproject info.
     // I TaskRepository
     public List<Task> findTasksByProjectId(long projectId) {
@@ -113,6 +114,7 @@ public class TaskRepository {
 
         return tasks;
     }
+
     // Get all tasks
     public List<Task> findAll() {
         String sql = """
@@ -183,6 +185,7 @@ public class TaskRepository {
         String sql = "DELETE FROM tasks WHERE task_id = ?";
         jdbcTemplate.update(sql, taskId);
     }
+
     public List<Task> findTasksBySubProjectId(long subProjectId) {
         String sql = """
         SELECT t.*,
@@ -216,5 +219,47 @@ public class TaskRepository {
 
             return task;
         }, subProjectId);
+    }
+
+    public List<Task> findTasksByAssignedUserId(long userId) {
+        String sql = """
+        SELECT t.*, 
+               sp.name as subproject_name, sp.description as subproject_description,
+               sp.project_id, sp.start_date as subproject_start_date, sp.end_date as subproject_end_date,
+               p.name as project_name
+        FROM tasks t
+        LEFT JOIN sub_projects sp ON t.sub_project_id = sp.sub_project_id
+        LEFT JOIN projects p ON sp.project_id = p.project_id
+        WHERE t.assigned_to = ?
+    """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Task task = new Task();
+            task.setTaskId(rs.getLong("task_id"));
+            task.setSubProjectId(rs.getLong("sub_project_id"));
+            task.setName(rs.getString("name"));
+            task.setDescription(rs.getString("description"));
+            task.setAssignedTo(rs.getObject("assigned_to") != null ? rs.getLong("assigned_to") : null);
+            task.setStatus(rs.getString("status"));
+            task.setDueDate(rs.getDate("due_date") != null ? rs.getDate("due_date").toLocalDate() : null);
+            task.setCreatedAt(rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null);
+            task.setEstimatedHours(rs.getDouble("estimated_hours"));
+            task.setHourlyRate(rs.getDouble("hourly_rate"));
+
+            // Set subproject info if available
+            if (rs.getObject("subproject_name") != null) {
+                SubProject subProject = new SubProject();
+                subProject.setSubProjectId(rs.getLong("sub_project_id"));
+                subProject.setName(rs.getString("subproject_name"));
+                subProject.setDescription(rs.getString("subproject_description"));
+                subProject.setProjectId(rs.getLong("project_id"));
+                task.setSubProject(subProject);
+
+                // Also set project ID for easier navigation
+                task.setProjectId(rs.getLong("project_id"));
+            }
+
+            return task;
+        }, userId);
     }
 }

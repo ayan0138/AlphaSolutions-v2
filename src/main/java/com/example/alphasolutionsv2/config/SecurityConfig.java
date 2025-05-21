@@ -47,6 +47,10 @@ public class SecurityConfig {
                         .requestMatchers("/tasks/*/assign")
                         .hasAnyAuthority("ROLE_ADMIN", "ROLE_PROJEKTLEDER")
 
+                        // Medarbejdere kan se deres tildelte opgaver
+                        .requestMatchers("/tasks/my-assigned-tasks").authenticated()
+                        .requestMatchers("/projects/**").authenticated() // Allow all authenticated users to view projects
+
                         // Alle andre kræver authentication
                         .anyRequest().authenticated()
                 )

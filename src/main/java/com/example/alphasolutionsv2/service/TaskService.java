@@ -174,5 +174,9 @@ public class TaskService {
 
         return null;
     }
+    // Add this method to TaskService class
+    public List<Task> getTasksByAssignedUserId(long userId) {
+        return taskRepository.findTasksByAssignedUserId(userId);
+    }
 }
 

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Opgavedetaljer</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/tasks/my-tasks}">Mine Opgaver</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${task.name}"></li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 th:text="${task.name}"></h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Opgaveinformation</h4>
+                    <table class="table">
+                        <tr>
+                            <th>Beskrivelse:</th>
+                            <td th:text="${task.description}"></td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <span th:if="${task.status == 'Igangværende'}" class="badge bg-warning">Igangværende</span>
+                                <span th:if="${task.status == 'På pause'}" class="badge bg-info">På pause</span>
+                                <span th:if="${task.status == 'Ikke påbegyndt'}" class="badge bg-secondary">Ikke påbegyndt</span>
+                                <span th:if="${task.status == 'Afventer'}" class="badge bg-primary">Afventer</span>
+                                <span th:if="${task.status == 'Afsluttet'}" class="badge bg-success">Afsluttet</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Deadline:</th>
+                            <td th:text="${#temporals.format(task.dueDate, 'yyyy-MM-dd')}"></td>
+                        </tr>
+                        <tr>
+                            <th>Estimeret tid:</th>
+                            <td th:text="${task.estimatedHours} + ' timer'"></td>
+                        </tr>
+                        <tr>
+                            <th>Timepris:</th>
+                            <td th:text="${task.hourlyRate} + ' DKK/time'"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h4>Projektinformation</h4>
+                    <table class="table">
+                        <tr th:if="${project != null}">
+                            <th>Projekt:</th>
+                            <td th:text="${project.name}"></td>
+                        </tr>
+                        <tr th:if="${task.subProject != null}">
+                            <th>Subprojekt:</th>
+                            <td th:text="${task.subProject.name}"></td>
+                        </tr>
+                        <tr th:if="${task.assignedUser != null}">
+                            <th>Tildelt til:</th>
+                            <td th:text="${task.assignedUser.username}"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add buttons for updating status if needed -->
+    <div class="mt-3 mb-5">
+        <a th:href="@{/tasks/my-tasks}" class="btn btn-secondary">Tilbage til Mine Opgaver</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
