@@ -27,7 +27,7 @@ public class PdfGenerationService {
         String htmlContent = templateEngine.process(templateName, context);
 
         // Læs ccs fil fra classpath
-        String cssContent = readCssFromClasspath("/static/style.css");
+        String cssContent = readCssFromClasspath("/static/css/style.css");
 
         // Rens CSS for at fjerne egenskaber, der foråsager advarlser
         String cleanedCss = cleanCssForPdf(cssContent);
@@ -54,9 +54,7 @@ public class PdfGenerationService {
         return outputStream.toByteArray();
     }
 
-    /**
-     * Clean CSS by removing or replacing properties that cause warnings in OpenHTMLToPDF
-     */
+
     private String cleanCssForPdf(String cssContent) {
         if (cssContent == null || cssContent.isEmpty()) {
             return "";
