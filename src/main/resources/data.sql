@@ -5,13 +5,14 @@ INSERT INTO roles (role_name) VALUES
         ('MEDARBEJDER');
 
 -- Indsæt brugere (med BCrypt-hashede adgangskoder – udskift evt. med egne)
-INSERT INTO users (username, email, password, role_id) VALUES
-        ('admin', 'admin@example.com',
-         '$2a$10$SMHANoSd/3je9FeY7uEFkuXMdEEpegi745iiufQjo5piYi9ohEQ3W', 1),
-        ('marcus', 'marcus@firma.dk',
-         '$2a$10$DCpiidKn5AqJCcQG3RlokeZN1UegrHb1gbqYruVgisNj6OJdHNWWW', 2),
-        ('najib', 'najib@firma.dk',
-         '$2a$10$lwJ26Zp9fytdc/bXmvs6bugcxBThP6iEOW7CCSMcKeGUe72F7oSdq', 3);
+INSERT INTO users (username, email, password, role_id, last_login, is_active) VALUES
+('admin', 'admin@example.com',
+'$2a$10$SMHANoSd/3je9FeY7uEFkuXMdEEpegi745iiufQjo5piYi9ohEQ3W', 1, '2025-05-20 10:00:00', TRUE),
+('marcus', 'marcus@firma.dk',
+'$2a$10$DCpiidKn5AqJCcQG3RlokeZN1UegrHb1gbqYruVgisNj6OJdHNWWW', 2, NULL, TRUE),
+('najib', 'najib@firma.dk',
+'$2a$10$lwJ26Zp9fytdc/bXmvs6bugcxBThP6iEOW7CCSMcKeGUe72F7oSdq', 3, NULL, TRUE);
+
 
 -- Indæst projekter
 INSERT INTO projects (name, description, start_date, end_date, created_by) VALUES

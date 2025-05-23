@@ -5,7 +5,7 @@ public class User {
     private String username;
     private String email;
     private String password;
-    private Role role;  // Ændret fra String til Role objekt
+    private Role role;  // Role objekt
 
     public User() {
         // Default constructor – nødvendig for binding i Thymeleaf

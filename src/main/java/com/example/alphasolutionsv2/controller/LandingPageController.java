@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class LandingPageController {
-    // Viser forsiden når brugeren går til / eller /forside
+    // Viser forsiden når brugeren går til ind på siden.
     @GetMapping({"/", "/frontpage"})
     public String showFrontPage() {
         return "calcura-frontpage"; // matcher filnavn i templates-mappen

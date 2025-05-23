@@ -15,8 +15,11 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     role_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP NULL,
+    is_active BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
+
 
 CREATE TABLE projects (
     project_id BIGINT PRIMARY KEY AUTO_INCREMENT,
