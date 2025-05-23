@@ -4,7 +4,6 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.W3CDom;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -18,16 +17,19 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * PDF Generation Service baseret på OpenHTMLToPDF's officielle integration guide
- * Se: https://github.com/danfickle/openhtmltopdf/wiki/Integration-Guide
- *
+ * Se: <a href="https://github.com/danfickle/openhtmltopdf/wiki/Integration-Guide">...</a>
+
  * Implementeringen følger det anbefalede mønster fra OpenHTMLToPDF dokumentationen
  * med tilføjede optimiseringer til CSS-håndtering for bedre PDF-rendering.
  */
 @Service
 public class PdfGenerationService {
 
-    @Autowired
-    private TemplateEngine templateEngine;
+    private final TemplateEngine templateEngine;
+
+    public PdfGenerationService(TemplateEngine templateEngine) {
+        this.templateEngine = templateEngine;
+    }
 
     /**
      * Hovedmetode til PDF-generering baseret på OpenHTMLToPDF's standard workflow:
@@ -35,7 +37,6 @@ public class PdfGenerationService {
      * 2. Parse med JSoup
      * 3. Konverter til W3C DOM
      * 4. Generer PDF med PdfRendererBuilder
-     *
      * Tilføjet: CSS-optimisering for bedre PDF-kompatibilitet
      */
     public byte[] generatePdfFromTemplate(String templateName, Context context) throws Exception {
@@ -77,7 +78,7 @@ public class PdfGenerationService {
 
     /**
      * PDF generation metode der følger OpenHTMLToPDF's anbefalede mønster
-     * Se: https://github.com/danfickle/openhtmltopdf/wiki/Integration-Guide
+     * Se: <a href="https://github.com/danfickle/openhtmltopdf/wiki/Integration-Guide">...</a>
      */
     private byte[] buildPdfFromDocument(org.w3c.dom.Document xhtmlDocument) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -94,7 +95,6 @@ public class PdfGenerationService {
     /**
      * CSS optimisering metode - kombinerer OpenHTMLToPDF anbefalinger
      * med community best practices for PDF-rendering
-     *
      * Baseret på issues og solutions fra OpenHTMLToPDF GitHub repository
      */
     private String optimizeCssForPdf(String cssContent) {
@@ -119,7 +119,7 @@ public class PdfGenerationService {
 
     /**
      * Fjerner box-shadow properties der ikke understøttes af OpenHTMLToPDF
-     * Problem dokumenteret i: https://github.com/danfickle/openhtmltopdf/issues
+     * Problem dokumenteret i: <a href="https://github.com/danfickle/openhtmltopdf/issues">...</a>
      */
     private String removeUnsupportedBoxShadow(String css) {
         return css.replaceAll("box-shadow\\s*:[^;]+;", "/* box-shadow ikke understøttet i PDF */");
@@ -163,7 +163,7 @@ public class PdfGenerationService {
      */
     private String addPrintOptimizations(String css) {
         // Fjern interaktive elementer
-        css = css.replaceAll("tr:hover\\s*\\{[^}]+\\}", "");
+        css = css.replaceAll("tr:hover\\s*\\{[^}]+}", "");
         css = css.replaceAll("opacity\\s*:[^;]+;", "");
 
         // Fjerner webkit-specifikke properties

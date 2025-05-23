@@ -5,7 +5,6 @@ import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.repository.SubProjectRepository;
 import com.example.alphasolutionsv2.repository.TaskRepository;
 import com.example.alphasolutionsv2.repository.UserRepository;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

@@ -474,7 +474,7 @@ public class TaskController {
                 User employee = userService.getUserById(employeeId).orElse(null);
                 if (employee == null) {
                     redirectAttributes.addFlashAttribute("error", "Medarbejder ikke fundet");
-                    return "redirect:/tasks/" + taskId + "/assign";
+                    return "redirect:/tasks/" + taskId;
                 }
 
                 System.out.println("Assigning employee: " + employee.getUsername() +
@@ -512,7 +512,7 @@ public class TaskController {
         } catch (Exception e) {
             e.printStackTrace(); // Tilføj stacktrace til konsolloggen for at se alle detaljer
             redirectAttributes.addFlashAttribute("error", "Kunne ikke tildele opgave: " + e.getMessage());
-            return "redirect:/tasks/" + taskId + "/assign";
+            return "redirect:/tasks/" + taskId;
         }
     }
     // Add this method to TaskController class

@@ -94,9 +94,7 @@ public class ProjectService {
         }
 
         // Check if user has direct project access
-        if (projectRepository.userHasAccessToProject(userId, projectId)) {
-            return true;
-        }
+        projectRepository.userHasAccessToProject(userId, projectId);
 
         // For now, temporarily allow all authenticated users to view projects
         return true;
