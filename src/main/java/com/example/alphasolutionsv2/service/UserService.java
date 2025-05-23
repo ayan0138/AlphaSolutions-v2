@@ -61,4 +61,7 @@ public class UserService {
         // Gem brugeren (Kald repository-metoden der håndterer UPDATE via user_id)
         userRepo.saveUser(user);
     }
+    public List<User> getAllEmployees() {
+        return userRepo.findByRoleName("Medarbejder");
+    }
 }

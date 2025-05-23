@@ -184,4 +184,32 @@ public class ProjectRepository {
     """;
         return jdbcTemplate.query(sql, new ProjectRowMapper());
     }
+    // Add this method to ProjectRepository
+    public List<Project> findProjectsByAssignedTasks(Long userId) {
+        String sql = """
+        SELECT DISTINCT p.project_id, p.name, p.description, p.start_date, p.end_date,
+               p.created_by, p.created_at,
+               u.username, u.email, u.password,
+               r.role_id, r.role_name
+        FROM Projects p
+        JOIN Users u ON p.created_by = u.user_id
+        JOIN Roles r ON u.role_id = r.role_id
+        JOIN Sub_Projects sp ON sp.project_id = p.project_id
+        JOIN Tasks t ON t.sub_project_id = sp.sub_project_id
+        WHERE t.assigned_to = ?
+        ORDER BY p.start_date ASC, p.end_date ASC
+    """;
+        return jdbcTemplate.query(sql, new ProjectRowMapper(), userId);
+    }
+    public boolean userHasTasksInProject(Long userId, Long projectId) {
+        String sql = """
+        SELECT COUNT(*) FROM tasks t
+        JOIN sub_projects sp ON t.sub_project_id = sp.sub_project_id
+        WHERE sp.project_id = ? AND t.assigned_to = ?
+    """;
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, projectId, userId);
+        return count != null && count > 0;
+    }
+
 }

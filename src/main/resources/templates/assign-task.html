@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Tildel opgave - Alpha Solutions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/static.css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Tildel opgave til medarbejder</h1>
+
+        <div>
+            <!-- Kun vis projekt-link hvis der findes et projekt -->
+            <a th:if="${project != null}" th:href="@{/projects/{id}(id=${project.projectId})}" class="btn btn-secondary">
+                ← Tilbage til projekt
+            </a>
+            <!-- Alternativt vis blot et link tilbage til projektoversigt -->
+            <a th:unless="${project != null}" th:href="@{/my-projects}" class="btn btn-secondary">
+                ← Tilbage til projekter
+            </a>
+        </div>
+    </div>
+
+    <!-- Fejl og success meddelelser -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Opgaveoplysninger</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Opgave:</strong> <span th:text="${task.name}"></span></p>
+                    <p><strong>Beskrivelse:</strong> <span th:text="${task.description}"></span></p>
+                    <p><strong>Status:</strong> <span th:text="${task.status}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Projekt:</strong> <span th:text="${project != null ? project.name : 'Ikke tilknyttet'}"></span></p>
+                    <p><strong>Underprojekt:</strong> <span th:text="${task.subProject != null ? task.subProject.name : 'Ikke tilknyttet'}"></span></p>
+                    <p><strong>Deadline:</strong> <span th:text="${task.dueDate}"></span></p>
+                </div>
+            </div>
+
+            <hr>
+
+            <p class="mb-0">
+                <strong>Nuværende tildeling:</strong>
+                <span th:if="${task.assignedUser != null}" th:text="${task.assignedUser.username + ' (' + task.assignedUser.email + ')'}"></span>
+                <span th:unless="${task.assignedUser != null}" class="text-muted">Ingen tildeling</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Vælg medarbejder</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/tasks/{id}/assign(id=${task.taskId})}" method="post">
+                <div class="mb-3">
+                    <label for="employeeId" class="form-label">Medarbejder</label>
+                    <select id="employeeId" name="employeeId" class="form-select">
+                        <option value="">-- Fjern tildeling --</option>
+                        <option th:each="employee : ${employees}"
+                                th:value="${employee.userId}"
+                                th:text="${employee.username + ' (' + employee.email + ')'}"
+                                th:selected="${task.assignedToId != null && task.assignedToId == employee.userId}">
+                            Medarbejdernavn (email)
+                        </option>
+                    </select>
+                    <div class="form-text">Vælg en medarbejder for at tildele opgaven, eller vælg "Fjern tildeling" for at fjerne den nuværende tildeling.</div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Gem tildeling</button>
+                    <a th:if="${project != null}" th:href="@{/projects/{id}(id=${project.projectId})}" class="btn btn-secondary">Annuller</a>
+                    <a th:unless="${project != null}" th:href="@{/my-projects}" class="btn btn-secondary">Annuller</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.example.alphasolutionsv2.service;
 
 import com.example.alphasolutionsv2.model.Project;
 import com.example.alphasolutionsv2.model.User;
+import com.example.alphasolutionsv2.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.alphasolutionsv2.repository.ProjectRepository;
@@ -15,12 +16,13 @@ import static org.mockito.Mockito.*;
 class ProjectServiceTest {
     private ProjectRepository projectRepository;
     private ProjectService projectService;
-
+    private  UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
         projectRepository = mock(ProjectRepository.class);
-        projectService = new ProjectService(projectRepository);
+        UserRepository userRepository = mock(UserRepository.class);
+        projectService = new ProjectService(projectRepository, userRepository);
     }
 
     // NEGATIVE TESTS

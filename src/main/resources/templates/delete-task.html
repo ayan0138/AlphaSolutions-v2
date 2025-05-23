@@ -13,6 +13,9 @@
 <div class="container mt-4">
   <h2>Er du sikker på, at du vil slette denne opgave?</h2>
 
+  <!-- Vis fejlmeddelelser, hvis der er nogen -->
+  <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
   <div class="card mt-3">
     <div class="card-body">
       <h5 class="card-title" th:text="${task.name}">[Opgavenavn]</h5>
@@ -23,8 +26,17 @@
         Timepris: <span th:text="${task.hourlyRate}"></span> DKK
       </p>
 
-      <form th:action="@{/tasks/{id}/delete/confirm(id=${task.taskId})}" method="post">
-        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+      <form th:action="@{/tasks/{id}/delete(id=${task.taskId})}" method="post">
+        <!-- Tilføj adgangskode-felt -->
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Bekræft med din adgangskode</label>
+          <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+          <div class="form-text">Indtast din adgangskode for at bekræfte sletningen.</div>
+        </div>
+
+        <!-- Skjult felt til 'from' parameter hvis det findes -->
+        <input type="hidden" name="from" th:if="${from != null}" th:value="${from}">
+
         <button type="submit" class="btn btn-danger">Ja, slet opgaven</button>
         <a th:href="@{/projects/{projectId}(projectId=${task.projectId})}" class="btn btn-secondary ms-2">Annuller</a>
       </form>

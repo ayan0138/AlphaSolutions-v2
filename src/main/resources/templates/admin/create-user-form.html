@@ -2,44 +2,70 @@
 <html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Opret ny bruger</title>
+  <title>Opret ny bruger - Alpha Solutions</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<div class="container mt-5" style="max-width: 600px;">
-  <h2 class="mb-4">Opret ny bruger</h2>
+<!-- Header -->
+<header class="d-flex justify-content-between align-items-center p-3 bg-light">
+  <div>
+    <a th:href="@{/}" class="text-decoration-none text-dark">
+      <h1>Alpha Solutions</h1>
+    </a>
+  </div>
+  <div>
+    <span>Admin Panel</span>
+    <a th:href="@{/logout}" class="btn btn-outline-danger ms-2">Log ud</a>
+  </div>
+</header>
 
-  <!-- Hvis der er fejl (fra controlleren), vis en advarsel -->
-  <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+<div class="container mt-4">
+  <!-- Admin navigation -->
+  <div class="mb-4">
+    <a th:href="@{/my-projects}" class="btn btn-secondary me-2">← Tilbage til projekter</a>
+    <a th:href="@{/admin/users}" class="btn btn-primary me-2">Brugerliste</a>
+    <a th:href="@{/admin/create-user}" class="btn btn-success active">Opret ny bruger</a>
+  </div>
 
-  <form th:action="@{/admin/create-user}" th:object="${user}" method="post">
-    <div class="mb-3">
-      <label for="username" class="form-label">Brugernavn</label>
-      <input type="text" id="username" th:field="*{username}" class="form-control" required>
+  <div class="card">
+    <div class="card-header">
+      <h2>Opret ny bruger</h2>
     </div>
+    <div class="card-body">
+      <!-- Fejlbesked -->
+      <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" id="email" th:field="*{email}" class="form-control" required>
+      <form th:action="@{/admin/create-user}" th:object="${user}" method="post">
+        <div class="mb-3">
+          <label for="username" class="form-label">Brugernavn</label>
+          <input type="text" id="username" th:field="*{username}" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" id="email" th:field="*{email}" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Kodeord</label>
+          <input type="password" id="password" th:field="*{password}" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="role" class="form-label">Rolle</label>
+          <select id="role" th:field="*{role.roleId}" class="form-select">
+            <option th:each="role : ${roles}"
+                    th:value="${role.roleId}"
+                    th:text="${role.roleName}">
+            </option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Opret bruger</button>
+      </form>
     </div>
-
-    <div class="mb-3">
-      <label for="password" class="form-label">Kodeord</label>
-      <input type="password" id="password" th:field="*{password}" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-      <label for="role" class="form-label">Rolle</label>
-      <select id="role" th:field="*{role.roleId}" class="form-select">
-        <option th:each="role : ${roles}"
-                th:value="${role.roleId}"
-                th:text="${role.roleName}">
-        </option>
-      </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Opret bruger</button>
-  </form>
+  </div>
 </div>
 </body>
 </html>

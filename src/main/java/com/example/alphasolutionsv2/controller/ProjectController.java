@@ -267,4 +267,83 @@ public class ProjectController {
             return "create-subproject";
         }
     }
+    // Add these methods to your existing ProjectController class
+
+    @GetMapping("/subprojects/{subProjectId}/edit")
+    public String showEditSubProjectForm(@PathVariable long subProjectId,
+                                         @AuthenticationPrincipal UserDetails userDetails,
+                                         Model model) {
+        User loggedInUser = loadUser(userDetails);
+        if (loggedInUser == null) return "redirect:/login";
+
+        // Get the subproject
+        SubProject subProject = subProjectService.getSubProjectById(subProjectId);
+        if (subProject == null) {
+            return "redirect:/my-projects?error=Subprojekt+ikke+fundet";
+        }
+
+        // Get the parent project for context
+        Optional<Project> projectOpt = projectService.getProjectById(subProject.getProjectId());
+
+        model.addAttribute("subProject", subProject);
+        model.addAttribute("loggedInUser", loggedInUser);
+        projectOpt.ifPresent(project -> model.addAttribute("project", project));
+
+        return "edit-subproject";
+    }
+
+    @PostMapping("/subprojects/{subProjectId}/edit")
+    public String updateSubProject(@PathVariable long subProjectId,
+                                   @ModelAttribute SubProject subProject,
+                                   @AuthenticationPrincipal UserDetails userDetails,
+                                   Model model,
+                                   RedirectAttributes redirectAttributes) {
+        User loggedInUser = loadUser(userDetails);
+        if (loggedInUser == null) return "redirect:/login";
+
+        try {
+            SubProject existingSubProject = subProjectService.getSubProjectById(subProjectId);
+            if (existingSubProject == null) {
+                return "redirect:/my-projects?error=Subprojekt+ikke+fundet";
+            }
+
+            // Validate dates - check if both dates are provided
+            if (subProject.getStartDate() != null && subProject.getEndDate() != null &&
+                    subProject.getEndDate().isBefore(subProject.getStartDate())) {
+                model.addAttribute("error", "Slutdato kan ikke være før startdato");
+                model.addAttribute("subProject", subProject);
+                model.addAttribute("loggedInUser", loggedInUser);
+
+                // Get project for display
+                Optional<Project> projectOpt = projectService.getProjectById(existingSubProject.getProjectId());
+                projectOpt.ifPresent(project -> model.addAttribute("project", project));
+
+                return "edit-subproject";
+            }
+
+            // Set ID and project ID from existing subproject to ensure they're not modified
+            subProject.setSubProjectId(subProjectId);
+            subProject.setProjectId(existingSubProject.getProjectId());
+            subProject.setCreatedAt(existingSubProject.getCreatedAt()); // Keep original creation time
+
+            // Update the subproject
+            subProjectService.updateSubProject(subProject);
+
+            redirectAttributes.addFlashAttribute("success", "Subprojekt opdateret!");
+            return "redirect:/projects/" + subProject.getProjectId();
+        } catch (Exception e) {
+            model.addAttribute("error", "Fejl ved opdatering: " + e.getMessage());
+            model.addAttribute("subProject", subProject);
+            model.addAttribute("loggedInUser", loggedInUser);
+
+            // Get project for display in case of error
+            SubProject existingSubProject = subProjectService.getSubProjectById(subProjectId);
+            if (existingSubProject != null) {
+                Optional<Project> projectOpt = projectService.getProjectById(existingSubProject.getProjectId());
+                projectOpt.ifPresent(project -> model.addAttribute("project", project));
+            }
+
+            return "edit-subproject";
+        }
+    }
 }

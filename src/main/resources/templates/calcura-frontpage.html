@@ -16,8 +16,16 @@
             text-align: center;
         }
         .logo {
-            max-width: 120px;
+            width: 100px;
+            height: auto;
             margin-bottom: 20px;
+        }
+
+        /* På mindre skærme */
+        @media (max-width: 768px) {
+            .logo {
+                max-width: 80px;
+            }
         }
         .hero {
             padding: 60px 20px;
@@ -42,16 +50,16 @@
 <body>
 
 <header>
-    <img src="/static/images/calcura-logo.png" alt="Calcura Logo" class="logo">
+    <img th:src="@{/images/calcura-logo.png}" alt="Calcura" class="logo">
     <h1>Calcura</h1>
     <p>Smart projektkalkulation gjort enkelt</p>
+
 </header>
 
 <section class="hero">
     <h1>Velkommen til Calcura</h1>
     <p>Et brugervenligt værktøj til at estimere projektomkostninger, styre ressourcer og bevare overblikket.</p>
     <div class="mt-4">
-        <a href="/register" class="btn btn-primary btn-lg me-2">Opret konto</a>
         <a href="/login" class="btn btn-outline-primary btn-lg">Log ind</a>
     </div>
 </section>

@@ -1,9 +1,10 @@
 package com.example.alphasolutionsv2.service;
 
 import com.example.alphasolutionsv2.model.Task;
+import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.repository.SubProjectRepository;
 import com.example.alphasolutionsv2.repository.TaskRepository;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import com.example.alphasolutionsv2.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,9 +15,12 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final SubProjectRepository subProjectRepository;
-    public TaskService(TaskRepository taskRepository, SubProjectRepository subProjectRepository) {
+    private final UserRepository userRepository;
+    public TaskService(TaskRepository taskRepository, SubProjectRepository subProjectRepository,
+                       UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.subProjectRepository = subProjectRepository;
+        this.userRepository = userRepository;
     }
     public void createTask(Task task, long projectId) {
         // Hvis task ikke har et projectId angivet, så brug det angivne
@@ -110,5 +114,68 @@ public class TaskService {
     public void deleteTask(long taskId) {
         taskRepository.deleteById(taskId);
     }
+    /**
+     * Tildel en opgave til en bruger
+     */
+    public void assignTaskToUser(long taskId, long userId) {
+        Task task = taskRepository.findById(taskId);
+        if (task == null) {
+            throw new IllegalArgumentException("Opgave ikke fundet");
+        }
 
+        // Tjek om brugeren er en medarbejder
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("Bruger ikke fundet");
+        }
+
+        // Tjek om brugeren er en medarbejder
+        if (!"Medarbejder".equals(user.getRole().getRoleName())) {
+            throw new IllegalArgumentException("Kun medarbejdere kan tildeles opgaver");
+        }
+
+        task.setAssignedToId(userId);
+        task.setAssignedUser(user);
+        taskRepository.update(task);
+    }
+
+    /**
+     * Fjern tildeling af en opgave
+     */
+    public void unassignTask(long taskId) {
+        Task task = taskRepository.findById(taskId);
+        if (task == null) {
+            throw new IllegalArgumentException("Opgave ikke fundet");
+        }
+
+        task.setAssignedToId(null);
+        task.setAssignedUser(null);
+        taskRepository.update(task);
+    }
+    /**
+     * Hent projekt-ID'et for en opgave
+     */
+    public Long getProjectIdForTask(long taskId) {
+        Task task = taskRepository.findById(taskId);
+        if (task == null) {
+            throw new IllegalArgumentException("Opgave ikke fundet");
+        }
+
+        // Hvis opgaven har et projekt-ID, returnér det
+        if (task.getProjectId() != null) {
+            return task.getProjectId();
+        }
+
+        // Ellers find projekt-ID'et via subprojektet
+        if (task.getSubProjectId() != null) {
+            return subProjectRepository.getProjectIdBySubProjectId(task.getSubProjectId());
+        }
+
+        return null;
+    }
+    // Add this method to TaskService class
+    public List<Task> getTasksByAssignedUserId(long userId) {
+        return taskRepository.findTasksByAssignedUserId(userId);
+    }
 }
+

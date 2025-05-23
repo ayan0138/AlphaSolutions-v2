@@ -3,6 +3,7 @@ package com.example.alphasolutionsv2.service;
 import com.example.alphasolutionsv2.model.Task;
 import com.example.alphasolutionsv2.repository.SubProjectRepository;
 import com.example.alphasolutionsv2.repository.TaskRepository;
+import com.example.alphasolutionsv2.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
@@ -16,12 +17,14 @@ class TaskServiceTest {
     private TaskRepository taskRepository;
     private SubProjectRepository subProjectRepository;
     private TaskService taskService;
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
         taskRepository = mock(TaskRepository.class);
         subProjectRepository = mock(SubProjectRepository.class);
-        taskService = new TaskService(taskRepository, subProjectRepository);
+        userRepository = mock(UserRepository.class);
+        taskService = new TaskService(taskRepository, subProjectRepository,userRepository);
     }
 
     @Test
