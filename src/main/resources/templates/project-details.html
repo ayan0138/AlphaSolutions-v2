@@ -75,11 +75,20 @@
           <div th:each="subProject : ${subProjects}" class="col-md-6 mb-3">
             <div class="card h-100">
               <div class="card-body">
-                <h6 class="card-title">
-                  <a th:href="@{/tasks/subproject/{id}(id=${subProject.subProjectId})}"
-                     th:text="${subProject.name}"
-                     class="text-decoration-none">Subprojekt navn</a>
-                </h6>
+                <!-- Updated: Added d-flex container for title and edit button -->
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="card-title mb-0">
+                    <a th:href="@{/tasks/subproject/{id}(id=${subProject.subProjectId})}"
+                       th:text="${subProject.name}"
+                       class="text-decoration-none">Subprojekt navn</a>
+                  </h6>
+                  <!-- Added: Edit button for subprojects -->
+                  <a th:href="@{/subprojects/{id}/edit(id=${subProject.subProjectId})}"
+                     class="btn btn-sm btn-outline-primary"
+                     th:if="${loggedInUser.role.roleName == 'Admin' || loggedInUser.role.roleName == 'Projektleder'}">
+                    Rediger
+                  </a>
+                </div>
                 <p class="card-text" th:text="${subProject.description}">Beskrivelse</p>
                 <small class="text-muted">
                   <span th:if="${subProject.startDate}" th:text="'Start: ' + ${subProject.startDate}"></span>
