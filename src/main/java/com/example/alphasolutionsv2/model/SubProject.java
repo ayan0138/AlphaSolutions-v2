@@ -34,7 +34,7 @@ public class SubProject {
         return subProjectId;
     }
 
-    public void setSubProjectId(long subProjectId) {
+    public void setSubProjectId(Long subProjectId) {
         this.subProjectId = subProjectId;
     }
 
@@ -42,7 +42,7 @@ public class SubProject {
         return projectId;
     }
 
-    public void setProjectId(long projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
