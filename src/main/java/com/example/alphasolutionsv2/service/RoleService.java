@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 public class RoleService {
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
     public RoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
@@ -17,9 +17,4 @@ public class RoleService {
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
-
-    public Role findById(Long roleId) {
-        return roleRepository.findById(roleId);
-    }
-
 }
