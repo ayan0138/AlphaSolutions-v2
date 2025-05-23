@@ -3,7 +3,7 @@ package com.example.alphasolutionsv2.model;
 import java.time.LocalDateTime;
 
 public class ProjectAssignment {
-    private long assignmentId;
+    private Long assignmentId;
     private User user; // FK: userId -> som objekt
     private Project project;  // FK: projectId -> som objekt
     private String projectRole;
@@ -13,7 +13,7 @@ public class ProjectAssignment {
         // Default constructor
     }
 
-    public ProjectAssignment(long assignmentId, User user, Project project, String projectRole, LocalDateTime createdAt) {
+    public ProjectAssignment(Long assignmentId, User user, Project project, String projectRole, LocalDateTime createdAt) {
         this.assignmentId = assignmentId;
         this.user = user;
         this.project = project;

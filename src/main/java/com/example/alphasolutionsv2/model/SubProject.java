@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class SubProject {
-    private long subProjectId;
-    private long projectId;
+    private Long subProjectId;
+    private Long projectId;
     private String name;
     private String description;
     private LocalDate startDate;
@@ -18,7 +18,7 @@ public class SubProject {
     }
 
     // Constructor with all fields
-    public SubProject(long subProjectId, long projectId, String name, String description,
+    public SubProject(Long subProjectId, Long projectId, String name, String description,
                       LocalDate startDate, LocalDate endDate, LocalDateTime createdAt) {
         this.subProjectId = subProjectId;
         this.projectId = projectId;
@@ -30,7 +30,7 @@ public class SubProject {
     }
 
     // Getters og setters
-    public long getSubProjectId() {
+    public Long getSubProjectId() {
         return subProjectId;
     }
 
@@ -38,7 +38,7 @@ public class SubProject {
         this.subProjectId = subProjectId;
     }
 
-    public long getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 

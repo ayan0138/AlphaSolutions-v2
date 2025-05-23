@@ -18,7 +18,7 @@ public class Task {
     private Double hourlyRate;
 
     // Add projectId field for form binding
-    private Long projectId; // This is for form binding, not stored in database
+    private Long projectId; //Dette for form binding, er ikke en del af databasen
 
     // Object references (not directly in database)
     private SubProject subProject;
@@ -28,7 +28,7 @@ public class Task {
         // Default constructor - nødvendig for binding i Thymeleaf
     }
 
-    // Constructor with all database fields
+    // Constructor med alle database felter
     public Task(Long taskId, Long subProjectId, String name, String description,
                 Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt, BigDecimal price,
                 Double estimatedHours, Double hourlyRate) {
