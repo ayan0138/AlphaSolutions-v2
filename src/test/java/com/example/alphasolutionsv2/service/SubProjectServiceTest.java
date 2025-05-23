@@ -78,6 +78,11 @@ class SubProjectServiceTest {
     @Test
     void testUpdateSubProject_shouldCallSave() {
         SubProject sub = new SubProject();
+        sub.setName("Test Subprojekt"); // Tilføj dette
+        // Tilføj andre påkrævede felter hvis nødvendigt:
+        // sub.setDescription("Test beskrivelse");
+        // sub.setProject(someProject);
+
         when(subProjectRepository.save(sub)).thenReturn(sub);
 
         SubProject result = subProjectService.updateSubProject(sub);

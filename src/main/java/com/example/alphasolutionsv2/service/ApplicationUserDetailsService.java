@@ -7,11 +7,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-// Remove @Service annotation - we'll create it as a bean in UserSecurityConfig
+
 public class ApplicationUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;

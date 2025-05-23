@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Offentlige ressourcer
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/frontpage", "/").permitAll()
+                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/frontpage/**", "/").permitAll()
 
                         // Admin-kun ressourcer - KUN hasAuthority overalt
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")

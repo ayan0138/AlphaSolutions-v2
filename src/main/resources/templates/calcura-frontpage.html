@@ -16,8 +16,16 @@
             text-align: center;
         }
         .logo {
-            max-width: 120px;
+            width: 100px;
+            height: auto;
             margin-bottom: 20px;
+        }
+
+        /* På mindre skærme */
+        @media (max-width: 768px) {
+            .logo {
+                max-width: 80px;
+            }
         }
         .hero {
             padding: 60px 20px;
@@ -42,9 +50,10 @@
 <body>
 
 <header>
-    <img src="/static/images/calcura-logo.png" alt="Calcura Logo" class="logo">
+    <img th:src="@{/images/calcura-logo.png}" alt="Calcura" class="logo">
     <h1>Calcura</h1>
     <p>Smart projektkalkulation gjort enkelt</p>
+
 </header>
 
 <section class="hero">
