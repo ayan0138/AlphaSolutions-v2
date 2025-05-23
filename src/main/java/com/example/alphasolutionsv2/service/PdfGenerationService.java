@@ -4,7 +4,6 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.W3CDom;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -19,15 +18,19 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class PdfGenerationService {
 
-    @Autowired
-    private TemplateEngine templateEngine;
+
+    private final TemplateEngine templateEngine;
+
+    public PdfGenerationService(TemplateEngine templateEngine) {
+        this.templateEngine = templateEngine;
+    }
 
     public byte[] generatePdfFromTemplate(String templateName, Context context) throws Exception {
         // Behandl Thymeleaf skabelonen til HTML
         String htmlContent = templateEngine.process(templateName, context);
 
         // Læs ccs fil fra classpath
-        String cssContent = readCssFromClasspath("/static/style.css");
+        String cssContent = readCssFromClasspath();
 
         // Rens CSS for at fjerne egenskaber, der foråsager advarlser
         String cleanedCss = cleanCssForPdf(cssContent);
@@ -92,7 +95,7 @@ public class PdfGenerationService {
         cssContent = cssContent.replaceAll("page-break-after\\s*:[^;]+;", "");
 
         // Fjern tr:hover da det ikke er nødvændigt i pdf
-        cssContent = cssContent.replaceAll("\\.pdf-table\\s+tr:hover\\s*\\{[^}]+\\}", "");
+        cssContent = cssContent.replaceAll("\\.pdf-table\\s+tr:hover\\s*\\{[^}]+}", "");
 
         return cssContent;
     }
@@ -141,14 +144,15 @@ public class PdfGenerationService {
     /**
      * Read CSS file from classpath
      */
-    private String readCssFromClasspath(String cssPath) throws IOException {
+    private String readCssFromClasspath() {
+        String cssPath = "/static/style.css";
         try {
             ClassPathResource resource = new ClassPathResource(cssPath);
             InputStream inputStream = resource.getInputStream();
             byte[] cssBytes = FileCopyUtils.copyToByteArray(inputStream);
             return new String(cssBytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.err.println("Warning: CSS file not found at " + cssPath);
+            System.err.println("Warning: CSS file not found at " + "/static/style.css");
             return "";
         }
     }

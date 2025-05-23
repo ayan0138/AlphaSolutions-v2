@@ -8,7 +8,6 @@ import com.example.alphasolutionsv2.service.ProjectService;
 import com.example.alphasolutionsv2.service.SubProjectService;
 import com.example.alphasolutionsv2.service.TaskService;
 import com.example.alphasolutionsv2.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,20 +27,23 @@ import java.util.Optional;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+
+
 
     private final TaskService taskService;
     private final ProjectService projectService;
     private final SubProjectService subProjectService;
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
     public TaskController(TaskService taskService, ProjectService projectService,
-                          SubProjectService subProjectService, UserService userService) {
+                          SubProjectService subProjectService, UserService userService,
+                          AuthenticationManager authenticationManager) {
         this.taskService = taskService;
         this.projectService = projectService;
         this.subProjectService = subProjectService;
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
     }
 
     // ============= HJÆLPE-METODER =============
@@ -353,7 +355,7 @@ public class TaskController {
         // Bekræft adgangskode
         if (!verifyPassword(userDetails.getUsername(), confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Forkert adgangskode. Kunne ikke slette opgave.");
-            return "redirect:/tasks/" + taskId + "/delete" + (from != null ? "?from=" + from : "");
+            return buildDeleteRedirectUrl(taskId, from);
         }
 
         try {
@@ -378,7 +380,12 @@ public class TaskController {
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Kunne ikke slette opgave: " + e.getMessage());
-            return "redirect:/tasks/" + taskId + "/delete" + (from != null ? "?from=" + from : "");
+            return buildDeleteRedirectUrl(taskId, from);
         }
     }
+
+    private String buildDeleteRedirectUrl(long taskId, String from) {
+        return "redirect:/tasks/" + taskId + "/delete" + (from != null ? "?from=" + from : "");
+    }
+
 }

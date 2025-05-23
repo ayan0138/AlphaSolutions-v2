@@ -7,8 +7,6 @@ import com.example.alphasolutionsv2.service.UserService;
 import com.example.alphasolutionsv2.service.TaskService; // Add this import
 
 import com.example.alphasolutionsv2.model.Project;
-import com.example.alphasolutionsv2.model.Task; // Add this import
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -29,25 +26,31 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final UserService userService;
-    private final TaskService taskService; // Add this field
+    private final TaskService taskService;
     private final SubProjectService subProjectService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    // Update constructor to include TaskService
-    public ProjectController(ProjectService projectService, UserService userService, TaskService taskService, SubProjectService subProjectService) {
+    public ProjectController(ProjectService projectService,
+                             UserService userService,
+                             TaskService taskService,
+                             SubProjectService subProjectService,
+                             AuthenticationManager authenticationManager) {
         this.projectService = projectService;
         this.userService = userService;
-        this.taskService = taskService; // Add this
+        this.taskService = taskService;
         this.subProjectService = subProjectService;
+        this.authenticationManager = authenticationManager;
+    }
+
+    private User loadUser(UserDetails userDetails) {
+        if (userDetails == null) return null;
+        return userService.getUserByUsername(userDetails.getUsername()).orElse(null);
     }
 
     private boolean verifyUserPassword(String username, String password) {
         try {
             Authentication authRequest = new UsernamePasswordAuthenticationToken(username, password);
-
             Authentication result = authenticationManager.authenticate(authRequest);
-
             return result.isAuthenticated();
         } catch (AuthenticationException e) {
             return false;
@@ -57,136 +60,116 @@ public class ProjectController {
     @GetMapping("/my-projects")
     public String showMyProjects(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         User loggedInUser = loadUser(userDetails);
-        if(loggedInUser==null){
-            return "redirect:/login";
-        }
+        if (loggedInUser == null) return "redirect:/login";
 
         model.addAttribute("loggedInUser", loggedInUser);
-        List<Project> projects = projectService.getProjectsByUserId(loggedInUser.getUserId());
-        model.addAttribute("projects", projects);
+        model.addAttribute("projects", projectService.getProjectsByUserId(loggedInUser.getUserId()));
         return "my-projects";
     }
 
     @GetMapping("/projects/{id}")
-    public String showProjectDetails(@PathVariable("id") Long projectId,
+    public String showProjectDetails(@PathVariable Long id,
                                      @AuthenticationPrincipal UserDetails userDetails,
                                      Model model) {
-        User loggedInUser = loadUser(userDetails);
-        if(loggedInUser==null) return "redirect:/login";
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
 
-        Optional<Project> projectOpt = projectService.getProjectById(projectId);
-        if(projectOpt.isEmpty()){
-            return "redirect:/my-projects?error=Projekt+ikke+fundet";
-        }
+        Optional<Project> projectOpt = projectService.getProjectById(id);
+        if (projectOpt.isEmpty()) return "redirect:/my-projects?error=Projekt+ikke+fundet";
 
         Project project = projectOpt.get();
-        if(project.getCreatedBy().getUserId().equals(loggedInUser.getUserId()) ||
-                "ADMIN".equalsIgnoreCase(loggedInUser.getRole().getRoleName()) ||
-                projectService.userCanViewProject(loggedInUser.getUserId(), projectId)) {
+        if (project.getCreatedBy().getUserId().equals(user.getUserId()) ||
+                "ADMIN".equalsIgnoreCase(user.getRole().getRoleName()) ||
+                projectService.userCanViewProject(user.getUserId(), id)) {
 
             model.addAttribute("project", project);
-            model.addAttribute("loggedInUser", loggedInUser);
-
-            // ADD THIS: Get tasks for this project
-            List<Task> tasks = taskService.getTasksByProjectId(projectId);
-            model.addAttribute("tasks", tasks);
-
-            // ADD THIS: Get subprojects for this project
-            List<SubProject> subProjects = subProjectService.getSubProjectsByProjectId(projectId);
-            model.addAttribute("subProjects", subProjects);
+            model.addAttribute("loggedInUser", user);
+            model.addAttribute("tasks", taskService.getTasksByProjectId(id));
+            model.addAttribute("subProjects", subProjectService.getSubProjectsByProjectId(id));
 
             return "project-details";
         }
 
         return "redirect:/my-projects?error=Ingen+rettigheder";
     }
-    @GetMapping("/projects/{id}/edit")
-    public String showEditProjectForm(@PathVariable("id") Long projectId,
-                                      @AuthenticationPrincipal UserDetails userDetails,
-                                      Model model) {
-        User loggedInUser = loadUser(userDetails);
-        if(loggedInUser==null) return "redirect:/login";
 
-        Optional<Project> projectOpt = projectService.getProjectById(projectId);
-        if(projectOpt.isEmpty()){
-            return "redirect:/my-projects?error=Projekt+ikke+fundet";
-        }
+    @GetMapping("/projects/{id}/edit")
+    public String showEditForm(@PathVariable Long id,
+                               @AuthenticationPrincipal UserDetails userDetails,
+                               Model model) {
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
+
+        Optional<Project> projectOpt = projectService.getProjectById(id);
+        if (projectOpt.isEmpty()) return "redirect:/my-projects?error=Projekt+ikke+fundet";
 
         Project project = projectOpt.get();
-        if(!projectService.userCanEditProject(loggedInUser, project)) {
-            return "redirect:/my-projects?error=Ikke+tilladelser+til+at+redigere";
+        if (!projectService.userCanEditProject(user, project)) {
+            return "redirect:/my-projects?error=Ikke+tilladt";
         }
 
         model.addAttribute("project", project);
-        model.addAttribute("loggedInUser", loggedInUser);
+        model.addAttribute("loggedInUser", user);
         return "edit-project";
     }
 
     @PostMapping("/projects/{id}/edit")
-    public String updateProject(@PathVariable("id") Long projectId,
-                                @RequestParam("name") String name,
-                                @RequestParam("description") String description,
-                                @RequestParam("startDate") String startDateStr,
-                                @RequestParam("endDate") String endDateStr,
+    public String updateProject(@PathVariable Long id,
+                                @RequestParam String name,
+                                @RequestParam String description,
+                                @RequestParam String startDateStr,
+                                @RequestParam String endDateStr,
                                 @AuthenticationPrincipal UserDetails userDetails,
-                                Model model,
-                                RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
 
-        User loggedInUser = loadUser(userDetails);
-        if(loggedInUser==null) return "redirect:/login";
-
-        Optional<Project> projectOpt = projectService.getProjectById(projectId);
-        if(projectOpt.isEmpty()){
+        Optional<Project> projectOpt = projectService.getProjectById(id);
+        if (projectOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Projekt ikke fundet");
             return "redirect:/my-projects";
         }
 
         Project project = projectOpt.get();
-        if(!projectService.userCanEditProject(loggedInUser, project)) {
-            redirectAttributes.addFlashAttribute("error",
-                    "Ingen rettigheder til at redigere projektet");
-            return "redirect:/projects/" + projectId;
+        if (!projectService.userCanEditProject(user, project)) {
+            redirectAttributes.addFlashAttribute("error", "Ingen rettigheder til at redigere");
+            return "redirect:/projects/" + id;
         }
 
-        String errorMessage = projectService.updateProjectDetails(project, name, description,
-                startDateStr, endDateStr);
-        if(errorMessage != null){
+        String error = projectService.updateProjectDetails(project, name, description, startDateStr, endDateStr);
+        if (error != null) {
             model.addAttribute("project", project);
-            model.addAttribute("error" , errorMessage);
-            model.addAttribute("loggedInUser", loggedInUser);
+            model.addAttribute("error", error);
+            model.addAttribute("loggedInUser", user);
             return "edit-project";
         }
 
         redirectAttributes.addFlashAttribute("success", "Projekt opdateret!");
-        return "redirect:/projects/" + projectId;
-    }
-
-    // Intern hjælper til at hente brugeren baseret på Spring Security login
-    private User loadUser(UserDetails userDetails) {
-        if(userDetails==null) return null;
-        return userService.getUserByUsername(userDetails.getUsername()).orElse(null);
+        return "redirect:/projects/" + id;
     }
 
     @GetMapping("/projects/create")
-    public String showCreateProjectForm(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        User loggedInUser = loadUser(userDetails);
-        if (loggedInUser == null) return "redirect:/login";
+    public String showCreateForm(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
 
-        Project newProject = new Project(); // tomt projekt til formular
-        newProject.setCreatedBy(loggedInUser); // evt. forudfyld "ejer"
-        model.addAttribute("project", newProject);
-        model.addAttribute("loggedInUser", loggedInUser);
-        return "create-project"; // <-- lav en HTML-side med formular her
+        Project project = new Project();
+        project.setCreatedBy(user);
+
+        model.addAttribute("project", project);
+        model.addAttribute("loggedInUser", user);
+        return "create-project";
     }
 
     @PostMapping("/projects/create")
     public String createProject(@ModelAttribute Project project,
                                 @AuthenticationPrincipal UserDetails userDetails,
                                 RedirectAttributes redirectAttributes) {
-        User loggedInUser = loadUser(userDetails);
-        if (loggedInUser == null) return "redirect:/login";
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
 
-        project.setCreatedBy(loggedInUser);
+        project.setCreatedBy(user);
 
         try {
             projectService.createProject(project);
@@ -199,115 +182,88 @@ public class ProjectController {
     }
 
     @GetMapping("/projects/{id}/delete")
-    public String showDeleteConfirmation(@PathVariable("id") Long projectId,
+    public String showDeleteConfirmation(@PathVariable Long id,
                                          @AuthenticationPrincipal UserDetails userDetails,
                                          Model model) {
-        User loggedInUser = loadUser(userDetails);
-        if (loggedInUser == null) return "redirect:/login";
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
 
-        Optional<Project> projectOpt = projectService.getProjectById(projectId);
-        if (projectOpt.isEmpty()) {
-            return "redirect:/my-projects?error=Projekt+ikke+fundet";
-        }
+        Optional<Project> projectOpt = projectService.getProjectById(id);
+        if (projectOpt.isEmpty()) return "redirect:/my-projects?error=Projekt+ikke+fundet";
 
         Project project = projectOpt.get();
-
-        // Check if user has delete permission
-        if (!projectService.userCanDeleteProject(loggedInUser, project)) {
-            return "redirect:/my-projects?error=Ingen+tilladelse+til+at+slette+projektet";
+        if (!projectService.userCanDeleteProject(user, project)) {
+            return "redirect:/my-projects?error=Ingen+tilladelse";
         }
 
         model.addAttribute("project", project);
-        model.addAttribute("loggedInUser", loggedInUser);
-        return "delete-project-confirmation";
+        model.addAttribute("loggedInUser", user);
+        return "delete-project-confirmation"; // TODO: Lav denne HTML-side
     }
 
     @PostMapping("/projects/{id}/delete")
-    public String deleteProject(@PathVariable("id") Long projectId,
-                                @RequestParam("confirmPassword") String confirmPassword,
+    public String deleteProject(@PathVariable Long id,
+                                @RequestParam String confirmPassword,
                                 @AuthenticationPrincipal UserDetails userDetails,
                                 RedirectAttributes redirectAttributes) {
-        User loggedInUser = loadUser(userDetails);
-        if (loggedInUser == null) return "redirect:/login";
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
 
-        if (!verifyUserPassword(userDetails.getUsername(), confirmPassword)) {
-            redirectAttributes.addFlashAttribute("error", "Forkert adgangskode. Kunne ikke slette projekt.");
-            return "redirect:/projects/" + projectId + "/edit";
+        if (!verifyUserPassword(user.getUsername(), confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Forkert adgangskode");
+            return "redirect:/projects/" + id + "/edit-project";
         }
 
-        boolean deleted = projectService.deleteProject(projectId, loggedInUser);
-
+        boolean deleted = projectService.deleteProject(id, user);
         if (deleted) {
-            redirectAttributes.addFlashAttribute("success", "Projekt er blevet slettet");
+            redirectAttributes.addFlashAttribute("success", "Projekt slettet");
         } else {
             redirectAttributes.addFlashAttribute("error", "Kunne ikke slette projekt");
         }
 
         return "redirect:/my-projects";
     }
+
     @GetMapping("/projects/{projectId}/subprojects/create")
     public String showCreateSubprojectForm(@PathVariable long projectId,
                                            @AuthenticationPrincipal UserDetails userDetails,
                                            Model model) {
-        User loggedInUser = loadUser(userDetails);
-        if (loggedInUser == null) {
-            return "redirect:/login";
-        }
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
 
         Optional<Project> projectOpt = projectService.getProjectById(projectId);
-        if (projectOpt.isEmpty()) {
-            return "redirect:/my-projects?error=Projekt+ikke+fundet";
-        }
+        if (projectOpt.isEmpty()) return "redirect:/my-projects?error=Projekt+ikke+fundet";
 
         SubProject subProject = new SubProject();
         subProject.setProjectId(projectId);
         model.addAttribute("subProject", subProject);
         model.addAttribute("project", projectOpt.get());
-        model.addAttribute("loggedInUser", loggedInUser);
-
+        model.addAttribute("loggedInUser", user);
         return "create-subproject";
     }
 
-    // Opret et nyt subprojekt
     @PostMapping("/projects/{projectId}/subprojects/create")
     public String createSubproject(@PathVariable long projectId,
                                    @ModelAttribute SubProject subProject,
                                    @AuthenticationPrincipal UserDetails userDetails,
                                    Model model,
                                    RedirectAttributes redirectAttributes) {
-        User loggedInUser = loadUser(userDetails);
-        if (loggedInUser == null) {
-            return "redirect:/login";
-        }
-
-        // Debug logging
-        System.out.println("Creating subproject: " + subProject.getName());
-        System.out.println("Project ID: " + projectId);
-        System.out.println("SubProject object: " + subProject);
+        User user = loadUser(userDetails);
+        if (user == null) return "redirect:/login";
 
         try {
             subProject.setProjectId(projectId);
             subProject.setCreatedAt(LocalDateTime.now());
 
             SubProject created = subProjectService.createSubProject(subProject);
-            System.out.println("Created subproject with ID: " + (created != null ? created.getSubProjectId() : "null"));
-
             redirectAttributes.addFlashAttribute("success", "Subprojekt oprettet!");
             return "redirect:/projects/" + projectId;
         } catch (Exception e) {
-            System.err.println("Error creating subproject: " + e.getMessage());
-            e.printStackTrace(); // Dette vil hjælpe med at se hele fejlen
-
             model.addAttribute("error", e.getMessage());
             model.addAttribute("subProject", subProject);
-
-            // Hent projekt til visning
             Optional<Project> projectOpt = projectService.getProjectById(projectId);
-            if (projectOpt.isPresent()) {
-                model.addAttribute("project", projectOpt.get());
-            }
-            model.addAttribute("loggedInUser", loggedInUser);
-
+            projectOpt.ifPresent(p -> model.addAttribute("project", p));
+            model.addAttribute("loggedInUser", user);
             return "create-subproject";
         }
     }

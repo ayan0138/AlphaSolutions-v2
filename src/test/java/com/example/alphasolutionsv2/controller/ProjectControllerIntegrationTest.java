@@ -84,8 +84,8 @@ class ProjectControllerIntegrationTest {
         mockMvc.perform(post("/projects/" + testProject.getProjectId() + "/edit")
                         .param("name", "Opdateret navn")
                         .param("description", "Opdateret beskrivelse")
-                        .param("startDate", "2025-05-01")
-                        .param("endDate", "2025-06-01"))
+                        .param("startDateStr", "2025-05-01")
+                        .param("endDateStr", "2025-06-01"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/projects/" + testProject.getProjectId()));
     }
@@ -96,8 +96,8 @@ class ProjectControllerIntegrationTest {
         mockMvc.perform(post("/projects/" + testProject.getProjectId() + "/edit")
                         .param("name", "Fejl-projekt")
                         .param("description", "Fejlbeskrivelse")
-                        .param("startDate", "2025-06-01")
-                        .param("endDate", "2025-05-01"))
+                        .param("startDateStr", "2025-06-01")
+                        .param("endDateStr", "2025-05-01"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("edit-project"))
                 .andExpect(model().attributeExists("error"));
