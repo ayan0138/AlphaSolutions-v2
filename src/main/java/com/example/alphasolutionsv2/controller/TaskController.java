@@ -387,5 +387,207 @@ public class TaskController {
     private String buildDeleteRedirectUrl(long taskId, String from) {
         return "redirect:/tasks/" + taskId + "/delete" + (from != null ? "?from=" + from : "");
     }
+    @GetMapping("/{taskId}/assign")
+    public String showAssignTaskForm(@PathVariable long taskId,
+                                     @AuthenticationPrincipal UserDetails userDetails,
+                                     Model model) {
+        User loggedInUser = loadUser(userDetails);
+        String redirect = redirectIfNotLoggedIn(loggedInUser);
+        if (redirect != null) return redirect;
 
+        // Tjek om brugeren er admin eller projektleder
+        if (!"Admin".equals(loggedInUser.getRole().getRoleName()) &&
+                !"Projektleder".equals(loggedInUser.getRole().getRoleName())) {
+            return "redirect:/my-projects?error=Du har ikke rettigheder til at tildele opgaver";
+        }
+
+        Task task = taskService.getTaskById(taskId);
+        if (task == null) {
+            return "redirect:/my-projects?error=Opgave+ikke+fundet";
+        }
+
+        // Hent alle medarbejdere (brugere med rollen "Medarbejder")
+        List<User> employees = userService.getAllEmployees();
+
+        // Find projektet
+        Long projectId = null;
+        // Hvis opgaven har et direkte projekt-ID
+        if (task.getProjectId() != null) {
+            projectId = task.getProjectId();
+        }
+        // Hvis opgaven har et subprojekt-ID, find projektet gennem subprojektet
+        else if (task.getSubProjectId() != null) {
+            projectId = subProjectService.getProjectIdBySubProjectId(task.getSubProjectId());
+        }
+
+        // Kun forsøg at hente projektet, hvis vi har et projektId og det er større end 0
+        if (projectId != null && projectId > 0) {
+            Optional<Project> projectOpt = projectService.getProjectById(projectId);
+            projectOpt.ifPresent(project -> model.addAttribute("project", project));
+        }
+
+        model.addAttribute("task", task);
+        model.addAttribute("employees", employees);
+        model.addAttribute("loggedInUser", loggedInUser);
+
+        return "assign-task";
+    }
+    @PostMapping("/{taskId}/assign")
+    public String assignTask(@PathVariable long taskId,
+                             @RequestParam(required = false) Long employeeId,
+                             @AuthenticationPrincipal UserDetails userDetails,
+                             RedirectAttributes redirectAttributes) {
+        User loggedInUser = loadUser(userDetails);
+        String redirect = redirectIfNotLoggedIn(loggedInUser);
+        if (redirect != null) return redirect;
+
+        // Tjek om brugeren er admin eller projektleder
+        if (!"Admin".equals(loggedInUser.getRole().getRoleName()) &&
+                !"Projektleder".equals(loggedInUser.getRole().getRoleName())) {
+            redirectAttributes.addAttribute("error", "Du har ikke rettigheder til at tildele opgaver");
+            return "redirect:/my-projects";
+        }
+
+        try {
+            // Hent opgaven
+            Task task = taskService.getTaskById(taskId);
+            if (task == null) {
+                redirectAttributes.addFlashAttribute("error", "Opgave ikke fundet");
+                return "redirect:/my-projects";
+            }
+
+            // Debugging: Vis opgavedetaljer før opdatering
+            System.out.println("Task before assignment: ID=" + task.getTaskId() +
+                    ", assignedToId=" + task.getAssignedToId() +
+                    ", assignedUser=" + (task.getAssignedUser() != null ?
+                    task.getAssignedUser().getUsername() : "null"));
+
+            if (employeeId == null) {
+                // Fjern tildeling
+                System.out.println("Removing assignment from task: " + task.getTaskId());
+                task.setAssignedTo(null);  // Brug setAssignedTo, da det er den metode, der findes i Task-klassen
+                task.setAssignedUser(null);
+                taskService.updateTask(task);
+                redirectAttributes.addFlashAttribute("success", "Opgavetildeling er blevet fjernet");
+            } else {
+                // Tildel opgaven til den valgte medarbejder
+                User employee = userService.getUserById(employeeId).orElse(null);
+                if (employee == null) {
+                    redirectAttributes.addFlashAttribute("error", "Medarbejder ikke fundet");
+                    return "redirect:/tasks/" + taskId + "/assign";
+                }
+
+                System.out.println("Assigning employee: " + employee.getUsername() +
+                        " (ID: " + employee.getUserId() + ") to task: " + task.getTaskId());
+
+                task.setAssignedTo(employeeId);  // Brug setAssignedTo, da det er den metode, der findes i Task-klassen
+                task.setAssignedUser(employee);
+                taskService.updateTask(task);
+                redirectAttributes.addFlashAttribute("success", "Opgaven er blevet tildelt til " + employee.getUsername());
+            }
+
+            // Find projekt-ID for redirect
+            Long projectId = null;
+
+            // Forsøg først direkte projektID
+            if (task.getProjectId() != null && task.getProjectId() > 0) {
+                projectId = task.getProjectId();
+            }
+            // Dernæst via subprojekt
+            else if (task.getSubProjectId() != null) {
+                projectId = subProjectService.getProjectIdBySubProjectId(task.getSubProjectId());
+            }
+
+            // Redirect til projektet eller projektoversigten
+            if (projectId != null && projectId > 0) {
+                Optional<Project> projectOpt = projectService.getProjectById(projectId);
+                if (projectOpt.isPresent()) {
+                    return "redirect:/projects/" + projectId;
+                }
+            }
+
+            // Fallback til projektoversigt
+            return "redirect:/my-projects";
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Tilføj stacktrace til konsolloggen for at se alle detaljer
+            redirectAttributes.addFlashAttribute("error", "Kunne ikke tildele opgave: " + e.getMessage());
+            return "redirect:/tasks/" + taskId + "/assign";
+        }
+    }
+    // Add this method to TaskController class
+
+    @GetMapping("/my-assigned-tasks")
+    public String showMyAssignedTasks(@AuthenticationPrincipal UserDetails userDetails,
+                                      Model model) {
+        User loggedInUser = loadUser(userDetails);
+        String redirect = redirectIfNotLoggedIn(loggedInUser);
+        if (redirect != null) return redirect;
+
+        // Get all tasks assigned to the logged-in user
+        List<Task> assignedTasks = taskService.getTasksByAssignedUserId(loggedInUser.getUserId());
+
+        model.addAttribute("tasks", assignedTasks);
+        model.addAttribute("loggedInUser", loggedInUser);
+
+        return "my-assigned-tasks";
+    }
+    // Add this to TaskController class
+    @GetMapping("/my-tasks")
+    public String showMyTasks(@AuthenticationPrincipal UserDetails userDetails,
+                              Model model) {
+        User loggedInUser = loadUser(userDetails);
+        String redirect = redirectIfNotLoggedIn(loggedInUser);
+        if (redirect != null) return redirect;
+
+        // Get all tasks assigned to the logged-in user
+        List<Task> assignedTasks = taskService.getTasksByAssignedUserId(loggedInUser.getUserId());
+
+        model.addAttribute("tasks", assignedTasks);
+        model.addAttribute("loggedInUser", loggedInUser);
+        model.addAttribute("title", "Mine Opgaver");
+
+        return "my-tasks";
+    }
+    // Add this method to TaskController class
+    @GetMapping("/view/{taskId}")
+    public String viewTask(@PathVariable long taskId,
+                           @AuthenticationPrincipal UserDetails userDetails,
+                           Model model) {
+        User loggedInUser = loadUser(userDetails);
+        String redirect = redirectIfNotLoggedIn(loggedInUser);
+        if (redirect != null) return redirect;
+
+        Task task = taskService.getTaskById(taskId);
+        if (task == null) {
+            return "redirect:/tasks/my-tasks?error=Opgave+ikke+fundet";
+        }
+
+        // Check if the user is assigned to this task or has admin/projektleder role
+        boolean isAssigned = task.getAssignedToId() != null &&
+                task.getAssignedToId().equals(loggedInUser.getUserId());
+        boolean hasHigherRole = "Admin".equals(loggedInUser.getRole().getRoleName()) ||
+                "Projektleder".equals(loggedInUser.getRole().getRoleName());
+
+        if (!isAssigned && !hasHigherRole) {
+            return "redirect:/tasks/my-tasks?error=Du+har+ikke+adgang+til+denne+opgave";
+        }
+
+        // Load project information
+        Long projectId = task.getProjectId();
+        if (projectId == null && task.getSubProjectId() != null) {
+            projectId = subProjectService.getProjectIdBySubProjectId(task.getSubProjectId());
+            task.setProjectId(projectId);
+        }
+
+        if (projectId != null) {
+            Optional<Project> projectOpt = projectService.getProjectById(projectId);
+            projectOpt.ifPresent(project -> model.addAttribute("project", project));
+        }
+
+        model.addAttribute("task", task);
+        model.addAttribute("loggedInUser", loggedInUser);
+
+        return "view-task";
+    }
 }
