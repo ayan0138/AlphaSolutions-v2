@@ -38,7 +38,8 @@ public class SubProjectRepository {
     }
 
     public SubProject save(SubProject subProject) {
-        if (subProject.getSubProjectId() == 0) {
+        // Tjek om det er et nyt subprojekt (ID er null eller 0)
+        if (subProject.getSubProjectId() == null || subProject.getSubProjectId() == 0) {
             // Insert new subproject
             String sql = "INSERT INTO sub_projects (project_id, name, description, start_date, end_date, created_at) " +
                     "VALUES (?, ?, ?, ?, ?, ?)";
@@ -58,6 +59,7 @@ public class SubProjectRepository {
                 return ps;
             }, keyHolder);
 
+            // Sæt det genererede ID
             long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
             subProject.setSubProjectId(generatedId);
         } else {
@@ -76,7 +78,6 @@ public class SubProjectRepository {
 
         return subProject;
     }
-
     public void deleteById(long subProjectId) {
         String sql = "DELETE FROM sub_projects WHERE sub_project_id = ?";
         jdbcTemplate.update(sql, subProjectId);
