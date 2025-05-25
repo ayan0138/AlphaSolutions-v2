@@ -1,0 +1,111 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Layout */
+.left-side, .right-side {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+/* Venstre side med baggrundsbillede */
+.left-side {
+    background-color: #1b1f23;
+    background-image: url('../images/calcura-logo.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 55%;
+    color: white;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Højre side med cyan baggrund */
+.right-side {
+    background-color: #e0f7fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 60px;
+}
+
+/* Login-boksen */
+.login-box {
+    background: white;
+    padding: 50px 60px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 750px;
+
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Velkomst-overskrift */
+.login-box h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* Slogan */
+.login-box p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 25px;
+}
+
+/* Input-felter og ikoner */
+.input-group-text {
+    background-color: #ffffff;
+    border-right: none;
+    font-size: 1.2rem;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+/* Responsivt layout */
+@media (max-width: 991.98px) {
+    .left-side {
+        display: none;
+    }
+
+    .right-side {
+        padding: 30px 20px;
+    }
+
+    .login-box {
+        padding: 30px;
+    }
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

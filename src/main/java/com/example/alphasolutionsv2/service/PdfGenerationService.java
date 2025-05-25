@@ -145,14 +145,14 @@ public class PdfGenerationService {
      * Read CSS file from classpath
      */
     private String readCssFromClasspath() {
-        String cssPath = "/static/style.css";
+        String cssPath = "/static/css/login.css";
         try {
             ClassPathResource resource = new ClassPathResource(cssPath);
             InputStream inputStream = resource.getInputStream();
             byte[] cssBytes = FileCopyUtils.copyToByteArray(inputStream);
             return new String(cssBytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.err.println("Warning: CSS file not found at " + "/static/style.css");
+            System.err.println("Warning: CSS file not found at " + "/static/css/login.css");
             return "";
         }
     }

@@ -4,7 +4,11 @@
 <!-- fragments/navbar.html -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4" th:fragment="navbar">
     <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/my-projects}">Alpha Solutions</a>
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/my-projects}">
+            <img th:src="@{/images/calcura-logo.png}" alt="Calcura" height="36" class="me-2">
+            <span class="fw-bold">Calcura</span>
+        </a>
+
 
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">

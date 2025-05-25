@@ -10,7 +10,11 @@
 
 <div class="container mt-4">
   <h1>Mine Projekter</h1>
-
+  <div class="alert alert-success alert-dismissible fade show mt-3" th:if="${param.welcome}">
+    <strong>✔️ Velkommen!</strong>
+    <span th:text="${param.welcome}">Du er nu logget ind.</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Luk"></button>
+  </div>
   <a th:href="@{/projects/create}" class="btn btn-primary mb-3">Opret nyt projekt</a>
 
   <!-- Vis oplysninger om den indloggede bruger -->
@@ -20,12 +24,12 @@
 
   <!-- Vis succesmeddelser -->
   <div class="alert alert-success" th:if="${param.success}">
-    <span th:text="${param.success}">Success message</span>
+    <span th:text="${param.success}"></span>
   </div>
 
   <!-- Vis fejlmeddelser -->
   <div class="alert alert-danger" th:if="${param.error}">
-    <span th:text="${param.error}">Error message</span>
+    <span th:text="${param.error}"></span>
   </div>
 
   <div th:if="${projects.isEmpty()}">
