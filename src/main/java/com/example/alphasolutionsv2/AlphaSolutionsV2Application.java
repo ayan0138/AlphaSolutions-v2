@@ -9,5 +9,4 @@ public class AlphaSolutionsV2Application {
     public static void main(String[] args) {
         SpringApplication.run(AlphaSolutionsV2Application.class, args);
     }
-
 }
