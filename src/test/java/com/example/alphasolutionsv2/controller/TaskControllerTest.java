@@ -299,30 +299,34 @@ public class TaskControllerTest {
                 .findFirst()
                 .orElseThrow();
 
-        // Print task info for debugging
         System.out.println("Created task ID: " + createdTask.getTaskId());
         System.out.println("Created task name: " + createdTask.getName());
 
-        // First, let's try to accept the redirect and see where it goes
+        // TEST 1: GET /tasks/{taskId}/assign should show the assignment form (status 200)
         mockMvc.perform(get("/tasks/" + createdTask.getTaskId() + "/assign")
                         .with(user("admin").roles("ADMIN")))
-                .andExpect(status().is3xxRedirection())  // Accept that it's redirecting
-                .andDo(result -> {
-                    // Print the redirect location
-                    String redirectUrl = result.getResponse().getRedirectedUrl();
-                    System.out.println("Redirect URL: " + redirectUrl);
-                });
+                .andExpect(status().isOk())  // ændret fra is3xxRedirection til isOk
+                .andExpect(view().name("tasks/assign-task"))  // Verify it shows the correct template
+                .andExpect(model().attributeExists("task"))
+                .andExpect(model().attributeExists("employees"))
+                .andExpect(model().attributeExists("loggedInUser"));
 
-        // Alternative approach - test the POST endpoint directly
+        // TEST 2: POST /tasks/{taskId}/assign should assign the task and redirect
         mockMvc.perform(post("/tasks/" + createdTask.getTaskId() + "/assign")
                         .param("employeeId", "3")  // Assuming user ID 3 is najib
                         .with(user("admin").roles("ADMIN"))
                         .with(csrf()))
-                .andExpect(status().is3xxRedirection()); // This should redirect after assignment
+                .andExpect(status().is3xxRedirection())  // POST should redirect
+                .andDo(result -> {
+                    String redirectUrl = result.getResponse().getRedirectedUrl();
+                    System.out.println("POST Redirect URL: " + redirectUrl);
+                });
 
-        // Verify the task was assigned
+        // TEST 3: Verify the task was actually assigned
         Task updatedTask = taskService.getTaskById(createdTask.getTaskId());
         System.out.println("Updated task assigned to: " + updatedTask.getAssignedToId());
+        assertNotNull(updatedTask.getAssignedToId(), "Task should be assigned to someone");
+        assertEquals(3L, updatedTask.getAssignedToId(), "Task should be assigned to user ID 3");
     }
     @Test
     void testViewTask() throws Exception {
