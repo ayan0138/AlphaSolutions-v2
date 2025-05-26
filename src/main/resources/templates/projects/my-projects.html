@@ -78,7 +78,7 @@
   </table>
 
   <!-- ADMIN SEKTION - Tilføj denne kode -->
-  <div th:if="${loggedInUser != null && loggedInUser.role.roleName == 'Admin'}" class="mt-4">
+  <div th:if="${loggedInUser != null and loggedInUser.role != null and #strings.equalsIgnoreCase(loggedInUser.role.roleName, 'Admin')}">
     <div class="card">
       <div class="card-header bg-primary text-white">
         <h4 class="mb-0">Administration</h4>
