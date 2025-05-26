@@ -396,8 +396,8 @@ public class TaskController {
         if (redirect != null) return redirect;
 
         // Tjek om brugeren er admin eller projektleder
-        if (!"Admin".equals(loggedInUser.getRole().getRoleName()) &&
-                !"Projektleder".equals(loggedInUser.getRole().getRoleName())) {
+        if (!"ADMIN".equals(loggedInUser.getRole().getRoleName()) &&
+                !"PROJEKTLEDER".equals(loggedInUser.getRole().getRoleName())) {
             return "redirect:/my-projects?error=Du har ikke rettigheder til at tildele opgaver";
         }
 
@@ -442,8 +442,8 @@ public class TaskController {
         if (redirect != null) return redirect;
 
         // Tjek om brugeren er admin eller projektleder
-        if (!"Admin".equals(loggedInUser.getRole().getRoleName()) &&
-                !"Projektleder".equals(loggedInUser.getRole().getRoleName())) {
+        if (!"ADMIN".equals(loggedInUser.getRole().getRoleName()) &&
+                !"PROJEKTLEDER".equals(loggedInUser.getRole().getRoleName())) {
             redirectAttributes.addAttribute("error", "Du har ikke rettigheder til at tildele opgaver");
             return "redirect:/my-projects";
         }
@@ -566,8 +566,8 @@ public class TaskController {
         // Check if the user is assigned to this task or has admin/projektleder role
         boolean isAssigned = task.getAssignedToId() != null &&
                 task.getAssignedToId().equals(loggedInUser.getUserId());
-        boolean hasHigherRole = "Admin".equals(loggedInUser.getRole().getRoleName()) ||
-                "Projektleder".equals(loggedInUser.getRole().getRoleName());
+        boolean hasHigherRole = "ADMIN".equals(loggedInUser.getRole().getRoleName()) ||
+                "PROJEKTLEDER".equals(loggedInUser.getRole().getRoleName());
 
         if (!isAssigned && !hasHigherRole) {
             return "redirect:/tasks/my-tasks?error=Du+har+ikke+adgang+til+denne+opgave";

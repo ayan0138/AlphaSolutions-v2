@@ -82,10 +82,10 @@
                        th:text="${subProject.name}"
                        class="text-decoration-none">Subprojekt navn</a>
                   </h6>
-                  <!-- Added: Edit button for subprojects -->
+                  <!-- FIXED: Edit button for subprojects - using ADMIN and PROJEKTLEDER -->
                   <a th:href="@{/subprojects/{id}/edit(id=${subProject.subProjectId})}"
                      class="btn btn-sm btn-outline-primary"
-                     th:if="${loggedInUser.role.roleName == 'Admin' || loggedInUser.role.roleName == 'Projektleder'}">
+                     th:if="${loggedInUser.role.roleName == 'ADMIN' || loggedInUser.role.roleName == 'PROJEKTLEDER'}">
                     Rediger
                   </a>
                 </div>
@@ -168,15 +168,15 @@
               <td th:text="${task.dueDate}"></td>
               <td th:text="${task.estimatedHours} + ' timer'"></td>
               <td th:text="${task.hourlyRate} + ' DKK/time'"></td>
-              <!-- Erstat den eksisterende "Handlinger" celle i tabellen med dette: -->
+              <!-- FIXED: Handlinger celle med ADMIN og PROJEKTLEDER -->
               <td>
                 <div class="btn-group">
                   <a th:href="@{'/tasks/edit/' + ${task.taskId}}" class="btn btn-sm btn-warning">
                     Redigér
                   </a>
 
-                  <!-- Ny Tildel-knap kun synlig for admin og projektledere -->
-                  <a th:if="${loggedInUser.role.roleName == 'Admin' || loggedInUser.role.roleName == 'Projektleder'}"
+                  <!-- FIXED: Tildel-knap kun synlig for ADMIN og PROJEKTLEDER -->
+                  <a th:if="${loggedInUser.role.roleName == 'ADMIN' || loggedInUser.role.roleName == 'PROJEKTLEDER'}"
                      th:href="@{/tasks/{id}/assign(id=${task.taskId})}"
                      class="btn btn-sm btn-outline-primary">
                     <span th:if="${task.assignedUser == null}">Tildel</span>
@@ -222,8 +222,8 @@
 
     <!-- Your existing buttons -->
     <a th:href="@{/my-projects}" class="btn btn-secondary">Tilbage til projekter</a>
-    <!-- Show edit button only for project creator or admins -->
-    <a th:if="${loggedInUser.role.roleName == 'Admin' or loggedInUser.role.roleName == 'Projektleder'}"
+    <!-- FIXED: Show edit button only for project creator or admins - using ADMIN and PROJEKTLEDER -->
+    <a th:if="${loggedInUser.role.roleName == 'ADMIN' or loggedInUser.role.roleName == 'PROJEKTLEDER'}"
        th:href="@{/projects/{id}/edit(id=${project.projectId})}"
        class="btn btn-primary">Rediger</a>
   </div>
