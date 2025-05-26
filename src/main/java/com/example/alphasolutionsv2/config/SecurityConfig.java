@@ -31,7 +31,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Offentlige ressourcer
                         .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/frontpage/**", "/").permitAll()
-
+// Reports adgang
+                                .requestMatchers("/reports/**").authenticated()
                         // Admin-kun ressourcer - KUN hasAuthority overalt
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 

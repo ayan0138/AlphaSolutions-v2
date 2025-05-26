@@ -66,7 +66,7 @@ public class PdfGenerationService {
      */
     private String loadCssContent() throws IOException {
         try {
-            ClassPathResource resource = new ClassPathResource("/static/css/style.css");
+            ClassPathResource resource = new ClassPathResource("static/css/style.css");
             InputStream inputStream = resource.getInputStream();
             byte[] cssBytes = FileCopyUtils.copyToByteArray(inputStream);
             return new String(cssBytes, StandardCharsets.UTF_8);

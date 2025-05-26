@@ -96,7 +96,7 @@ public class ReportController {
             context.setVariable("loggedInUser", loggedInUser);
 
             // Generer PDF ved hjælp af PDF skabelonen
-            byte[] pdfBytes = pdfGenerationService.generatePdfFromTemplate("project-report-pdf", context);
+            byte[] pdfBytes = pdfGenerationService.generatePdfFromTemplate("projects/project-report-pdf", context);
 
             // Angiv respons-headere for PDF download
             String filename = "projekt-rapport-" +
