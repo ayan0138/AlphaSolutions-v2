@@ -10,17 +10,26 @@
         </a>
 
 
-        <div class="collapse navbar-collapse justify-content-end">
-            <ul class="navbar-nav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/my-projects}">Mine Projekter</a>
                 </li>
+                <!-- Show tasks link to all users, but especially useful for employees -->
                 <li class="nav-item">
-                    <form th:action="@{/logout}" method="post">
-                        <button class="btn btn-outline-danger" type="submit">Log ud</button>
-                    </form>
+                    <a class="nav-link" th:href="@{/tasks/my-assigned-tasks}">Mine Opgaver</a>
                 </li>
             </ul>
+
+            <!-- Log out button -->
+            <form th:action="@{/logout}" method="post" class="d-flex">
+                <button class="btn btn-outline-danger" type="submit">Log ud</button>
+            </form>
         </div>
     </div>
 </nav>

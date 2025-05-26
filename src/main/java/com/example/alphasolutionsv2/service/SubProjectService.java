@@ -34,7 +34,7 @@ public class SubProjectService {
      * Create a new subproject
      */
     public SubProject createSubProject(SubProject subProject) {
-        // Tilføj validering
+        // Existing validation
         if (subProject.getName() == null || subProject.getName().isEmpty()) {
             throw new IllegalArgumentException("Subprojekt navn er påkrævet");
         }
@@ -43,7 +43,13 @@ public class SubProjectService {
             throw new IllegalArgumentException("Projekt ID er påkrævet");
         }
 
-        // Set oprettelsestidpunkt  hvis det ikke allered er set
+        // Add date validation
+        if (subProject.getStartDate() != null && subProject.getEndDate() != null &&
+                subProject.getEndDate().isBefore(subProject.getStartDate())) {
+            throw new IllegalArgumentException("Slutdato må ikke være før startdato");
+        }
+
+        // Set creation time if not already set
         if (subProject.getCreatedAt() == null) {
             subProject.setCreatedAt(LocalDateTime.now());
         }
@@ -55,6 +61,17 @@ public class SubProjectService {
      * Update an existing subproject
      */
     public SubProject updateSubProject(SubProject subProject) {
+        // Add validation for updates too
+        if (subProject.getName() == null || subProject.getName().isEmpty()) {
+            throw new IllegalArgumentException("Subprojekt navn er påkrævet");
+        }
+
+        // Add date validation
+        if (subProject.getStartDate() != null && subProject.getEndDate() != null &&
+                subProject.getEndDate().isBefore(subProject.getStartDate())) {
+            throw new IllegalArgumentException("Slutdato må ikke være før startdato");
+        }
+
         return subProjectRepository.save(subProject);
     }
 
@@ -75,4 +92,5 @@ public class SubProjectService {
         SubProject subProject = getSubProjectById(subProjectId);
         return subProject != null ? subProject.getProjectId() : null;
     }
+
 }

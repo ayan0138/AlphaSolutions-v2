@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Rediger Subprojekt</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/my-projects}">Mine Projekter</a></li>
+            <li class="breadcrumb-item" th:if="${project != null}">
+                <a th:href="@{/projects/{id}(id=${project.projectId})}" th:text="${project.name}">Projekt</a>
+            </li>
+            <li class="breadcrumb-item active">Rediger Subprojekt</li>
+        </ol>
+    </nav>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2>Rediger Subprojekt</h2>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/subprojects/{id}/edit(id=${subProject.subProjectId})}" method="post" th:object="${subProject}">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Navn</label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Beskrivelse</label>
+                    <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="startDate" class="form-label">Startdato</label>
+                    <input type="date" class="form-control" id="startDate" th:field="*{startDate}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="endDate" class="form-label">Slutdato</label>
+                    <input type="date" class="form-control" id="endDate" th:field="*{endDate}" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Gem ændringer</button>
+                <a th:href="@{/projects/{id}(id=${subProject.projectId})}" class="btn btn-secondary">Annuller</a>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

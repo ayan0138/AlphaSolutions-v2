@@ -5,48 +5,45 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Task {
-    private Long taskId;
+    private long taskId;
     private Long subProjectId;
     private String name;
     private String description;
-    private Long assignedTo;
+    private Long assignedToId;
     private String status;
     private LocalDate dueDate;
     private LocalDateTime createdAt;
     private BigDecimal price;
     private Double estimatedHours;
     private Double hourlyRate;
-
-    // Add projectId field for form binding
-    private Long projectId; //Dette for form binding, er ikke en del af databasen
-
-    // Object references (not directly in database)
+    private Long projectId; // This is for form binding, not stored in database
     private SubProject subProject;
     private User assignedUser;
 
     public Task() {
-        // Default constructor - nødvendig for binding i Thymeleaf
+        // Default constructor
     }
 
-    // Constructor med alle database felter
-    public Task(Long taskId, Long subProjectId, String name, String description,
+    // Constructor with all database fields
+    public Task(long taskId, Long subProjectId, String name, String description,
                 Long assignedTo, String status, LocalDate dueDate, LocalDateTime createdAt, BigDecimal price,
-                Double estimatedHours, Double hourlyRate) {
+                Double estimatedHours, Double hourlyRate,User assignedUser) {
         this.taskId = taskId;
         this.subProjectId = subProjectId;
         this.name = name;
         this.description = description;
-        this.assignedTo = assignedTo;
+        this.assignedToId = assignedTo;
         this.status = status;
         this.dueDate = dueDate;
         this.createdAt = createdAt;
         this.price = price;
         this.estimatedHours = estimatedHours;
         this.hourlyRate = hourlyRate;
+        this.assignedUser = assignedUser;
     }
 
     // Alle getters og setters
-    public Long getTaskId() {
+    public long getTaskId() {
         return taskId;
     }
 
@@ -78,12 +75,12 @@ public class Task {
         this.description = description;
     }
 
-    public Long getAssignedTo() {
-        return assignedTo;
+    public Long getAssignedToId() {
+        return assignedToId;
     }
 
-    public void setAssignedTo(Long assignedTo) {
-        this.assignedTo = assignedTo;
+    public void setAssignedToId(Long assignedToId) {
+        this.assignedToId = assignedToId;
     }
 
     public String getStatus() {
@@ -167,7 +164,15 @@ public class Task {
     public void setAssignedUser(User assignedUser) {
         this.assignedUser = assignedUser;
         if (assignedUser != null) {
-            this.assignedTo = assignedUser.getUserId();
+            this.assignedToId = assignedUser.getUserId();
         }
     }
+    public Long getAssignedTo() {
+        return assignedToId;
+    }
+
+    public void setAssignedTo(Long assignedTo) {
+        this.assignedToId = assignedTo;
+    }
 }
+

@@ -1,7 +1,7 @@
 package com.example.alphasolutionsv2.controller;
 
 import com.example.alphasolutionsv2.config.SecurityConfig;
-import com.example.alphasolutionsv2.service.CustomUserDetailsService;
+import com.example.alphasolutionsv2.service.ApplicationUserDetailsService;
 import com.example.alphasolutionsv2.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,8 +35,8 @@ public class LogoutIntegrationTest {
     @TestConfiguration
     static class MockedSecurityBeans {
         @Bean
-        public CustomUserDetailsService customUserDetailsService() {
-            return Mockito.mock(CustomUserDetailsService.class);
+        public ApplicationUserDetailsService customUserDetailsService() {
+            return Mockito.mock(ApplicationUserDetailsService.class);
         }
 
         @Bean

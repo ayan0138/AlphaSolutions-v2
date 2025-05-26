@@ -5,7 +5,6 @@ import com.example.alphasolutionsv2.model.User;
 import com.example.alphasolutionsv2.service.PdfGenerationService;
 import com.example.alphasolutionsv2.service.ReportService;
 import com.example.alphasolutionsv2.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;

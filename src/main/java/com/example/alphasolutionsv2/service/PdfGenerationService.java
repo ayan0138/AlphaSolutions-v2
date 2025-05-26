@@ -15,9 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * PDF Generation Service baseret på OpenHTMLToPDF's officielle integration guide
+ * Se: <a href="https://github.com/danfickle/openhtmltopdf/wiki/Integration-Guide">...</a>
+
+ * Implementeringen følger det anbefalede mønster fra OpenHTMLToPDF dokumentationen
+ * med tilføjede optimiseringer til CSS-håndtering for bedre PDF-rendering.
+ */
 @Service
 public class PdfGenerationService {
-
 
     private final TemplateEngine templateEngine;
 
@@ -25,30 +31,59 @@ public class PdfGenerationService {
         this.templateEngine = templateEngine;
     }
 
+    /**
+     * Hovedmetode til PDF-generering baseret på OpenHTMLToPDF's standard workflow:
+     * 1. Process Thymeleaf template til HTML
+     * 2. Parse med JSoup
+     * 3. Konverter til W3C DOM
+     * 4. Generer PDF med PdfRendererBuilder
+     * Tilføjet: CSS-optimisering for bedre PDF-kompatibilitet
+     */
     public byte[] generatePdfFromTemplate(String templateName, Context context) throws Exception {
-        // Behandl Thymeleaf skabelonen til HTML
+        // Step 1: Standard Thymeleaf processing (fra OpenHTMLToPDF guide)
         String htmlContent = templateEngine.process(templateName, context);
 
-        // Læs ccs fil fra classpath
-        String cssContent = readCssFromClasspath();
+        // Step 2: CSS handling (inspireret af community best practices)
+        String cssContent = loadCssContent();
+        String optimizedCss = optimizeCssForPdf(cssContent);
 
-        // Rens CSS for at fjerne egenskaber, der foråsager advarlser
-        String cleanedCss = cleanCssForPdf(cssContent);
-
-        // Parse HTML med JSoup og inline den rensede CSS
+        // Step 3: HTML manipulation med JSoup (OpenHTMLToPDF standard approach)
         Document document = Jsoup.parse(htmlContent);
-
-        // Fjern eksisterende CSS link og tilføj inline-stilarter
         document.select("link[rel=stylesheet]").remove();
-        document.head().appendElement("style").text(cleanedCss);
+        document.head().appendElement("style").text(optimizedCss);
 
-        // Konventer til XHTML for OpenHTMLToPDF
+        // Step 4: W3C DOM conversion (direkte fra OpenHTMLToPDF dokumentation)
         W3CDom w3cDom = new W3CDom();
         org.w3c.dom.Document xhtmlDocument = w3cDom.fromJsoup(document);
 
-        // Generer PDF
+        // Step 5: PDF generation (standard PdfRendererBuilder usage)
+        return buildPdfFromDocument(xhtmlDocument);
+    }
+
+    /**
+     * Standard CSS loading metode baseret på Spring Boot best practices
+     * Inspiration: Spring.io guides om ressource-håndtering
+     */
+    private String loadCssContent() throws IOException {
+        try {
+            ClassPathResource resource = new ClassPathResource("/static/css/style.css");
+            InputStream inputStream = resource.getInputStream();
+            byte[] cssBytes = FileCopyUtils.copyToByteArray(inputStream);
+            return new String(cssBytes, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            System.err.println("CSS file ikke fundet, bruger standard styling");
+            return getDefaultPdfStyles();
+        }
+    }
+
+    /**
+     * PDF generation metode der følger OpenHTMLToPDF's anbefalede mønster
+     * Se: <a href="https://github.com/danfickle/openhtmltopdf/wiki/Integration-Guide">...</a>
+     */
+    private byte[] buildPdfFromDocument(org.w3c.dom.Document xhtmlDocument) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+        // Standard PdfRendererBuilder setup fra OpenHTMLToPDF dokumentation
         PdfRendererBuilder builder = new PdfRendererBuilder();
         builder.withW3cDocument(xhtmlDocument, "/");
         builder.toStream(outputStream);
@@ -58,63 +93,92 @@ public class PdfGenerationService {
     }
 
     /**
-     * Clean CSS by removing or replacing properties that cause warnings in OpenHTMLToPDF
+     * CSS optimisering metode - kombinerer OpenHTMLToPDF anbefalinger
+     * med community best practices for PDF-rendering
+     * Baseret på issues og solutions fra OpenHTMLToPDF GitHub repository
      */
-    private String cleanCssForPdf(String cssContent) {
+    private String optimizeCssForPdf(String cssContent) {
         if (cssContent == null || cssContent.isEmpty()) {
-            return "";
+            return getDefaultPdfStyles();
         }
 
-        // Fjern box-shadow properties
-        cssContent = cssContent.replaceAll("box-shadow\\s*:[^;]+;", "/* box-shadow removed for PDF */");
+        // Fix #1: box-shadow ikke understøttet (kendt OpenHTMLToPDF limitation)
+        cssContent = removeUnsupportedBoxShadow(cssContent);
 
-        // Fjern webkit og color-adjust properties
-        cssContent = cssContent.replaceAll("-webkit-print-color-adjust\\s*:[^;]+;", "");
-        cssContent = cssContent.replaceAll("color-adjust\\s*:[^;]+;", "");
-        cssContent = cssContent.replaceAll("print-color-adjust\\s*:[^;]+;", "");
+        // Fix #2: Gradient support workaround (fra community solutions)
+        cssContent = replaceGradientsWithSolidColors(cssContent);
 
-        // Fjern opacity (erstat med kommentar for at bevare den visuelle effekt
-        cssContent = cssContent.replaceAll("opacity\\s*:[^;]+;", "/* opacity removed for PDF */");
+        // Fix #3: Modern layout fixes (baseret på PDF rendering best practices)
+        cssContent = convertModernLayoutForPdf(cssContent);
 
-        // Erstat linear-gradient med solid farve
-        cssContent = cssContent.replaceAll(
-                "background:\\s*linear-gradient\\([^)]+\\);",
-                "background: #007bff;"
-        );
-
-        // Erstat CSS Grid med PDF-friendly alternativer
-        cssContent = replaceCssGrid(cssContent);
-
-        // Fjern flexbox og erstat with block
-        cssContent = cssContent.replaceAll("display\\s*:\\s*flex;", "display: block;");
-
-        // Fjern break-inside properties
-        cssContent = cssContent.replaceAll("break-inside\\s*:[^;]+;", "");
-
-        // Fjern page-break properties som potentialt kan forårsage problemer
-        cssContent = cssContent.replaceAll("page-break-after\\s*:[^;]+;", "");
-
-        // Fjern tr:hover da det ikke er nødvændigt i pdf
-        cssContent = cssContent.replaceAll("\\.pdf-table\\s+tr:hover\\s*\\{[^}]+}", "");
+        // Fix #4: Print-specific optimizations
+        cssContent = addPrintOptimizations(cssContent);
 
         return cssContent;
     }
 
     /**
-     * Replace CSS Grid with PDF-friendly layout
+     * Fjerner box-shadow properties der ikke understøttes af OpenHTMLToPDF
+     * Problem dokumenteret i: <a href="https://github.com/danfickle/openhtmltopdf/issues">...</a>
      */
-    private String replaceCssGrid(String cssContent) {
-        // Erstat grid display med block
-        cssContent = cssContent.replaceAll("display\\s*:\\s*grid;", "display: block;");
+    private String removeUnsupportedBoxShadow(String css) {
+        return css.replaceAll("box-shadow\\s*:[^;]+;", "/* box-shadow ikke understøttet i PDF */");
+    }
 
-        // Fjern grid-template-columns
-        cssContent = cssContent.replaceAll("grid-template-columns\\s*:[^;]+;", "");
+    /**
+     * Erstatter linear-gradient med solid colors
+     * Workaround for OpenHTMLToPDF's begrænsede gradient support
+     */
+    private String replaceGradientsWithSolidColors(String css) {
+        // Erstat login gradient med solid farve
+        css = css.replaceAll(
+                "background:\\s*linear-gradient\\([^)]+\\);",
+                "background: #2c5aa0;"
+        );
+        return css;
+    }
 
-        // Fjern gap property
-        cssContent = cssContent.replaceAll("gap\\s*:[^;]+;", "");
+    /**
+     * Konverterer moderne CSS layout (Grid, Flexbox) til PDF-kompatible alternativer
+     * Baseret på anbefalinger fra CSS-to-PDF conversion best practices
+     */
+    private String convertModernLayoutForPdf(String css) {
+        // Flexbox → Block layout conversion
+        css = css.replaceAll("display\\s*:\\s*flex;", "display: block;");
 
-        // Tilføj PDF-venlig alternativer til summary grid
-        String pdfGridStyles = """
+        // CSS Grid → Table-like layout conversion
+        css = css.replaceAll("display\\s*:\\s*grid;", "display: block;");
+        css = css.replaceAll("grid-template-columns\\s*:[^;]+;", "");
+        css = css.replaceAll("gap\\s*:[^;]+;", "");
+
+        // Tilføj PDF-venlige layout alternativer
+        css += getPdfLayoutStyles();
+
+        return css;
+    }
+
+    /**
+     * Tilføjer print-specifikke optimiseringer
+     * Baseret på W3C print stylesheet anbefalinger
+     */
+    private String addPrintOptimizations(String css) {
+        // Fjern interaktive elementer
+        css = css.replaceAll("tr:hover\\s*\\{[^}]+}", "");
+        css = css.replaceAll("opacity\\s*:[^;]+;", "");
+
+        // Fjerner webkit-specifikke properties
+        css = css.replaceAll("-webkit-[^:]+:[^;]+;", "");
+
+        return css;
+    }
+
+    /**
+     * PDF-venlige layout styles som erstatning for moderne CSS features
+     */
+    private String getPdfLayoutStyles() {
+        return """
+            
+            /* PDF Layout Alternatives - erstatter Grid/Flexbox */
             .pdf-summary-item {
                 display: inline-block;
                 width: 24%;
@@ -123,7 +187,6 @@ public class PdfGenerationService {
                 text-align: center;
                 padding: 15px;
                 background: white;
-                border-radius: 8px;
                 border: 1px solid #e0e0e0;
                 box-sizing: border-box;
             }
@@ -134,26 +197,18 @@ public class PdfGenerationService {
                 width: 100%;
             }
             """;
-
-        // Tilføj den PDF-venlige styles i slutningen
-        cssContent += "\n/* PDF-friendly grid alternatives */\n" + pdfGridStyles;
-
-        return cssContent;
     }
 
     /**
-     * Read CSS file from classpath
+     * Fallback styles hvis hovedstyling ikke kan loades
      */
-    private String readCssFromClasspath() {
-        String cssPath = "/static/css/login.css";
-        try {
-            ClassPathResource resource = new ClassPathResource(cssPath);
-            InputStream inputStream = resource.getInputStream();
-            byte[] cssBytes = FileCopyUtils.copyToByteArray(inputStream);
-            return new String(cssBytes, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            System.err.println("Warning: CSS file not found at " + "/static/css/login.css");
-            return "";
-        }
+    private String getDefaultPdfStyles() {
+        return """
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .pdf-header { background: #007bff; color: white; padding: 20px; text-align: center; }
+            .pdf-table { width: 100%; border-collapse: collapse; }
+            .pdf-table th, .pdf-table td { border: 1px solid #ddd; padding: 8px; }
+            .pdf-table th { background-color: #f2f2f2; }
+            """;
     }
 }
