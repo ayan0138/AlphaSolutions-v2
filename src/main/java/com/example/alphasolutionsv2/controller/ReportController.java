@@ -58,7 +58,7 @@ public class ReportController {
             model.addAttribute("report", report);
             model.addAttribute("loggedInUser", loggedInUser);
 
-            return "project-report";
+            return "projects/project-report";
 
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());

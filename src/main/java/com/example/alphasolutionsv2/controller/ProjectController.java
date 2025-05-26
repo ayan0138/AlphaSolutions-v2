@@ -64,7 +64,7 @@ public class ProjectController {
 
         model.addAttribute("loggedInUser", loggedInUser);
         model.addAttribute("projects", projectService.getProjectsByUserId(loggedInUser.getUserId()));
-        return "my-projects";
+        return "projects/my-projects";
     }
 
     @GetMapping("/projects/{id}")
@@ -87,7 +87,7 @@ public class ProjectController {
             model.addAttribute("tasks", taskService.getTasksByProjectId(id));
             model.addAttribute("subProjects", subProjectService.getSubProjectsByProjectId(id));
 
-            return "project-details";
+            return "projects/project-details";
         }
 
         return "redirect:/my-projects?error=Ingen+rettigheder";
@@ -110,7 +110,7 @@ public class ProjectController {
 
         model.addAttribute("project", project);
         model.addAttribute("loggedInUser", user);
-        return "edit-project";
+        return "projects/edit-project";
     }
 
     @PostMapping("/projects/{id}/edit")
@@ -142,7 +142,7 @@ public class ProjectController {
             model.addAttribute("project", project);
             model.addAttribute("error", error);
             model.addAttribute("loggedInUser", user);
-            return "edit-project";
+            return "projects/edit-project";
         }
 
         redirectAttributes.addFlashAttribute("success", "Projekt opdateret!");
@@ -159,7 +159,7 @@ public class ProjectController {
 
         model.addAttribute("project", project);
         model.addAttribute("loggedInUser", user);
-        return "create-project";
+        return "projects/create-project";
     }
 
     @PostMapping("/projects/create")
@@ -198,7 +198,7 @@ public class ProjectController {
 
         model.addAttribute("project", project);
         model.addAttribute("loggedInUser", user);
-        return "delete-project-confirmation"; // TODO: Lav denne HTML-side
+        return "projects/delete-project-confirmation"; // TODO: Lav denne HTML-side
     }
 
     @PostMapping("/projects/{id}/delete")
@@ -211,7 +211,7 @@ public class ProjectController {
 
         if (!verifyUserPassword(user.getUsername(), confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Forkert adgangskode");
-            return "redirect:/projects/" + id + "/edit-project";
+            return "redirect:/projects/" + id + "/edit";
         }
 
         boolean deleted = projectService.deleteProject(id, user);
@@ -239,7 +239,7 @@ public class ProjectController {
         model.addAttribute("subProject", subProject);
         model.addAttribute("project", projectOpt.get());
         model.addAttribute("loggedInUser", user);
-        return "create-subproject";
+        return "subprojects/create-subproject";
     }
 
     @PostMapping("/projects/{projectId}/subprojects/create")
@@ -264,7 +264,7 @@ public class ProjectController {
             Optional<Project> projectOpt = projectService.getProjectById(projectId);
             projectOpt.ifPresent(p -> model.addAttribute("project", p));
             model.addAttribute("loggedInUser", user);
-            return "create-subproject";
+            return "subprojects/create-subproject";
         }
     }
     // Add these methods to your existing ProjectController class
@@ -289,7 +289,7 @@ public class ProjectController {
         model.addAttribute("loggedInUser", loggedInUser);
         projectOpt.ifPresent(project -> model.addAttribute("project", project));
 
-        return "edit-subproject";
+        return "subprojects/edit-subproject";
     }
 
     @PostMapping("/subprojects/{subProjectId}/edit")
@@ -318,7 +318,7 @@ public class ProjectController {
                 Optional<Project> projectOpt = projectService.getProjectById(existingSubProject.getProjectId());
                 projectOpt.ifPresent(project -> model.addAttribute("project", project));
 
-                return "edit-subproject";
+                return "subprojects/edit-subproject";
             }
 
             // Set ID and project ID from existing subproject to ensure they're not modified
@@ -343,7 +343,7 @@ public class ProjectController {
                 projectOpt.ifPresent(project -> model.addAttribute("project", project));
             }
 
-            return "edit-subproject";
+            return "subprojects/edit-subproject";
         }
     }
 }

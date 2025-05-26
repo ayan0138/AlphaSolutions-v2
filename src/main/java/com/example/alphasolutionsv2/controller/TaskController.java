@@ -106,7 +106,7 @@ public class TaskController {
         List<Task> tasks = taskService.getAllTasks();
         model.addAttribute("tasks", tasks);
         model.addAttribute("loggedInUser", loggedInUser);
-        return "tasks-list";
+        return "tasks/tasks-list";
     }
 
     @GetMapping("/project/{projectId}")
@@ -121,7 +121,7 @@ public class TaskController {
         model.addAttribute("tasks", tasks);
         model.addAttribute("projectId", projectId);
         model.addAttribute("loggedInUser", loggedInUser);
-        return "tasks-list";
+        return "tasks/tasks-list";
     }
 
     @GetMapping("/subproject/{subProjectId}")
@@ -145,7 +145,7 @@ public class TaskController {
         model.addAttribute("loggedInUser", loggedInUser);
         projectOpt.ifPresent(project -> model.addAttribute("project", project));
 
-        return "subproject-tasks";
+        return "subprojects/subproject-tasks";
     }
 
     // ============= OPRET-METODER =============
@@ -164,7 +164,7 @@ public class TaskController {
         }
 
         populateCreateTaskModel(model, task, loggedInUser);
-        return "create-task";
+        return "tasks/create-task";
     }
 
     @GetMapping("/project/{projectId}/create")
@@ -183,7 +183,7 @@ public class TaskController {
         }
 
         populateCreateTaskModel(model, task, loggedInUser);
-        return "create-task";
+        return "tasks/create-task";
     }
 
     @PostMapping("/create")
@@ -212,7 +212,7 @@ public class TaskController {
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             populateCreateTaskModel(model, task, loggedInUser);
-            return "create-task";
+            return "tasks/create-task";
         }
     }
 
@@ -257,7 +257,7 @@ public class TaskController {
             projectOpt.ifPresent(project -> model.addAttribute("project", project));
         }
 
-        return "edit-task";
+        return "tasks/edit-task";
     }
 
     @PostMapping("/edit/{taskId}")
@@ -290,7 +290,7 @@ public class TaskController {
                 model.addAttribute("subProjects", subProjects);
             }
 
-            return "edit-task";
+            return "tasks/edit-task";
         }
     }
 
@@ -333,7 +333,7 @@ public class TaskController {
         model.addAttribute("loggedInUser", loggedInUser);
         model.addAttribute("from", from);
 
-        return "delete-task";
+        return "tasks/delete-task";
     }
 
     @PostMapping("/{taskId}/delete")
@@ -430,7 +430,7 @@ public class TaskController {
         model.addAttribute("employees", employees);
         model.addAttribute("loggedInUser", loggedInUser);
 
-        return "assign-task";
+        return "tasks/assign-task";
     }
     @PostMapping("/{taskId}/assign")
     public String assignTask(@PathVariable long taskId,
@@ -530,7 +530,7 @@ public class TaskController {
         model.addAttribute("tasks", assignedTasks);
         model.addAttribute("loggedInUser", loggedInUser);
 
-        return "my-assigned-tasks";
+        return "tasks/my-assigned-tasks";
     }
     // Add this to TaskController class
     @GetMapping("/my-tasks")
@@ -547,7 +547,7 @@ public class TaskController {
         model.addAttribute("loggedInUser", loggedInUser);
         model.addAttribute("title", "Mine Opgaver");
 
-        return "my-tasks";
+        return "tasks/my-tasks";
     }
     // Add this method to TaskController class
     @GetMapping("/view/{taskId}")
@@ -588,6 +588,6 @@ public class TaskController {
         model.addAttribute("task", task);
         model.addAttribute("loggedInUser", loggedInUser);
 
-        return "view-task";
+        return "tasks/view-task";
     }
 }

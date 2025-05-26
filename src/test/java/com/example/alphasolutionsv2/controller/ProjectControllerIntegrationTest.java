@@ -72,7 +72,7 @@ class ProjectControllerIntegrationTest {
     void testShouldReturnProjectDetails_whenUserHasAcces() throws Exception {
         mockMvc.perform(get("/projects/" + testProject.getProjectId()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("project-details"))
+                .andExpect(view().name("projects/project-details"))
                 .andExpect(model().attributeExists("project"))
                 .andExpect(model().attributeExists("loggedInUser"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Eksamensprojekt")));
@@ -99,7 +99,7 @@ class ProjectControllerIntegrationTest {
                         .param("startDateStr", "2025-06-01")
                         .param("endDateStr", "2025-05-01"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("edit-project"))
+                .andExpect(view().name("projects/edit-project"))
                 .andExpect(model().attributeExists("error"));
     }
 }

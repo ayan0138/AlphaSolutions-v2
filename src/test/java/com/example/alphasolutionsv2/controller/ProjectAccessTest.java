@@ -34,7 +34,7 @@ class ProjectAccessTest {
     void testAccessMyProjectAsAuthenticatedUser() throws Exception {
         mockMvc.perform(get("/my-projects"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("my-projects"))
+                .andExpect(view().name("projects/my-projects"))
                 .andExpect(model().attributeExists("projects"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }
@@ -44,7 +44,7 @@ class ProjectAccessTest {
     void testAccessMyProjectAsAdmin() throws Exception {
         mockMvc.perform(get("/my-projects"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("my-projects"))
+                .andExpect(view().name("projects/my-projects"))
                 .andExpect(model().attributeExists("projects"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }

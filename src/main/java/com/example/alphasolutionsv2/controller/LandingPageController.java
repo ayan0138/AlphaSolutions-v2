@@ -10,7 +10,7 @@ public class LandingPageController {
     // Viser forsiden når brugeren går til ind på siden.
     @GetMapping({"/", "/frontpage"})
     public String showFrontPage() {
-        return "calcura-frontpage"; // matcher filnavn i templates-mappen
+        return "dashboard/calcura-frontpage"; // matcher filnavn i templates-mappen
     }
 
     @GetMapping("/login")
@@ -30,6 +30,6 @@ public class LandingPageController {
         }
 
         // Hvis ikke logget ind
-        return "login";
+        return "auth/login";
     }
 }

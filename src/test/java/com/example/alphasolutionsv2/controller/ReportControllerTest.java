@@ -96,7 +96,7 @@ class ReportControllerTest {
         mockMvc.perform(get("/reports/project/1")
                         .with(user("testuser").roles("USER")))
                 .andExpect(status().isOk())
-                .andExpect(view().name("project-report"))
+                .andExpect(view().name("projects/project-report"))
                 .andExpect(model().attribute("report", testReport))
                 .andExpect(model().attribute("loggedInUser", testUser));
     }

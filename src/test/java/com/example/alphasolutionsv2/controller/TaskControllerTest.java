@@ -59,7 +59,7 @@ public class TaskControllerTest {
         mockMvc.perform(get("/tasks")
                         .with(user("marcus").roles("USER")))
                 .andExpect(status().isOk())
-                .andExpect(view().name("tasks-list"))
+                .andExpect(view().name("tasks/tasks-list"))
                 .andExpect(model().attributeExists("tasks"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }
@@ -79,7 +79,7 @@ public class TaskControllerTest {
         mockMvc.perform(get("/tasks/project/1")
                         .with(user("marcus").roles("USER")))
                 .andExpect(status().isOk())
-                .andExpect(view().name("tasks-list"))
+                .andExpect(view().name("tasks/tasks-list"))
                 .andExpect(model().attributeExists("tasks"))
                 .andExpect(model().attributeExists("projectId"))
                 .andExpect(model().attributeExists("loggedInUser"));
@@ -92,7 +92,7 @@ public class TaskControllerTest {
                         .param("projectId", "1")
                         .with(user("admin").roles("ADMIN")))  // Use ADMIN role
                 .andExpect(status().isOk())
-                .andExpect(view().name("create-task"))
+                .andExpect(view().name("tasks/create-task"))
                 .andExpect(model().attributeExists("task"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }
@@ -103,7 +103,7 @@ public class TaskControllerTest {
         mockMvc.perform(get("/tasks/project/1/create")
                         .with(user("admin").roles("ADMIN")))  // Use ADMIN role for proper access
                 .andExpect(status().isOk())
-                .andExpect(view().name("create-task"))
+                .andExpect(view().name("tasks/create-task"))
                 .andExpect(model().attributeExists("task"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }
@@ -152,7 +152,7 @@ public class TaskControllerTest {
         mockMvc.perform(get("/tasks/edit/" + createdTask.getTaskId())
                         .with(user("marcus").roles("USER")))
                 .andExpect(status().isOk())
-                .andExpect(view().name("edit-task"))
+                .andExpect(view().name("tasks/edit-task"))
                 .andExpect(model().attributeExists("task"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }
@@ -215,7 +215,7 @@ public class TaskControllerTest {
                         .with(user("admin").roles("ADMIN")) // Use admin with ADMIN role
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("delete-task"))
+                .andExpect(view().name("tasks/delete-task"))
                 .andExpect(model().attributeExists("task"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }
@@ -226,7 +226,7 @@ public class TaskControllerTest {
         mockMvc.perform(get("/tasks/subproject/1")
                         .with(user("marcus").roles("USER")))
                 .andExpect(status().isOk())
-                .andExpect(view().name("subproject-tasks"))
+                .andExpect(view().name("subprojects/subproject-tasks"))
                 .andExpect(model().attributeExists("tasks"))
                 .andExpect(model().attributeExists("subProject"))
                 .andExpect(model().attributeExists("loggedInUser"));
@@ -276,7 +276,7 @@ public class TaskControllerTest {
         mockMvc.perform(get("/tasks/my-assigned-tasks")
                         .with(user("najib").roles("MEDARBEJDER")))
                 .andExpect(status().isOk())
-                .andExpect(view().name("my-assigned-tasks"))
+                .andExpect(view().name("tasks/my-assigned-tasks"))
                 .andExpect(model().attributeExists("tasks"))
                 .andExpect(model().attributeExists("loggedInUser"));
     }
@@ -348,7 +348,7 @@ public class TaskControllerTest {
         mockMvc.perform(get("/tasks/view/" + createdTask.getTaskId())
                         .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk())  // Expect 200 OK status
-                .andExpect(view().name("view-task"))  // Verify the correct view is returned
+                .andExpect(view().name("tasks/view-task"))  // Verify the correct view is returned
                 .andExpect(model().attributeExists("task"));  // Verify the task attribute exists
     }
     // Helper method to create a task
@@ -368,5 +368,4 @@ public class TaskControllerTest {
                 .orElseThrow();
     }
 }
-
 
