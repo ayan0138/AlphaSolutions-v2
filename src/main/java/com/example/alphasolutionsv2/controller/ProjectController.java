@@ -211,7 +211,7 @@ public class ProjectController {
 
         if (!verifyUserPassword(user.getUsername(), confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Forkert adgangskode");
-            return "redirect:/projects/" + id + "/edit";
+            return "redirect:/projects/" + id;
         }
 
         boolean deleted = projectService.deleteProject(id, user);
