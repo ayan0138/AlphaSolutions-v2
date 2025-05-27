@@ -270,6 +270,12 @@ public class TaskController {
         if (redirect != null) return redirect;
 
         try {
+            Task existingTask = taskService.getTaskById(taskId);
+            if (existingTask != null) {
+                task.setAssignedTo(existingTask.getAssignedTo());
+                task.setAssignedUser(existingTask.getAssignedUser());
+            }
+
             task.setTaskId(taskId);
             taskService.updateTask(task);
 
